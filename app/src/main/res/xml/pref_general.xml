@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_full_name_default"
+        android:inputType="text"
+        android:key="@string/pref_full_name_key"
+        android:singleLine="true"
+        android:title="@string/pref_full_name_label"/>
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_age_default"
+        android:inputType="number"
+        android:key="@string/pref_age_key"
+        android:singleLine="true"
+        android:title="@string/pref_age_label"/>
+
+    <ListPreference
+        android:defaultValue="@string/pref_side_light_value"
+        android:entries="@array/pref_side_option_labels"
+        android:entryValues="@array/pref_side_option_values"
+        android:key="@string/pref_side_key"
+        android:title="@string/pref_side_label"/>
+
+</PreferenceScreen>

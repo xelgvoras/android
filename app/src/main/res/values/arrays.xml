@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_side_option_labels">
+        <item>@string/pref_side_label_light</item>
+        <item>@string/pref_side_label_dark</item>
+    </array>
+
+    <array name="pref_side_option_values">
+        <item>@string/pref_side_light_value</item>
+        <item>@string/pref_side_dark_value</item>
+    </array>
+</resources>

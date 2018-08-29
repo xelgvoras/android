@@ -1,0 +1,51 @@
+<resources>
+    <!-- - - - - - - - - - - - - - - - - -->
+    <!-- Используется в самом приложении -->
+    <!-- - - - - - - - - - - - - - - - - -->
+
+    <!-- Название приложения -->
+    <string name="app_name">notatry</string>
+
+    <!-- Пункт меню для генерации паспорта игрока -->
+    <string name="action_settings">Паспорт игрока</string>
+
+    <!-- - - - - - - - - - - - - - -->
+    <!-- Используется в настройках -->
+    <!-- - - - - - - - - - - - - - -->
+
+    <!-- Заголовок для параметра имени персонажа -->
+    <string name="pref_full_name_label">Полное имя</string>
+
+    <!-- Ключ для хранения имени персонажа в настройках -->
+    <string name="pref_full_name_key" translatable="false">full_name</string>
+
+    <!-- Имя по-умолчанию -->
+    <string name="pref_full_name_default" translatable="false">Вася Пупкин</string>
+
+    <!-- Заголовок для параметра возраста персонажа -->
+    <string name="pref_age_label">Возраст</string>
+
+    <!-- Ключ для хранения возраста персонажа в настройках -->
+    <string name="pref_age_key" translatable="false">age</string>
+
+    <!-- Возраст по-умолчанию -->
+    <string name="pref_age_default" translatable="false">18</string>
+
+    <!-- Заголовок для параметра стороны силы -->
+    <string name="pref_side_label">Сторона силы</string>
+
+    <!-- Заголовок для стороны силы - свет -->
+    <string name="pref_side_label_light">Свет</string>
+
+    <!-- Заголовок для стороны силы - тьма -->
+    <string name="pref_side_label_dark">Тьма</string>
+
+    <!-- Ключ для параметра стороны силы в настройках -->
+    <string name="pref_side_key" translatable="false">side</string>
+
+    <!-- Значение для параметра светлой стороны -->
+    <string name="pref_side_light_value" translatable="false">light</string>
+
+    <!-- Значение для параметра темной стороны -->
+    <string name="pref_side_dark_value" translatable="false">dark</string>
+</resources>

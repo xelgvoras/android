@@ -1,19 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_personal_info"
+            android:id="@+id/tv_character_full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Title"
+            android:text="Александр Бойко (Шурик), 20 лет"/>
+
+        <TextView
+            android:id="@+id/tv_character_personal_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:text="Темный иной, оборотень, 4 уровень"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             android:padding="16dp"
-            android:textSize="20sp"/>
+            android:background="?android:attr/listDivider" />
 
-    </ScrollView>
+        <TextView
+            android:id="@+id/tv_character_magic_power"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:text="Резерв силы: 50/78"/>
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_character_defence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Base.TextAppearance.AppCompat.Medium"
+            android:text="Щиты \n
+            Магическая защита: 36 \n
+            Физическая защита: 36 \n
+            Ментальная защита: 2"/>
+
+        <Button
+            android:id="@+id/b_batle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Бой"
+            android:padding="16dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

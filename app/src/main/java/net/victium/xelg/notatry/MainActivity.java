@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
-import net.victium.xelg.notatry.data.NotATryPreferences;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,12 +18,17 @@ public class MainActivity extends AppCompatActivity {
     TextView mPersonalInfoTextView;
     TextView mMagicPowerTextView;
     TextView mDefenceTextView;
-    Button mBatleButton;
+    Button mBattleButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFullNameTextView = findViewById(R.id.tv_character_full_name);
+        mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
+        mMagicPowerTextView = findViewById(R.id.tv_character_magic_power);
+        mDefenceTextView = findViewById(R.id.tv_character_defence);
     }
 
     @Override

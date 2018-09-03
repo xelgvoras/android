@@ -46,7 +46,6 @@
             Физическая защита: 36 \n
             Ментальная защита: 2"/>
 
-        // TODO(1) Сделать раскрывающееся текстовое поле
         <TextView
             android:id="@+id/tv_character_details"
             android:layout_width="wrap_content"

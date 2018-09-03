@@ -54,13 +54,13 @@
     <string name="pref_side_label_light">Свет</string>
 
     <!-- Значение для параметра светлой стороны -->
-    <string name="pref_side_light_value" translatable="false">light</string>
+    <string name="pref_side_light_value" translatable="false">свет</string>
 
     <!-- Заголовок для стороны силы - тьма -->
     <string name="pref_side_label_dark">Тьма</string>
 
     <!-- Значение для параметра темной стороны -->
-    <string name="pref_side_dark_value" translatable="false">dark</string>
+    <string name="pref_side_dark_value" translatable="false">тьма</string>
 
     <!-- - - - - - - - - - - - - - - - - -->
     <!-- Массив для параметра типа иного -->
@@ -73,82 +73,82 @@
     <string name="pref_type_key" translatable="false">type</string>
 
     <!-- Заголовок для типа иного - маг -->
-    <string name="pref_type_label_mag">маг</string>
+    <string name="pref_type_label_mag">Маг</string>
 
     <!-- Значение для типа иного - маг -->
-    <string name="pref_type_value_mag" translatable="false">mag</string>
+    <string name="pref_type_value_mag" translatable="false">маг</string>
     
     <!-- Заголовок для типа иного - целитель -->
-    <string name="pref_type_label_healer">целитель</string>
+    <string name="pref_type_label_healer">Целитель</string>
     
     <!-- Значение для типа иного - целитель -->
-    <string name="pref_type_value_healer" translatable="false">healer</string>
+    <string name="pref_type_value_healer" translatable="false">целитель</string>
     
     <!-- Заголовок для типа иного - пророк -->
-    <string name="pref_type_label_prophet">пророк</string>
+    <string name="pref_type_label_prophet">Пророк</string>
 
     <!-- Значение для типа иного - пророк -->
-    <string name="pref_type_value_prophet" translatable="false">prophet</string>
+    <string name="pref_type_value_prophet" translatable="false">пророк</string>
 
     <!-- Заголовок для типа иного - инкуб -->
-    <string name="pref_type_label_incubus">инкуб</string>
+    <string name="pref_type_label_incubus">Инкуб</string>
 
     <!-- Значение для типа иного - инкуб -->
-    <string name="pref_type_value_incubus" translatable="false">incubus</string>
+    <string name="pref_type_value_incubus" translatable="false">инкуб</string>
 
     <!-- Заголовок для типа иного - суккуб -->
-    <string name="pref_type_label_succubus">суккуб</string>
+    <string name="pref_type_label_succubus">Суккуб</string>
 
     <!-- Значение для типа иного - суккуб -->
-    <string name="pref_type_value_succubus" translatable="false">succubus</string>
+    <string name="pref_type_value_succubus" translatable="false">суккуб</string>
 
     <!-- Заголовок для типа иного - перевертыш -->
-    <string name="pref_type_label_flipflop">перевертыш</string>
+    <string name="pref_type_label_flipflop">Перевертыш</string>
 
     <!-- Значение для типа иного - перевертыш -->
-    <string name="pref_type_value_flipflop" translatable="false">flip-flop</string>
+    <string name="pref_type_value_flipflop" translatable="false">перевертыш</string>
 
     <!-- Заголовок для типа иного - ведьма -->
-    <string name="pref_type_label_witch">ведьма</string>
+    <string name="pref_type_label_witch">Ведьма</string>
 
     <!-- Значение для типа иного - ведьма -->
-    <string name="pref_type_value_witch" translatable="false">witch</string>
+    <string name="pref_type_value_witch" translatable="false">ведьма</string>
 
     <!-- Заголовок для типа иного - ведьмак -->
-    <string name="pref_type_label_witcher">ведьмак</string>
+    <string name="pref_type_label_witcher">Ведьмак</string>
 
     <!-- Значение для типа иного - ведьмак -->
-    <string name="pref_type_value_witcher" translatable="false">witcher</string>
+    <string name="pref_type_value_witcher" translatable="false">ведьмак</string>
 
     <!-- Заголовок для типа иного - ведунья -->
-    <string name="pref_type_label_charmer">ведунья</string>
+    <string name="pref_type_label_charmer">Ведунья</string>
     
     <!-- Значение для типа иного - ведунья -->
-    <string name="pref_type_value_charmer" translatable="false">charmer</string>
+    <string name="pref_type_value_charmer" translatable="false">ведунья</string>
     
     <!-- Заголовок для типа иного - ведун -->
-    <string name="pref_type_label_sorcerer">ведун</string>
+    <string name="pref_type_label_sorcerer">Ведун</string>
 
     <!-- Значение для типа иного - ведун -->
-    <string name="pref_type_value_sorcerer" translatable="false">sorcerer</string>
+    <string name="pref_type_value_sorcerer" translatable="false">ведун</string>
 
     <!-- Заголовок для типа иного - вампир -->
-    <string name="pref_type_label_vampire">вампир</string>
+    <string name="pref_type_label_vampire">Вампир</string>
 
     <!-- Значение для типа иного - вампир -->
-    <string name="pref_type_value_vampire" translatable="false">vampire</string>
+    <string name="pref_type_value_vampire" translatable="false">вампир</string>
 
     <!-- Заголовок для типа иного - оборотень -->
-    <string name="pref_type_label_werewolf">оборотень</string>
+    <string name="pref_type_label_werewolf">Оборотень</string>
 
     <!-- Значение для типа иного - оборотень -->
-    <string name="pref_type_value_werewolf" translatable="false">werewolf</string>
+    <string name="pref_type_value_werewolf" translatable="false">оборотень</string>
 
     <!-- Заголовок для типа иного - оборотень-маг -->
-    <string name="pref_type_label_werewolf_mag">оборотень-маг</string>
+    <string name="pref_type_label_werewolf_mag">Оборотень-маг</string>
 
     <!-- Значение для типа иного - оборотень-маг -->
-    <string name="pref_type_value_werewolf_mag" translatable="false">werewolf-mag</string>
+    <string name="pref_type_value_werewolf_mag" translatable="false">оборотень-маг</string>
 
     <!-- - - - - - - - - - - - - - - - - - -->
     <!-- Массив для параметра уровня иного -->
@@ -164,48 +164,48 @@
     <string name="pref_level_label_seven">7</string>
 
     <!-- Значение для седьмого уровня иного -->
-    <string name="pref_level_value_seven" translatable="false">seven</string>
+    <string name="pref_level_value_seven" translatable="false">7</string>
 
     <!-- Заголовок для шестого уровня иного -->
     <string name="pref_level_label_six">6</string>
 
     <!-- Значение для шестого уровня иного -->
-    <string name="pref_level_value_six" translatable="false">six</string>
+    <string name="pref_level_value_six" translatable="false">6</string>
 
     <!-- Заголовок для пятого уровня иного -->
     <string name="pref_level_label_five">5</string>
 
     <!-- Значение для пятого уровня иного -->
-    <string name="pref_level_value_five" translatable="false">five</string>
+    <string name="pref_level_value_five" translatable="false">5</string>
 
     <!-- Заголовок для четвертого уровня иного -->
     <string name="pref_level_label_four">4</string>
 
     <!-- Значение для четвертого уровня иного -->
-    <string name="pref_level_value_four" translatable="false">four</string>
+    <string name="pref_level_value_four" translatable="false">4</string>
 
     <!-- Заголовок для третьего уровня иного -->
     <string name="pref_level_label_three">3</string>
 
     <!-- Значение для третьего уровня иного -->
-    <string name="pref_level_value_three" translatable="false">three</string>
+    <string name="pref_level_value_three" translatable="false">3</string>
 
     <!-- Заголовок для второго уровня иного -->
     <string name="pref_level_label_two">2</string>
 
     <!-- Значение для второго уровня иного -->
-    <string name="pref_level_value_two" translatable="false">two</string>
+    <string name="pref_level_value_two" translatable="false">2</string>
 
     <!-- Заголовок для первого уровня иного -->
     <string name="pref_level_label_one">1</string>
 
     <!-- Значение для первого уровня иного -->
-    <string name="pref_level_value_one" translatable="false">one</string>
+    <string name="pref_level_value_one" translatable="false">1</string>
 
     <!-- Заголовок для нулевого уровня иного -->
     <string name="pref_level_label_zero">высший</string>
 
     <!-- Значение для нулевого уровня иного -->
-    <string name="pref_level_value_zero" translatable="false">zero</string>
+    <string name="pref_level_value_zero" translatable="false">высший</string>
 
 </resources>

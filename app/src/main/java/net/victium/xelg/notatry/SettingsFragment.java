@@ -6,9 +6,11 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceScreen;
+import android.widget.Toast;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        Preference.OnPreferenceChangeListener {
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = String.valueOf(value);
@@ -39,6 +41,15 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             String value = sharedPreferences.getString(p.getKey(), "");
             setPreferenceSummary(p, value);
         }
+
+        Preference[] preferences = {
+                findPreference(getString(R.string.pref_age_key)),
+                findPreference(getString(R.string.pref_power_key))
+        };
+
+        for (Preference p : preferences) {
+            p.setOnPreferenceChangeListener(this);
+        }
     }
 
     @Override
@@ -62,5 +73,31 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         if (null != preference) {
             setPreferenceSummary(preference, sharedPreferences.getString(key, ""));
         }
+    }
+
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        Toast errorMessage = Toast.makeText(getContext(), "Вводить можно только положительные целые числа", Toast.LENGTH_LONG);
+
+        String ageKey = getString(R.string.pref_age_key);
+        String powerKey = getString(R.string.pref_power_key);
+        String prefKey = preference.getKey();
+
+        if (prefKey.equals(ageKey) || prefKey.equals(powerKey)) {
+            String value = String.valueOf(newValue);
+            try {
+                int intValue = Integer.parseInt(value);
+
+                if (intValue < 0) {
+                    errorMessage.show();
+                    return false;
+                }
+            } catch (Exception e) {
+                errorMessage.show();
+                return false;
+            }
+        }
+
+        return true;
     }
 }

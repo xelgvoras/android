@@ -22,4 +22,25 @@
         android:key="@string/pref_side_key"
         android:title="@string/pref_side_label"/>
 
+    <ListPreference
+        android:defaultValue="@string/pref_type_value_mag"
+        android:entries="@array/pref_type_option_labels"
+        android:entryValues="@array/pref_type_option_values"
+        android:key="@string/pref_type_key"
+        android:title="@string/pref_type_label"/>
+
+    <ListPreference
+        android:defaultValue="@string/pref_level_value_seven"
+        android:entries="@array/pref_level_option_labels"
+        android:entryValues="@array/pref_level_option_values"
+        android:key="@string/pref_level_key"
+        android:title="@string/pref_level_label"/>
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_power_default"
+        android:inputType="number"
+        android:key="@string/pref_power_key"
+        android:singleLine="true"
+        android:title="@string/pref_power_label"/>
+
 </PreferenceScreen>

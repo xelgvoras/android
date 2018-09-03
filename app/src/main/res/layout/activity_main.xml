@@ -46,6 +46,7 @@
             Физическая защита: 36 \n
             Ментальная защита: 2"/>
 
+        // TODO(1) Сделать раскрывающееся текстовое поле
         <TextView
             android:id="@+id/tv_character_details"
             android:layout_width="wrap_content"
@@ -62,12 +63,26 @@
             Максимальное количество персональных щитов: 2 \n
             Максимальное количество авто-амулетов: 1 \n" />
 
-        <Button
-            android:id="@+id/b_battle"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Бой"
-            android:padding="16dp"/>
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/b_shields"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Щиты"
+                android:padding="16dp"/>
+
+            <Button
+                android:id="@+id/b_battle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Бой"
+                android:padding="16dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

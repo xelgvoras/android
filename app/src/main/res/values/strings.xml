@@ -31,21 +31,181 @@
     <!-- Возраст по-умолчанию -->
     <string name="pref_age_default" translatable="false">18</string>
 
+    <!-- Заголовок для параметра максимального запаса силы -->
+    <string name="pref_power_label">Запас силы</string>
+
+    <!-- Ключ для хранения максимального запаса силы персонажа в настройках -->
+    <string name="pref_power_key" translatable="false">power</string>
+
+    <!-- Запас силы по-умолчанию -->
+    <string name="pref_power_default" translatable="false">8</string>
+
+    <!-- - - - - - - - - - - - - - - - - - -->
+    <!-- Массив для параметра стороны силы -->
+    <!-- - - - - - - - - - - - - - - - - - -->
+
     <!-- Заголовок для параметра стороны силы -->
     <string name="pref_side_label">Сторона силы</string>
-
-    <!-- Заголовок для стороны силы - свет -->
-    <string name="pref_side_label_light">Свет</string>
-
-    <!-- Заголовок для стороны силы - тьма -->
-    <string name="pref_side_label_dark">Тьма</string>
 
     <!-- Ключ для параметра стороны силы в настройках -->
     <string name="pref_side_key" translatable="false">side</string>
 
+    <!-- Заголовок для стороны силы - свет -->
+    <string name="pref_side_label_light">Свет</string>
+
     <!-- Значение для параметра светлой стороны -->
     <string name="pref_side_light_value" translatable="false">light</string>
 
+    <!-- Заголовок для стороны силы - тьма -->
+    <string name="pref_side_label_dark">Тьма</string>
+
     <!-- Значение для параметра темной стороны -->
     <string name="pref_side_dark_value" translatable="false">dark</string>
+
+    <!-- - - - - - - - - - - - - - - - - -->
+    <!-- Массив для параметра типа иного -->
+    <!-- - - - - - - - - - - - - - - - - -->
+
+    <!-- Заголовок для параметра типа иного -->
+    <string name="pref_type_label">Тип иного</string>
+
+    <!-- Ключ для параметра типа иного в настройках -->
+    <string name="pref_type_key" translatable="false">type</string>
+
+    <!-- Заголовок для типа иного - маг -->
+    <string name="pref_type_label_mag">маг</string>
+
+    <!-- Значение для типа иного - маг -->
+    <string name="pref_type_value_mag" translatable="false">mag</string>
+    
+    <!-- Заголовок для типа иного - целитель -->
+    <string name="pref_type_label_healer">целитель</string>
+    
+    <!-- Значение для типа иного - целитель -->
+    <string name="pref_type_value_healer" translatable="false">healer</string>
+    
+    <!-- Заголовок для типа иного - пророк -->
+    <string name="pref_type_label_prophet">пророк</string>
+
+    <!-- Значение для типа иного - пророк -->
+    <string name="pref_type_value_prophet" translatable="false">prophet</string>
+
+    <!-- Заголовок для типа иного - инкуб -->
+    <string name="pref_type_label_incubus">инкуб</string>
+
+    <!-- Значение для типа иного - инкуб -->
+    <string name="pref_type_value_incubus" translatable="false">incubus</string>
+
+    <!-- Заголовок для типа иного - суккуб -->
+    <string name="pref_type_label_succubus">суккуб</string>
+
+    <!-- Значение для типа иного - суккуб -->
+    <string name="pref_type_value_succubus" translatable="false">succubus</string>
+
+    <!-- Заголовок для типа иного - перевертыш -->
+    <string name="pref_type_label_flipflop">перевертыш</string>
+
+    <!-- Значение для типа иного - перевертыш -->
+    <string name="pref_type_value_flipflop" translatable="false">flip-flop</string>
+
+    <!-- Заголовок для типа иного - ведьма -->
+    <string name="pref_type_label_witch">ведьма</string>
+
+    <!-- Значение для типа иного - ведьма -->
+    <string name="pref_type_value_witch" translatable="false">witch</string>
+
+    <!-- Заголовок для типа иного - ведьмак -->
+    <string name="pref_type_label_witcher">ведьмак</string>
+
+    <!-- Значение для типа иного - ведьмак -->
+    <string name="pref_type_value_witcher" translatable="false">witcher</string>
+
+    <!-- Заголовок для типа иного - ведунья -->
+    <string name="pref_type_label_charmer">ведунья</string>
+    
+    <!-- Значение для типа иного - ведунья -->
+    <string name="pref_type_value_charmer" translatable="false">charmer</string>
+    
+    <!-- Заголовок для типа иного - ведун -->
+    <string name="pref_type_label_sorcerer">ведун</string>
+
+    <!-- Значение для типа иного - ведун -->
+    <string name="pref_type_value_sorcerer" translatable="false">sorcerer</string>
+
+    <!-- Заголовок для типа иного - вампир -->
+    <string name="pref_type_label_vampire">вампир</string>
+
+    <!-- Значение для типа иного - вампир -->
+    <string name="pref_type_value_vampire" translatable="false">vampire</string>
+
+    <!-- Заголовок для типа иного - оборотень -->
+    <string name="pref_type_label_werewolf">оборотень</string>
+
+    <!-- Значение для типа иного - оборотень -->
+    <string name="pref_type_value_werewolf" translatable="false">werewolf</string>
+
+    <!-- Заголовок для типа иного - оборотень-маг -->
+    <string name="pref_type_label_werewolf_mag">оборотень-маг</string>
+
+    <!-- Значение для типа иного - оборотень-маг -->
+    <string name="pref_type_value_werewolf_mag" translatable="false">werewolf-mag</string>
+
+    <!-- - - - - - - - - - - - - - - - - - -->
+    <!-- Массив для параметра уровня иного -->
+    <!-- - - - - - - - - - - - - - - - - - -->
+
+    <!-- Заголовок для параметра уровня иного -->
+    <string name="pref_level_label">Уровень иного</string>
+
+    <!-- Ключ для параметра уровня иного в настройках -->
+    <string name="pref_level_key" translatable="false">level</string>
+
+    <!-- Заголовок для седьмого уровня иного -->
+    <string name="pref_level_label_seven">7</string>
+
+    <!-- Значение для седьмого уровня иного -->
+    <string name="pref_level_value_seven" translatable="false">seven</string>
+
+    <!-- Заголовок для шестого уровня иного -->
+    <string name="pref_level_label_six">6</string>
+
+    <!-- Значение для шестого уровня иного -->
+    <string name="pref_level_value_six" translatable="false">six</string>
+
+    <!-- Заголовок для пятого уровня иного -->
+    <string name="pref_level_label_five">5</string>
+
+    <!-- Значение для пятого уровня иного -->
+    <string name="pref_level_value_five" translatable="false">five</string>
+
+    <!-- Заголовок для четвертого уровня иного -->
+    <string name="pref_level_label_four">4</string>
+
+    <!-- Значение для четвертого уровня иного -->
+    <string name="pref_level_value_four" translatable="false">four</string>
+
+    <!-- Заголовок для третьего уровня иного -->
+    <string name="pref_level_label_three">3</string>
+
+    <!-- Значение для третьего уровня иного -->
+    <string name="pref_level_value_three" translatable="false">three</string>
+
+    <!-- Заголовок для второго уровня иного -->
+    <string name="pref_level_label_two">2</string>
+
+    <!-- Значение для второго уровня иного -->
+    <string name="pref_level_value_two" translatable="false">two</string>
+
+    <!-- Заголовок для первого уровня иного -->
+    <string name="pref_level_label_one">1</string>
+
+    <!-- Значение для первого уровня иного -->
+    <string name="pref_level_value_one" translatable="false">one</string>
+
+    <!-- Заголовок для нулевого уровня иного -->
+    <string name="pref_level_label_zero">высший</string>
+
+    <!-- Значение для нулевого уровня иного -->
+    <string name="pref_level_value_zero" translatable="false">zero</string>
+
 </resources>

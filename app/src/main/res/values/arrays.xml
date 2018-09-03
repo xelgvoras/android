@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Массив для значений стороны света -->
     <array name="pref_side_option_labels">
         <item>@string/pref_side_label_light</item>
         <item>@string/pref_side_label_dark</item>
@@ -8,5 +9,61 @@
     <array name="pref_side_option_values">
         <item>@string/pref_side_light_value</item>
         <item>@string/pref_side_dark_value</item>
+    </array>
+    
+    <!-- Массив для значения типа иного -->
+    <array name="pref_type_option_labels">
+        <item>@string/pref_type_label_mag</item>
+        <item>@string/pref_type_label_healer</item>
+        <item>@string/pref_type_label_prophet</item>
+        <item>@string/pref_type_label_incubus</item>
+        <item>@string/pref_type_label_succubus</item>
+        <item>@string/pref_type_label_flipflop</item>
+        <item>@string/pref_type_label_witch</item>
+        <item>@string/pref_type_label_witcher</item>
+        <item>@string/pref_type_label_charmer</item>
+        <item>@string/pref_type_label_sorcerer</item>
+        <item>@string/pref_type_label_vampire</item>
+        <item>@string/pref_type_label_werewolf</item>
+        <item>@string/pref_type_label_werewolf_mag</item>
+    </array>
+    
+    <array name="pref_type_option_values">
+        <item>@string/pref_type_value_mag</item>
+        <item>@string/pref_type_value_healer</item>
+        <item>@string/pref_type_value_prophet</item>
+        <item>@string/pref_type_value_incubus</item>
+        <item>@string/pref_type_value_succubus</item>
+        <item>@string/pref_type_value_flipflop</item>
+        <item>@string/pref_type_value_witch</item>
+        <item>@string/pref_type_value_witcher</item>
+        <item>@string/pref_type_value_charmer</item>
+        <item>@string/pref_type_value_sorcerer</item>
+        <item>@string/pref_type_value_vampire</item>
+        <item>@string/pref_type_value_werewolf</item>
+        <item>@string/pref_type_value_werewolf_mag</item>
+    </array>
+    
+    <!-- Массив для уровней иного -->
+    <array name="pref_level_option_labels">
+        <item>@string/pref_level_label_seven</item>
+        <item>@string/pref_level_label_six</item>
+        <item>@string/pref_level_label_five</item>
+        <item>@string/pref_level_label_four</item>
+        <item>@string/pref_level_label_three</item>
+        <item>@string/pref_level_label_two</item>
+        <item>@string/pref_level_label_one</item>
+        <item>@string/pref_level_label_zero</item>
+    </array>
+    
+    <array name="pref_level_option_values">
+        <item>@string/pref_level_value_seven</item>
+        <item>@string/pref_level_value_six</item>
+        <item>@string/pref_level_value_five</item>
+        <item>@string/pref_level_value_four</item>
+        <item>@string/pref_level_value_three</item>
+        <item>@string/pref_level_value_two</item>
+        <item>@string/pref_level_value_one</item>
+        <item>@string/pref_level_value_zero</item>
     </array>
 </resources>

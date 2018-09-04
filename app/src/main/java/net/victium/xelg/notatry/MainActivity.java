@@ -2,9 +2,13 @@ package net.victium.xelg.notatry;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,6 +17,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.data.CharacterPreferences;
+import net.victium.xelg.notatry.data.NotATryContract.*;
+import net.victium.xelg.notatry.data.NotATryDbHelper;
+import net.victium.xelg.notatry.data.TestUtil;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -24,8 +31,11 @@ public class MainActivity extends AppCompatActivity implements
     TextView mMagicPowerTextView;
     TextView mDefenceTextView;
     TextView mCharacterDetailsTextView;
+    RecyclerView mDuskLayersRecyclerView;
     Button mShieldsButton;
     Button mBattleButton;
+
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,16 +48,37 @@ public class MainActivity extends AppCompatActivity implements
         mDefenceTextView = findViewById(R.id.tv_character_defence);
         // TODO(1) Сделать раскрывающееся текстовое поле
         mCharacterDetailsTextView = findViewById(R.id.tv_character_details);
+        mDuskLayersRecyclerView = findViewById(R.id.rv_dusk_layers);
         mShieldsButton = findViewById(R.id.b_shields);
         mBattleButton = findViewById(R.id.b_battle);
 
+        mDuskLayersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         mShieldsButton.setOnClickListener(this);
         mBattleButton.setOnClickListener(this);
+
+        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
+        mDb = notATryDbHelper.getWritableDatabase();
+        TestUtil.insertFakeData(mDb);
+        Cursor cursor = getAllDuskLayers();
 
         setupSharedPreferences();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        mDuskLayersRecyclerView.setAdapter(new DuskLayersAdapter(this));
+    }
+
+    private Cursor getAllDuskLayers() {
+        Cursor cursor = mDb.query(DuskLayersEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                DuskLayersEntry.COLUMN_DUSK_LAYER);
+
+        return cursor;
     }
 
     private void setupSharedPreferences() {

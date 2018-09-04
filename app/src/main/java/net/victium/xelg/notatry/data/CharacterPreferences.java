@@ -62,14 +62,14 @@ public class CharacterPreferences {
     public static String getCharacterDefence(Context context) {
         // TODO(3) На текущий момент - это заглушка, требуется реализация получения значений из базы данных
         String magicDefence = "36";
-        String phisicDefence = "36";
+        String physicDefence = "36";
         String mentalShields = "2";
 
         String summary = String.format("Щиты \n" +
                 "\t\t\t Магическая защита: %s \n" +
                 "\t\t\t Физическая защита: %s \n" +
                 "\t\t\t Ментальная защита: %s",
-                magicDefence, phisicDefence, mentalShields);
+                magicDefence, physicDefence, mentalShields);
 
         return summary;
     }

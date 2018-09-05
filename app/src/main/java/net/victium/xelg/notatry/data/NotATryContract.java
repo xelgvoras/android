@@ -1,11 +1,21 @@
 package net.victium.xelg.notatry.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class NotATryContract {
+    public static final String AUTHORITY = "net.victium.xelg.notatry";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    public static final String PATH_CHARACTER_STATUS = "characterProperties";
+    public static final String PATH_DUSK_SUMMARY = "duskSummary";
+    public static final String PATH_ACTIVE_SHIELDS = "activeShields";
+
     private NotATryContract() {};
 
-    public class CharacterStatusEntry implements BaseColumns {
+    public static class CharacterStatusEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_CHARACTER_STATUS).build();
+
         public static final String TABLE_NAME = "characterProperties";
         public static final String COLUMN_CHARACTER_NAME = "charName";
         public static final String COLUMN_CURRENT_POWER = "currentPower";
@@ -16,14 +26,20 @@ public class NotATryContract {
         public static final String COLUMN_COUNT_REACTIONS = "countReactions";
     }
 
-    public class DuskLayersEntry implements BaseColumns {
+    public static class DuskLayersEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_DUSK_SUMMARY).build();
+
         public static final String TABLE_NAME = "duskSummary";
         public static final String COLUMN_DUSK_LAYER = "duskLayer";
         public static final String COLUMN_ROUNDS = "duskRounds";
         public static final String COLUMN_TIME = "duskTime";
     }
 
-    public class ActiveShieldsEntry implements BaseColumns {
+    public static class ActiveShieldsEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ACTIVE_SHIELDS).build();
+
         public static final String TABLE_NAME = "activeShields";
         public static final String COLUMN_SHIELD_NAME = "shieldName";
         public static final String COLUMN_COST = "shieldCost";

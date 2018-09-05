@@ -2,6 +2,8 @@ package net.victium.xelg.notatry.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
@@ -51,7 +53,6 @@ public class CharacterPreferences {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String keyForCharPower = context.getString(R.string.pref_power_key);
         String powerDefault = context.getString(R.string.pref_power_default);
-
         String characterPowerLimit = sharedPreferences.getString(keyForCharPower, powerDefault);
         // TODO(2) Добавить реализацию получения значения текущего размера резерва силы из базы данных
         String summary = String.format("Резерв силы: 50/%s", characterPowerLimit);

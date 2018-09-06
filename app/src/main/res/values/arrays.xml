@@ -66,4 +66,22 @@
         <item>@string/pref_level_value_one</item>
         <item>@string/pref_level_value_zero</item>
     </array>
+
+    <!-- Массив для щитов -->
+    <array name="shields_array">
+        <item>@string/shields_mag_shield</item>
+        <item>@string/shields_clean_mind</item>
+        <item>@string/shields_will_barrier</item>
+        <item>@string/shields_sphere_of_tranquility</item>
+        <item>@string/shields_icecrown</item>
+        <item>@string/shields_concave_shield</item>
+        <item>@string/shields_sphere_of_negation</item>
+        <item>@string/shields_pair_shield</item>
+        <item>@string/shields_cloack_of_darkness</item>
+        <item>@string/shields_rainbow_sphere</item>
+        <item>@string/shields_highest_mag_shield</item>
+        <item>@string/shields_big_rainbow_sphere</item>
+        <item>@string/shields_protective_dome</item>
+        <item>@string/shields_crystal_shield</item>
+    </array>
 </resources>

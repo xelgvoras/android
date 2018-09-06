@@ -77,13 +77,13 @@
 
     <!-- Значение для типа иного - маг -->
     <string name="pref_type_value_mag" translatable="false">маг</string>
-    
+
     <!-- Заголовок для типа иного - целитель -->
     <string name="pref_type_label_healer">Целитель</string>
-    
+
     <!-- Значение для типа иного - целитель -->
     <string name="pref_type_value_healer" translatable="false">целитель</string>
-    
+
     <!-- Заголовок для типа иного - пророк -->
     <string name="pref_type_label_prophet">Пророк</string>
 
@@ -122,10 +122,10 @@
 
     <!-- Заголовок для типа иного - ведунья -->
     <string name="pref_type_label_charmer">Ведунья</string>
-    
+
     <!-- Значение для типа иного - ведунья -->
     <string name="pref_type_value_charmer" translatable="false">ведунья</string>
-    
+
     <!-- Заголовок для типа иного - ведун -->
     <string name="pref_type_label_sorcerer">Ведун</string>
 
@@ -207,5 +207,23 @@
 
     <!-- Значение для нулевого уровня иного -->
     <string name="pref_level_value_zero" translatable="false">высший</string>
+
+    <!-- - - - - - - - - - - - - -  -->
+    <!-- Значения для массива щитов -->
+    <!-- - - - - - - - - - - - - -  -->
+    <string name="shields_mag_shield">Щит мага</string>
+    <string name="shields_clean_mind">Чистый разум</string>
+    <string name="shields_will_barrier">Барьер воли</string>
+    <string name="shields_sphere_of_tranquility">Сфера спокойствия</string>
+    <string name="shields_icecrown">Ледяная кора</string>
+    <string name="shields_concave_shield">Вогнутый щит</string>
+    <string name="shields_sphere_of_negation">Сфера отрицания</string>
+    <string name="shields_pair_shield">Спаренный щит</string>
+    <string name="shields_cloack_of_darkness">Плащ тьмы</string>
+    <string name="shields_rainbow_sphere">Радужная сфера</string>
+    <string name="shields_highest_mag_shield">Высший щит мага</string>
+    <string name="shields_big_rainbow_sphere">Большая радужная сфера</string>
+    <string name="shields_protective_dome">Защитный купол</string>
+    <string name="shields_crystal_shield">Хрустальный щит</string>
 
 </resources>

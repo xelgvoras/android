@@ -2,6 +2,7 @@ package net.victium.xelg.notatry.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
@@ -47,14 +48,17 @@ public class CharacterPreferences {
         return summary;
     }
 
-    public static String getCharacterMagicPower(Context context) {
+    public static String getCharacterMagicPower(Context context, Cursor cursor) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String keyForCharPower = context.getString(R.string.pref_power_key);
         String powerDefault = context.getString(R.string.pref_power_default);
 
         String characterPowerLimit = sharedPreferences.getString(keyForCharPower, powerDefault);
+        int currentPowerCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_POWER);
+        int powerInt = cursor.getInt(currentPowerCol);
+        String currentPower = String.valueOf(powerInt);
         // TODO(2) Добавить реализацию получения значения текущего размера резерва силы из базы данных
-        String summary = String.format("Резерв силы: 50/%s", characterPowerLimit);
+        String summary = String.format("Резерв силы: %s/%s", currentPower, characterPowerLimit);
 
         return summary;
     }
@@ -74,12 +78,15 @@ public class CharacterPreferences {
         return summary;
     }
 
-    public static String getCharacterDetails(Context context) {
+    public static String getCharacterDetails(Context context, Cursor cursor) {
         // TODO(4) Реализовать получение значений из базы данных
-        String maxDuskDepth = "2";
+        int duskLimitCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT);
+        String duskLimit = cursor.getString(duskLimitCol);
         String[] duskLayersTime = {"20", "1", "-", "-", "-", "1", "20"};
-        String maxPersonalShields = "3";
-        String maxAutoAmulets = "4";
+        int shieldsLimitCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT);
+        String shieldsLimit = cursor.getString(shieldsLimitCol);
+        int amuletsLimitCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT);
+        String amuletsLimit = cursor.getString(amuletsLimitCol);
 
         String duskSummary = "";
         int i = 1;
@@ -91,7 +98,7 @@ public class CharacterPreferences {
                 duskSummary +
                 "Максимальное количество персональных щитов: %s \n" +
                 "Максимальное количество авто-амулетов: %s",
-                maxDuskDepth, maxPersonalShields, maxAutoAmulets);
+                duskLimit, shieldsLimit, amuletsLimit);
 
         return summary;
     }

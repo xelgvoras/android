@@ -1,7 +1,10 @@
 package net.victium.xelg.notatry;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +16,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.data.CharacterPreferences;
+import net.victium.xelg.notatry.data.NotATryContract;
+import net.victium.xelg.notatry.data.NotATryDbHelper;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -26,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements
     TextView mCharacterDetailsTextView;
     Button mShieldsButton;
     Button mBattleButton;
+
+    private SQLiteDatabase mDb;
+    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +54,12 @@ public class MainActivity extends AppCompatActivity implements
         mShieldsButton.setOnClickListener(this);
         mBattleButton.setOnClickListener(this);
 
+        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
+        mDb = notATryDbHelper.getWritableDatabase();
+
+        mCursor = getCharacterStatus();
+        collectCharacterStatusIntoDb(mCursor);
+
         setupSharedPreferences();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -55,9 +71,98 @@ public class MainActivity extends AppCompatActivity implements
 
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(this));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(this));
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this, mCursor));
         mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(this));
-        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(this));
+        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(this, mCursor));
+    }
+
+    private void collectCharacterStatusIntoDb(Cursor cursor) {
+        if (cursor.moveToFirst()) {
+            return;
+        }
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String powerKey = getString(R.string.pref_power_key);
+        String powerDefault = getString(R.string.pref_power_default);
+        String powerString = sharedPreferences.getString(powerKey, powerDefault);
+        int power = Integer.parseInt(powerString);
+
+        int currentDepth = 0;
+        int depthLimit = 3;
+        int currentShields = 0;
+
+        String levelKey = getString(R.string.pref_level_key);
+        String levelDefault = getString(R.string.pref_level_value_seven);
+        String levelString = sharedPreferences.getString(levelKey, levelDefault);
+        int level = Integer.parseInt(levelString);
+        int shieldsLimit = 1;
+        int amuletsLimit = 1;
+
+        if (level >= 5) {
+            shieldsLimit = 1;
+            amuletsLimit = 1;
+        } else if (level >= 3) {
+            shieldsLimit = 2;
+            amuletsLimit = 1;
+        } else if (level >= 1) {
+            shieldsLimit = 3;
+            amuletsLimit = 2;
+        } else {
+            shieldsLimit = 4;
+            amuletsLimit = 3;
+        }
+
+        ArrayList<String> typeArray = new ArrayList<>();
+        typeArray.add(getString(R.string.pref_type_value_flipflop));
+        typeArray.add(getString(R.string.pref_type_value_vampire));
+        typeArray.add(getString(R.string.pref_type_value_werewolf));
+        typeArray.add(getString(R.string.pref_type_value_werewolf_mag));
+
+        String typeKey = getString(R.string.pref_type_key);
+        String typeDefault = getString(R.string.pref_type_value_mag);
+        String typeString = sharedPreferences.getString(typeKey, typeDefault);
+        int naturalDefence = 0;
+        int reactionsNumber = 1;
+        if (typeArray.contains(typeString)) {
+            naturalDefence = power;
+
+            if (level >= 5) {
+                reactionsNumber = 2;
+            } else if (level >= 3) {
+                reactionsNumber = 3;
+            } else if (level >= 1) {
+                reactionsNumber = 4;
+            } else {
+                reactionsNumber = 5;
+            }
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_POWER, power);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_DEPTH, currentDepth);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT, depthLimit);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_SHIELDS, currentShields);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT, shieldsLimit);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT, amuletsLimit);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, reactionsNumber);
+
+        mDb.insert(NotATryContract.CharacterStatusEntry.TABLE_NAME, null, contentValues);
+        mCursor = getCharacterStatus();
+    }
+
+    private Cursor getCharacterStatus() {
+
+        return mDb.query(
+                NotATryContract.CharacterStatusEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     @Override
@@ -113,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements
                 key.equals(getString(R.string.pref_level_key))) {
             mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(this));
         } else if (key.equals(getString(R.string.pref_power_key))) {
-            mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this));
+            mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this, mCursor));
         }
     }
 }

@@ -4,129 +4,87 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="#000"
+        android:stretchColumns="*">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
+        <TableRow
+            android:padding="1dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_margin="1dp"
+                android:background="#fff"
                 android:gravity="center"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:text="Название"/>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_margin="1dp"
+                android:background="#fff"
                 android:gravity="center"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:text="у.е"/>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_margin="1dp"
+                android:background="#fff"
                 android:gravity="center"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:text="МЗ"/>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_margin="1dp"
+                android:background="#fff"
                 android:gravity="center"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:text="ФЗ"/>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_margin="1dp"
+                android:background="#fff"
                 android:gravity="center"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:text="Мент."/>
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_margin="1dp"
+                android:background="#fff"
                 android:gravity="center"
                 style="@style/Base.TextAppearance.AppCompat.Small"
                 android:text="Линия защиты"/>
-
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="?android:attr/listDivider" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
+        </TableRow>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_active_shields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
-    </LinearLayout>
+    </TableLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_shield"

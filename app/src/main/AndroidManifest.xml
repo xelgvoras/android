@@ -33,19 +33,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity
-            android:name=".AddShieldActivity"
-            android:parentActivityName=".ShieldsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ShieldsActivity" />
-        </activity>
         <activity android:name=".SettingsActivity" />
 
-        <provider
-            android:authorities="net.victium.xelg.notatry"
-            android:name="net.victium.xelg.notatry.data.NotATryContentProvider"
-            android:exported="false" />
     </application>
 
 </manifest>

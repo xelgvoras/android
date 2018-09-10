@@ -206,7 +206,7 @@
     <string name="pref_level_label_zero">высший</string>
 
     <!-- Значение для нулевого уровня иного -->
-    <string name="pref_level_value_zero" translatable="false">высший</string>
+    <string name="pref_level_value_zero" translatable="false">0</string>
 
     <!-- - - - - - - - - - - - - -  -->
     <!-- Значения для массива щитов -->

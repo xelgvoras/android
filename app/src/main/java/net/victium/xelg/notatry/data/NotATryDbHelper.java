@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -21,7 +21,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_CHARACTER_STATUS_TABLE = "CREATE TABLE " + CharacterStatusEntry.TABLE_NAME + " (" +
                 CharacterStatusEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                CharacterStatusEntry.COLUMN_POWER + " INTEGER NOT NULL," +
+                CharacterStatusEntry.COLUMN_CURRENT_POWER + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_CURRENT_DEPTH + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_DEPTH_LIMIT + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_CURRENT_SHIELDS + " INTEGER NOT NULL," +
@@ -31,12 +31,20 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 CharacterStatusEntry.COLUMN_REACTIONS_NUMBER + " INTEGER NOT NULL);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_CHARACTER_STATUS_TABLE);
+
+        final String SQL_CREATE_DUSK_LAYERS_SUMMARY_TABLE = "CREATE TABLE " + DuskLayersSummaryEntry.TABLE_NAME + " (" +
+                DuskLayersSummaryEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                DuskLayersSummaryEntry.COLUMN_LAYER + " INTEGER NOT NULL," +
+                DuskLayersSummaryEntry.COLUMN_ROUNDS + " INTEGER);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_DUSK_LAYERS_SUMMARY_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CharacterStatusEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DuskLayersSummaryEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

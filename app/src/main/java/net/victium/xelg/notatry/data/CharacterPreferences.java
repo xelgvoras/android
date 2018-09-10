@@ -3,7 +3,6 @@ package net.victium.xelg.notatry.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
@@ -50,14 +49,15 @@ public class CharacterPreferences {
     }
 
     public static String getCharacterMagicPower(Context context, Cursor cursor) {
+        cursor.moveToFirst();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String keyForCharPower = context.getString(R.string.pref_power_key);
         String powerDefault = context.getString(R.string.pref_power_default);
         String characterPowerLimit = sharedPreferences.getString(keyForCharPower, powerDefault);
-        int currentPowerCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_POWER);
+        int currentPowerCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER);
         int powerInt = cursor.getInt(currentPowerCol);
         String currentPower = String.valueOf(powerInt);
-        // TODO(2) Добавить реализацию получения значения текущего размера резерва силы из базы данных
+        // COMPLETED(2) Добавить реализацию получения значения текущего размера резерва силы из базы данных
         String summary = String.format("Резерв силы: %s/%s", currentPower, characterPowerLimit);
 
         return summary;
@@ -78,27 +78,45 @@ public class CharacterPreferences {
         return summary;
     }
 
-    public static String getCharacterDetails(Context context, Cursor cursor) {
+    public static String getCharacterDetails(Context context, Cursor characterStatusCursor, Cursor duskLayersCursor) {
+        characterStatusCursor.moveToFirst();
+        duskLayersCursor.moveToFirst();
         // TODO(4) Реализовать получение значений из базы данных
-        int duskLimitCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT);
-        String duskLimit = cursor.getString(duskLimitCol);
-        String[] duskLayersTime = {"20", "1", "-", "-", "-", "1", "20"};
-        int shieldsLimitCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT);
-        String shieldsLimit = cursor.getString(shieldsLimitCol);
-        int amuletsLimitCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT);
-        String amuletsLimit = cursor.getString(amuletsLimitCol);
+        int duskLimitCol = characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT);
+        String duskLimit = characterStatusCursor.getString(duskLimitCol);
+        int shieldsLimitCol = characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT);
+        String shieldsLimit = characterStatusCursor.getString(shieldsLimitCol);
+        int amuletsLimitCol = characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT);
+        String amuletsLimit = characterStatusCursor.getString(amuletsLimitCol);
+        int reactionsNumberCol = characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER);
+        String reactionsNumber = characterStatusCursor.getString(reactionsNumberCol);
 
         String duskSummary = "";
-        int i = 1;
-        for (String s : duskLayersTime) {
-            duskSummary = duskSummary + "\t\t\t Время на " + i++ + " слое: " + s +"\n";
+        int duskLayerCol = duskLayersCursor.getColumnIndex(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER);
+        int duskRoundCol = duskLayersCursor.getColumnIndex(NotATryContract.DuskLayersSummaryEntry.COLUMN_ROUNDS);
+        boolean hasEntry = true;
+
+        while (hasEntry) {
+            String layer = duskLayersCursor.getString(duskLayerCol);
+            String rounds = duskLayersCursor.getString(duskRoundCol);
+
+            if (null == rounds || rounds.isEmpty()) {
+                rounds = "недоступно";
+            } else if (rounds.equals("999")) {
+                rounds = "бесконечно";
+            }
+
+            duskSummary = duskSummary + "\t\t\t Ходов на " + layer + " слое: " + rounds +"\n";
+
+            hasEntry = duskLayersCursor.moveToNext();
         }
 
         String summary = String.format("Максимальный слой сумрака: %s \n" +
                 duskSummary +
                 "Максимальное количество персональных щитов: %s \n" +
-                "Максимальное количество авто-амулетов: %s",
-                duskLimit, shieldsLimit, amuletsLimit);
+                "Максимальное количество авто-амулетов: %s \n" +
+                "Количество реакций за бой: %s",
+                duskLimit, shieldsLimit, amuletsLimit, reactionsNumber);
 
         return summary;
     }

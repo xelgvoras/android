@@ -7,7 +7,7 @@ public class NotATryContract {
     public static final class CharacterStatusEntry implements BaseColumns {
 
         public static final String TABLE_NAME = "characterStatus";
-        public static final String COLUMN_POWER = "power";
+        public static final String COLUMN_CURRENT_POWER = "currentPower";
         public static final String COLUMN_CURRENT_DEPTH = "currentDepth";
         public static final String COLUMN_DEPTH_LIMIT = "depthLimit";
         public static final String COLUMN_CURRENT_SHIELDS = "currentShields";
@@ -15,5 +15,12 @@ public class NotATryContract {
         public static final String COLUMN_AMULETS_LIMIT = "amuletsLimit";
         public static final String COLUMN_NATURAL_DEFENCE = "naturalDefence";
         public static final String COLUMN_REACTIONS_NUMBER = "reactionsNumber";
+    }
+
+    public static final class DuskLayersSummaryEntry implements BaseColumns {
+
+        public static final String TABLE_NAME = "duskLayers";
+        public static final String COLUMN_LAYER = "layer";
+        public static final String COLUMN_ROUNDS = "rounds";
     }
 }

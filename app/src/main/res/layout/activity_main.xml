@@ -52,15 +52,13 @@
             android:layout_height="wrap_content"
             style="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="Максимальный слой сумрака: 2 \n
-            Время на 1 слое: 20 \n
-            Время на 2 слое: 3 \n
-            Время на 3 слое: - \n
-            Время на 4 слое: - \n
-            Время на 5 слое: - \n
-            Время на 6 слое: 3 \n
-            Время на 7 слое: 20 \n
             Максимальное количество персональных щитов: 2 \n
             Максимальное количество авто-амулетов: 1 \n" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_dusk_layers"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <LinearLayout
             android:layout_width="wrap_content"

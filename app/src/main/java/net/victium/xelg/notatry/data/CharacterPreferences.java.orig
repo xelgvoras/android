@@ -3,7 +3,10 @@ package net.victium.xelg.notatry.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+<<<<<<< HEAD
+=======
 import android.database.sqlite.SQLiteDatabase;
+>>>>>>> origin/dev
 import android.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;

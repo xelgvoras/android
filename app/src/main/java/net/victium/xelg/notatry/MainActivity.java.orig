@@ -19,12 +19,19 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.data.CharacterPreferences;
+<<<<<<< HEAD
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
 
 import java.util.ArrayList;
+=======
+import net.victium.xelg.notatry.data.DatabaseUtil;
+import net.victium.xelg.notatry.data.NotATryContract.*;
+import net.victium.xelg.notatry.data.NotATryDbHelper;
+import net.victium.xelg.notatry.data.TestUtil;
 
 import java.util.Map;
+>>>>>>> origin/dev
 
 
 public class MainActivity extends AppCompatActivity implements

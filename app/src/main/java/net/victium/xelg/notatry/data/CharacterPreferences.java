@@ -18,6 +18,8 @@ public class CharacterPreferences {
 
         String fullName = sharedPreferences.getString(keyForCharName, defaultName);
         String age = sharedPreferences.getString(keyForCharAge, defaultAge);
+        //TODO(7) Изменить %s лет на "возраст: %s"
+        //TODO(8) Добавить обработчик возраста для выбора склонения
         String summary = String.format("%s, %s лет", fullName, age);
 
         return summary;

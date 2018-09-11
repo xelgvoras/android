@@ -79,6 +79,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Toast errorMessage = Toast.makeText(getContext(), "Вводить можно только положительные целые числа", Toast.LENGTH_LONG);
 
+        //TODO(5) Добавить проверку ввода значений, выходящих за предел типа
+        //TODO(6) Добавить проверку ввода минимальных и максимальных значений запаса силы от уровня игрока
+
         String ageKey = getString(R.string.pref_age_key);
         String powerKey = getString(R.string.pref_power_key);
         String prefKey = preference.getKey();

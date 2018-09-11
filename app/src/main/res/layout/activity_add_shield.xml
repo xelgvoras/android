@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
     <EditText
@@ -10,22 +10,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:hint="Сколько у.е. вложить в щит?"
-        android:padding="16dp"/>
+        android:hint="Какое количество у.е. вложить в щит?"
+        android:padding="8dp"/>
 
     <Spinner
-        android:id="@+id/sp_shield_list"
+        android:id="@+id/sp_shields_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"/>
+        android:padding="8dp"/>
 
     <Button
-        android:id="@+id/bt_add_shield"
+        android:id="@+id/bt_add_shield_activity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
+        android:layout_gravity="center"
         android:text="Повесить щит"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:onClick="onClickAddShield"/>
+        android:onClick="onClickAddShield"
+        android:padding="8dp"/>
 
 </LinearLayout>

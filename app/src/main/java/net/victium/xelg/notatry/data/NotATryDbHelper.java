@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -38,6 +38,19 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 DuskLayersSummaryEntry.COLUMN_ROUNDS + " INTEGER);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_DUSK_LAYERS_SUMMARY_TABLE);
+
+        final String SQL_CREATE_ACTIVE_SHIELDS_TABLE = "CREATE TABLE " + ActiveShieldsEntry.TABLE_NAME + " (" +
+                ActiveShieldsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ActiveShieldsEntry.COLUMN_NAME + " TEXT NOT NULL UNIQUE," +
+                ActiveShieldsEntry.COLUMN_TYPE + " TEXT NOT NULL," +
+                ActiveShieldsEntry.COLUMN_COST + " INTEGER NOT NULL," +
+                ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE + " INTEGER NOT NULL," +
+                ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE + " INTEGER NOT NULL," +
+                ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + " INTEGER NOT NULL," +
+                ActiveShieldsEntry.COLUMN_TARGET + " TEXT NOT NULL," +
+                ActiveShieldsEntry.COLUMN_RANGE + " INTEGER NOT NULL);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_SHIELDS_TABLE);
     }
 
     @Override
@@ -45,6 +58,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CharacterStatusEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DuskLayersSummaryEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveShieldsEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

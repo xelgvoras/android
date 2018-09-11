@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;

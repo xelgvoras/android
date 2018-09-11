@@ -61,6 +61,12 @@ public class ShieldsActivity extends AppCompatActivity implements View.OnClickLi
         }).attachToRecyclerView(mActiveShieldsRecyclerView);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAdapter.swapCursor(getAllShields());
+    }
+
     private Cursor getAllShields() {
         return mDb.query(
                 NotATryContract.ActiveShieldsEntry.TABLE_NAME,

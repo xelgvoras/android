@@ -1,5 +1,7 @@
 package net.victium.xelg.notatry;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,8 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
+import net.victium.xelg.notatry.data.NotATryContract;
+import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.data.Shield;
 
 import java.util.ArrayList;
@@ -19,6 +24,8 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
 
     private EditText mShieldCost;
     private Spinner mShieldList;
+    private String errorMessage;
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +40,68 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
         shieldArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mShieldList.setAdapter(shieldArrayAdapter);
         mShieldList.setOnItemSelectedListener(this);
+
+        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
+        mDb = notATryDbHelper.getWritableDatabase();
     }
 
     public void onClickAddShield(View view) {
+
         String input = mShieldCost.getText().toString();
+        int inputInt = 1;
+
+        if (input.length() == 0) {
+            errorMessage = "Вы не указали количество у.е. для щита";
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            return;
+        } else {
+            errorMessage = "Можно указывать только положительные, целые числа, больше нуля.";
+
+            try {
+                inputInt = Integer.parseInt(input);
+
+                if (inputInt <= 0) {
+                    Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                    return;
+                }
+            } catch (Exception ex) {
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            }
+        }
+
         Shield currentShield = (Shield) mShieldList.getSelectedItem();
+
+        String name = currentShield.name;
+        String type = currentShield.type;
+        int magicDefence = currentShield.magicDefenceMultiplier * inputInt;
+        int physicDefence = currentShield.physicDefenceMultiplier * inputInt;
+        int mentalDefence = 0;
+        if (currentShield.hasMentalDefence) mentalDefence = 1;
+        String target = "персональный";
+        if (!currentShield.isPersonalShield) target = "групповой";
+        int range = currentShield.range;
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_NAME, name);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TYPE, type);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, inputInt);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, magicDefence);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, physicDefence);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE, mentalDefence);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET, target);
+        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_RANGE, range);
+
+        try {
+            mDb.insert(
+                    NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                    null,
+                    contentValues
+            );
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        finish();
     }
 
     private ArrayList<Shield> createShieldArrayList() {

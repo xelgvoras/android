@@ -1,9 +1,11 @@
 package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -91,7 +93,7 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
         cursor.close();
 
         String input = mShieldCost.getText().toString();
-        int inputInt = 1;
+        int inputInt;
 
         if (input.length() == 0) {
             errorMessage = "Вы не указали количество у.е. для щита";

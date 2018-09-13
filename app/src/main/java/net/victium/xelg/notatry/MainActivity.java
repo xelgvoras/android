@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements
         if (cursor.moveToFirst()) {
             /* На этапе разработки, все время очищает таблицу при запуске, в дальнейшем,
             * после проверки, просто прерывать выполнение кода. */
-            mDb.delete(NotATryContract.CharacterStatusEntry.TABLE_NAME, null, null);
+//            mDb.delete(NotATryContract.CharacterStatusEntry.TABLE_NAME, null, null);
+            return;
         }
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -176,7 +177,8 @@ public class MainActivity extends AppCompatActivity implements
         if (cursor.moveToFirst()) {
             /* На этапе разработки, все время очищает таблицу при запуске, в дальнейшем,
              * после проверки, просто прерывать выполнение кода. */
-            mDb.delete(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME, null, null);
+//            mDb.delete(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME, null, null);
+            return;
         }
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -382,6 +384,12 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this, getCharacterStatus()));
     }
 
     @Override

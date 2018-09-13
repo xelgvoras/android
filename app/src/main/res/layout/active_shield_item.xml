@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/tv_shield_name"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="1dp"
@@ -23,7 +23,7 @@
     <TextView
         android:id="@+id/tv_shield_cost"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="1dp"
@@ -37,7 +37,7 @@
     <TextView
         android:id="@+id/tv_magic_defence"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="1dp"
@@ -51,7 +51,7 @@
     <TextView
         android:id="@+id/tv_physic_defence"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="1dp"
@@ -65,7 +65,7 @@
     <TextView
         android:id="@+id/tv_mental_defence"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="1dp"
@@ -79,7 +79,7 @@
     <TextView
         android:id="@+id/tv_shield_range"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_marginLeft="1dp"

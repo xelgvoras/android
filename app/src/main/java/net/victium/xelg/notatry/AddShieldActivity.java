@@ -1,6 +1,8 @@
 package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -47,6 +49,47 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
 
     public void onClickAddShield(View view) {
 
+        Cursor cursor;
+        cursor = mDb.query(
+                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                null,
+                NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + " is ?",
+                new String[]{"персональный"},
+                null,
+                null,
+                null
+        );
+
+        int personalShieldsCount = cursor.getCount();
+        cursor.close();
+
+        cursor = mDb.query(
+                NotATryContract.CharacterStatusEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+
+        int personalShieldsLimit = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT));
+        cursor.close();
+
+        cursor = mDb.query(
+                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                null,
+                NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + " is ?",
+                new String[]{"групповой"},
+                null,
+                null,
+                null
+        );
+
+        int groupShieldsCount = cursor.getCount();
+        cursor.close();
+
         String input = mShieldCost.getText().toString();
         int inputInt = 1;
 
@@ -66,6 +109,7 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
                 }
             } catch (Exception ex) {
                 Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                return;
             }
         }
 
@@ -81,6 +125,22 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
         if (!currentShield.isPersonalShield) target = "групповой";
         int range = currentShield.range;
 
+        if (target.equals("персональный")) {
+
+            if (personalShieldsCount >= personalShieldsLimit) {
+                errorMessage = "Достигнут лимит персональных щитов";
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                return;
+            }
+        } else {
+
+            if (groupShieldsCount >= 1) {
+                errorMessage = "Достигнут лимит групповых щитов";
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_NAME, name);
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TYPE, type);
@@ -91,14 +151,16 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET, target);
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_RANGE, range);
 
-        try {
-            mDb.insert(
-                    NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                    null,
-                    contentValues
-            );
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        long insertedRowCount = mDb.insert(
+                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                null,
+                contentValues
+        );
+
+        if (insertedRowCount <= 0) {
+            errorMessage = "Нельзя повесить два одинаковых щита";
+            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            return;
         }
 
         finish();
@@ -245,30 +307,4 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
-
-    /*private class Shield {
-
-        public String name;
-        public String type;
-        public int magicDefenceMultiplier;
-        public int physicDefenceMultiplier;
-        public boolean hasMentalDefence;
-        public boolean isPersonalShield;
-        public int range;
-
-        public Shield(String name, String type, int magicDefenceMultiplier, int physicDefenceMultiplier, boolean hasMentalDefence, boolean isPersonalShield, int range) {
-            this.name = name;
-            this.type = type;
-            this.magicDefenceMultiplier = magicDefenceMultiplier;
-            this.physicDefenceMultiplier = physicDefenceMultiplier;
-            this.hasMentalDefence = hasMentalDefence;
-            this.isPersonalShield = isPersonalShield;
-            this.range = range;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("%s (%s)", name, type);
-        }
-    }*/
 }

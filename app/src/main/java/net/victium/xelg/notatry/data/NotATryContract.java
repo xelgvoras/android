@@ -8,6 +8,7 @@ public class NotATryContract {
 
         public static final String TABLE_NAME = "characterStatus";
         public static final String COLUMN_CURRENT_POWER = "currentPower";
+        public static final String COLUMN_POWER_LIMIT = "powerLimit";
         public static final String COLUMN_CURRENT_DEPTH = "currentDepth";
         public static final String COLUMN_DEPTH_LIMIT = "depthLimit";
         public static final String COLUMN_CURRENT_SHIELDS = "currentShields";

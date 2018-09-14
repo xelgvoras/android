@@ -17,7 +17,7 @@ import java.util.List;
 public class ShieldArrayAdapter extends ArrayAdapter<Shield> {
 
     private Context mContext;
-    private List<Shield> shieldList = new ArrayList<>();
+    private List<Shield> shieldList;
 
     public ShieldArrayAdapter(@NonNull Context context, ArrayList<Shield> list) {
         super(context, 0, list);

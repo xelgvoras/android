@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -22,6 +22,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_CHARACTER_STATUS_TABLE = "CREATE TABLE " + CharacterStatusEntry.TABLE_NAME + " (" +
                 CharacterStatusEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 CharacterStatusEntry.COLUMN_CURRENT_POWER + " INTEGER NOT NULL," +
+                CharacterStatusEntry.COLUMN_POWER_LIMIT + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_CURRENT_DEPTH + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_DEPTH_LIMIT + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_CURRENT_SHIELDS + " INTEGER NOT NULL," +

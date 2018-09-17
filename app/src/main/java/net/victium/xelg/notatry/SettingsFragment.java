@@ -79,9 +79,53 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Toast errorMessage = Toast.makeText(getContext(), "Вводить можно только положительные целые числа", Toast.LENGTH_LONG);
 
+        //COMPLETED(5) Добавить проверку ввода значений, выходящих за предел типа
+        //COMPLETED(6) Добавить проверку ввода минимальных и максимальных значений запаса силы от уровня игрока
+
         String ageKey = getString(R.string.pref_age_key);
         String powerKey = getString(R.string.pref_power_key);
         String prefKey = preference.getKey();
+
+        SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
+        int currentLevel = Integer.parseInt(sharedPreferences.getString(getString(R.string.pref_level_key),
+                getString(R.string.pref_level_value_seven)));
+        int minPower = 1;
+        int maxPower = 7;
+
+        switch (currentLevel) {
+            case 7:
+                minPower = 1;
+                maxPower = 7;
+                break;
+            case 6:
+                minPower = 4;
+                maxPower = 15;
+                break;
+            case 5:
+                minPower = 8;
+                maxPower = 31;
+                break;
+            case 4:
+                minPower = 16;
+                maxPower = 63;
+                break;
+            case 3:
+                minPower = 32;
+                maxPower = 127;
+                break;
+            case 2:
+                minPower = 64;
+                maxPower = 255;
+                break;
+            case 1:
+                minPower = 128;
+                maxPower = 511;
+                break;
+            case 0:
+                minPower = 512;
+                maxPower = 2048;
+                break;
+        }
 
         if (prefKey.equals(ageKey) || prefKey.equals(powerKey)) {
             String value = String.valueOf(newValue);
@@ -92,6 +136,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                     errorMessage.show();
                     return false;
                 }
+
+                if (intValue < minPower || intValue > maxPower) {
+                    Toast.makeText(getContext(), "Указано значение силы вне границы уровня: " + minPower + "-" + maxPower, Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            } catch (NumberFormatException nfe) {
+                Toast.makeText(getContext(), "Слишком большое число", Toast.LENGTH_LONG).show();
+                return false;
             } catch (Exception e) {
                 errorMessage.show();
                 return false;

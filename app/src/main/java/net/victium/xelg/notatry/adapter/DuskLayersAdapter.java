@@ -1,4 +1,4 @@
-package net.victium.xelg.notatry;
+package net.victium.xelg.notatry.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import net.victium.xelg.notatry.R;
 
 public class DuskLayersAdapter extends RecyclerView.Adapter<DuskLayersAdapter.DuskViewHolder> {
     private Context mContext;

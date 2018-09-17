@@ -23,8 +23,6 @@ import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.data.Character;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -68,11 +66,8 @@ public class MainActivity extends AppCompatActivity implements
         NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
         mDb = notATryDbHelper.getWritableDatabase();
 
-        mCharacterStatusCursor = getCharacterStatus();
-        collectCharacterStatusIntoDb(mCharacterStatusCursor, mCharacter);
-
-        mDuskLayersCursor = getDuskLayersCursor();
-        setupDuskLayers(mDuskLayersCursor, mCharacter);
+        collectCharacterStatusIntoDb(mCharacter);
+        setupDuskLayers(mCharacter);
 
         setupSharedPreferences();
 
@@ -82,22 +77,20 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setupSharedPreferences() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(this));
-        mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(this));
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this, mCharacterStatusCursor));
+        mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
+        mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(mCharacter));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
         mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(this));
-        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(this, mCharacterStatusCursor, mDuskLayersCursor));
+        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatus(), getDuskLayersCursor()));
     }
 
-    private void collectCharacterStatusIntoDb(Cursor cursor, Character character) {
+    private void collectCharacterStatusIntoDb(Character character) {
 
-        if (cursor.moveToFirst()) {
-            /* На этапе разработки, все время очищает таблицу при запуске, в дальнейшем,
-            * после проверки, просто прерывать выполнение кода. */
-            mDb.delete(NotATryContract.CharacterStatusEntry.TABLE_NAME, null, null);
-//            return;
+        mCharacterStatusCursor = swapCursor(mCharacterStatusCursor, getCharacterStatus());
+
+        if (mCharacterStatusCursor.moveToFirst()) {
+            return;
         }
 
         ContentValues contentValues = new ContentValues();
@@ -112,17 +105,31 @@ public class MainActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, character.getCharacterReactionsNumber());
 
         mDb.insert(NotATryContract.CharacterStatusEntry.TABLE_NAME, null, contentValues);
-
-        swapCursor(mCharacterStatusCursor, getCharacterStatus());
     }
 
-    private void setupDuskLayers(Cursor cursor, Character character) {
+    private void updateCharacterStatus(ContentValues contentValues){
 
-        if (cursor.moveToFirst()) {
-            /* На этапе разработки, все время очищает таблицу при запуске, в дальнейшем,
-             * после проверки, просто прерывать выполнение кода. */
-            mDb.delete(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME, null, null);
-//            return;
+        mCharacterStatusCursor = swapCursor(mCharacterStatusCursor, getCharacterStatus());
+
+        mCharacterStatusCursor.moveToFirst();
+        long id = mCharacterStatusCursor.getLong(mCharacterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry._ID));
+
+        mDb.update(
+                NotATryContract.CharacterStatusEntry.TABLE_NAME,
+                contentValues,
+                NotATryContract.CharacterStatusEntry._ID + "=" + id,
+                null
+        );
+    }
+
+    private void setupDuskLayers(Character character) {
+
+        boolean isTableEmpty = true;
+
+        mDuskLayersCursor = swapCursor(mDuskLayersCursor, getDuskLayersCursor());
+
+        if (mDuskLayersCursor.moveToFirst()) {
+            isTableEmpty = false;
         }
 
         ContentValues contentValues = new ContentValues();
@@ -146,15 +153,22 @@ public class MainActivity extends AppCompatActivity implements
                 rounds = null;
             }
 
-            contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER, duskLayer++);
+            contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER, duskLayer);
             contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_ROUNDS, rounds);
 
-            mDb.insert(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
-                    null,
-                    contentValues);
-        }
+            if (isTableEmpty) {
+                mDb.insert(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
+                        null,
+                        contentValues);
+            } else {
+                mDb.update(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
+                        contentValues,
+                        NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER + "=?",
+                        new String[]{String.valueOf(duskLayer)});
+            }
 
-        swapCursor(mDuskLayersCursor, getDuskLayersCursor());
+            duskLayer++;
+        }
     }
 
     private Cursor getDuskLayersCursor() {
@@ -183,133 +197,13 @@ public class MainActivity extends AppCompatActivity implements
         );
     }
 
-    private void swapCursor(Cursor oldCursor, Cursor newCursor) {
+    private Cursor swapCursor(Cursor oldCursor, Cursor newCursor) {
 
         if (null != oldCursor) {
             oldCursor.close();
-            oldCursor = newCursor;
-        }
-    }
-
-    private void updateCharacterLimits(Cursor cursor) {
-        int idCol = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry._ID);
-        String id = cursor.getString(idCol);
-
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        ContentValues contentValues = new ContentValues();
-
-        String levelKey = getString(R.string.pref_level_key);
-        String levelDefault = getString(R.string.pref_level_value_seven);
-        String levelString = sharedPreferences.getString(levelKey, levelDefault);
-        int level = Integer.parseInt(levelString);
-        int shieldsLimit = 1;
-        int amuletsLimit = 1;
-
-        if (level >= 5) {
-            shieldsLimit = 1;
-            amuletsLimit = 1;
-        } else if (level >= 3) {
-            shieldsLimit = 2;
-            amuletsLimit = 1;
-        } else if (level >= 1) {
-            shieldsLimit = 3;
-            amuletsLimit = 2;
-        } else {
-            shieldsLimit = 4;
-            amuletsLimit = 3;
         }
 
-        String powerKey = getString(R.string.pref_power_key);
-        String powerDefault = getString(R.string.pref_power_default);
-        String powerString = sharedPreferences.getString(powerKey, powerDefault);
-        int power = Integer.parseInt(powerString);
-
-        int depthLimit = 1;
-        if (power > 512) {
-            depthLimit = 6;
-        } else if (power > 128) {
-            depthLimit = 3;
-        } else if (power > 32) {
-            depthLimit = 2;
-        }
-
-        ArrayList<String> typeArray = new ArrayList<>();
-        typeArray.add(getString(R.string.pref_type_value_flipflop));
-        typeArray.add(getString(R.string.pref_type_value_vampire));
-        typeArray.add(getString(R.string.pref_type_value_werewolf));
-        typeArray.add(getString(R.string.pref_type_value_werewolf_mag));
-
-        String typeKey = getString(R.string.pref_type_key);
-        String typeDefault = getString(R.string.pref_type_value_mag);
-        String typeString = sharedPreferences.getString(typeKey, typeDefault);
-        int reactionsNumber = 1;
-        if (typeArray.contains(typeString)) {
-
-            if (level >= 5) {
-                reactionsNumber = 2;
-            } else if (level >= 3) {
-                reactionsNumber = 3;
-            } else if (level >= 1) {
-                reactionsNumber = 4;
-            } else {
-                reactionsNumber = 5;
-            }
-
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, reactionsNumber);
-        }
-
-        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT, shieldsLimit);
-        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT, amuletsLimit);
-        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT, depthLimit);
-
-        mDb.update(NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                contentValues,
-                "_id=?",
-                new String[]{id});
-
-        mCharacterStatusCursor = getCharacterStatus();
-    }
-
-    private void updateDuskLayersSummary() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String powerLimitKey = getString(R.string.pref_power_key);
-        String powerLimitDefault = getString(R.string.pref_power_default);
-        String powerLimitString = sharedPreferences.getString(powerLimitKey, powerLimitDefault);
-        int powerLimit = Integer.parseInt(powerLimitString);
-
-        int[] stsForLayers = new int[]{32,128,512,512,128,32};
-
-        ContentValues contentValues = new ContentValues();
-        int duskLayer = 1;
-
-        for (int sts : stsForLayers) {
-            Integer rounds;
-
-            try {
-                rounds = Math.round((float)(10 * powerLimit / (sts - powerLimit)));
-            } catch (ArithmeticException ax) {
-                rounds = 999;
-            }
-
-            if (rounds < 0) {
-                rounds = 999;
-            } else if (rounds == 0) {
-                rounds = null;
-            }
-
-            contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER, duskLayer);
-            contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_ROUNDS, rounds);
-
-            mDb.update(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
-                    contentValues,
-                    NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER + "=?",
-                    new String[]{String.valueOf(duskLayer)});
-
-            duskLayer++;
-        }
-
-        mDuskLayersCursor = getDuskLayersCursor();
+        return newCursor;
     }
 
     @Override
@@ -342,7 +236,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this, getCharacterStatus()));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(this));
     }
 
     @Override
@@ -372,23 +267,62 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_full_name_key)) ||
-                key.equals(getString(R.string.pref_age_key))) {
-            mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(this));
-        } else if (key.equals(getString(R.string.pref_side_key)) ||
-                key.equals(getString(R.string.pref_type_key))) {
-            mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(this));
-        } else if (key.equals(getString(R.string.pref_power_key))) {
-            updateDuskLayersSummary();
-            updateCharacterLimits(mCharacterStatusCursor);
-            mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(this, mCharacterStatusCursor));
-            mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(this, mCharacterStatusCursor, mDuskLayersCursor));
-        } else if (key.equals(getString(R.string.pref_level_key))) {
-            updateCharacterLimits(mCharacterStatusCursor);
-            mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(this));
-            mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(this, mCharacterStatusCursor, mDuskLayersCursor));
+
+        ContentValues contentValues;
+
+        if (key.equals(getString(R.string.pref_full_name_key))) {
+            mCharacter.setCharacterName(sharedPreferences);
+        } else if (key.equals(getString(R.string.pref_age_key))) {
+            mCharacter.setCharacterAge(sharedPreferences);
+        } else if (key.equals(getString(R.string.pref_side_key))) {
+            mCharacter.setCharacterSide(sharedPreferences);
         } else if (key.equals(getString(R.string.pref_type_key))) {
-            mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(this, mCharacterStatusCursor, mDuskLayersCursor));
+            mCharacter.setCharacterType(sharedPreferences);
+
+            contentValues = new ContentValues();
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE,
+                    mCharacter.getCharacterNaturalDefence());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER,
+                    mCharacter.getCharacterReactionsNumber());
+
+            updateCharacterStatus(contentValues);
+
+        } else if (key.equals(getString(R.string.pref_level_key))) {
+            mCharacter.setCharacterLevel(sharedPreferences);
+
+            contentValues = new ContentValues();
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT,
+                    mCharacter.getCharacterPersonalShieldsLimit());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
+                    mCharacter.getCharacterAmuletsLimit());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER,
+                    mCharacter.getCharacterReactionsNumber());
+
+            updateCharacterStatus(contentValues);
+
+        } else if (key.equals(getString(R.string.pref_power_key))) {
+            mCharacter.setCharacterPowerLimit(sharedPreferences);
+
+            contentValues = new ContentValues();
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT,
+                    mCharacter.getCharacterPowerLimit());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT,
+                    mCharacter.getCharacterDuskLayerLimit());
+
+            Cursor cursor = getCharacterStatus();
+            cursor.moveToFirst();
+            int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
+            int powerLimit = mCharacter.getCharacterPowerLimit();
+
+            if (currentPower > powerLimit) {
+                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER, powerLimit);
+            }
+
+            updateCharacterStatus(contentValues);
+
+            setupDuskLayers(mCharacter);
         }
+
+        setupSharedPreferences();
     }
 }

@@ -12,6 +12,7 @@ public class Character {
 
     private String characterName;
     private String characterType;
+    private int characterAge;
     private int characterLevel;
     private int characterPowerLimit;
     private int characterDuskLayerLimit;
@@ -20,37 +21,43 @@ public class Character {
     private int characterReactionsNumber;
     private int characterNaturalDefence;
     private boolean characterSide;
+    private Context mContext;
 
     private ArrayList<String> listOfSpecialTypes = new ArrayList<>();
 
     public Character(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mContext = context;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
-        String nameKey = context.getString(R.string.pref_full_name_key);
-        String nameDefault = context.getString(R.string.pref_full_name_default);
+        String nameKey = mContext.getString(R.string.pref_full_name_key);
+        String nameDefault = mContext.getString(R.string.pref_full_name_default);
         characterName = sharedPreferences.getString(nameKey, nameDefault);
 
-        String typeKey = context.getString(R.string.pref_type_key);
-        String typeDefault = context.getString(R.string.pref_type_value_mag);
+        String typeKey = mContext.getString(R.string.pref_type_key);
+        String typeDefault = mContext.getString(R.string.pref_type_value_mag);
         characterType = sharedPreferences.getString(typeKey, typeDefault);
 
-        String levelKey = context.getString(R.string.pref_level_key);
-        String levelDefault = context.getString(R.string.pref_level_value_seven);
+        String ageKey = mContext.getString(R.string.pref_age_key);
+        String ageDefault = mContext.getString(R.string.pref_age_default);
+        characterAge = Integer.parseInt(sharedPreferences.getString(ageKey, ageDefault));
+
+        String levelKey = mContext.getString(R.string.pref_level_key);
+        String levelDefault = mContext.getString(R.string.pref_level_value_seven);
         characterLevel = Integer.parseInt(sharedPreferences.getString(levelKey, levelDefault));
 
-        String powerKey = context.getString(R.string.pref_power_key);
-        String powerDefault = context.getString(R.string.pref_power_default);
+        String powerKey = mContext.getString(R.string.pref_power_key);
+        String powerDefault = mContext.getString(R.string.pref_power_default);
         characterPowerLimit = Integer.parseInt(sharedPreferences.getString(powerKey, powerDefault));
 
-        String sideKey = context.getString(R.string.pref_side_key);
-        String sideDefault = context.getString(R.string.pref_side_light_value);
+        String sideKey = mContext.getString(R.string.pref_side_key);
+        String sideDefault = mContext.getString(R.string.pref_side_light_value);
         String sideString = sharedPreferences.getString(sideKey, sideDefault);
         characterSide = sideString.equals(sideDefault);
 
-        listOfSpecialTypes.add(context.getString(R.string.pref_type_value_flipflop));
-        listOfSpecialTypes.add(context.getString(R.string.pref_type_value_vampire));
-        listOfSpecialTypes.add(context.getString(R.string.pref_type_value_werewolf));
-        listOfSpecialTypes.add(context.getString(R.string.pref_type_value_werewolf_mag));
+        listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_flipflop));
+        listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_vampire));
+        listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_werewolf));
+        listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_werewolf_mag));
 
         setupDuskLayerLimit();
         setupPersonalShieldsLimit();
@@ -141,26 +148,42 @@ public class Character {
         return characterName;
     }
 
-    public void setCharacterName(String characterName) {
-        this.characterName = characterName;
+    public void setCharacterName(SharedPreferences sharedPreferences) {
+        String nameKey = mContext.getString(R.string.pref_full_name_key);
+        String nameDefault = mContext.getString(R.string.pref_full_name_default);
+        this.characterName = sharedPreferences.getString(nameKey, nameDefault);
     }
 
     public String getCharacterType() {
         return characterType;
     }
 
-    public void setCharacterType(String characterType) {
-        this.characterType = characterType;
+    public void setCharacterType(SharedPreferences sharedPreferences) {
+        String typeKey = mContext.getString(R.string.pref_type_key);
+        String typeDefault = mContext.getString(R.string.pref_type_value_mag);
+        this.characterType = sharedPreferences.getString(typeKey, typeDefault);
         setupReactionsNumber();
         setupNaturalDefence();
+    }
+
+    public int getCharacterAge() {
+        return characterAge;
+    }
+
+    public void setCharacterAge(SharedPreferences sharedPreferences) {
+        String ageKey = mContext.getString(R.string.pref_age_key);
+        String ageDefault = mContext.getString(R.string.pref_age_default);
+        this.characterAge = Integer.parseInt(sharedPreferences.getString(ageKey, ageDefault));
     }
 
     public int getCharacterLevel() {
         return characterLevel;
     }
 
-    public void setCharacterLevel(int characterLevel) {
-        this.characterLevel = characterLevel;
+    public void setCharacterLevel(SharedPreferences sharedPreferences) {
+        String levelKey = mContext.getString(R.string.pref_level_key);
+        String levelDefault = mContext.getString(R.string.pref_level_value_seven);
+        this.characterLevel = Integer.parseInt(sharedPreferences.getString(levelKey, levelDefault));
         setupPersonalShieldsLimit();
         setupAmuletsLimit();
         setupReactionsNumber();
@@ -170,8 +193,10 @@ public class Character {
         return characterPowerLimit;
     }
 
-    public void setCharacterPowerLimit(int characterPowerLimit) {
-        this.characterPowerLimit = characterPowerLimit;
+    public void setCharacterPowerLimit(SharedPreferences sharedPreferences) {
+        String powerKey = mContext.getString(R.string.pref_power_key);
+        String powerDefault = mContext.getString(R.string.pref_power_default);
+        this.characterPowerLimit = Integer.parseInt(sharedPreferences.getString(powerKey, powerDefault));
         setupDuskLayerLimit();
     }
 
@@ -219,7 +244,10 @@ public class Character {
         return characterSide;
     }
 
-    public void setCharacterSide(boolean characterSide) {
-        this.characterSide = characterSide;
+    public void setCharacterSide(SharedPreferences sharedPreferences) {
+        String sideKey = mContext.getString(R.string.pref_side_key);
+        String sideDefault = mContext.getString(R.string.pref_side_light_value);
+        String sideString = sharedPreferences.getString(sideKey, sideDefault);
+        this.characterSide = sideString.equals(sideDefault);
     }
 }

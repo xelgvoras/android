@@ -2,6 +2,7 @@ package net.victium.xelg.notatry.data;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 public class CharacterPreferences {
 
@@ -39,11 +40,18 @@ public class CharacterPreferences {
                 character.getCharacterPowerLimit());
     }
 
-    public static String getCharacterDefence(Context context) {
+    public static String getCharacterDefence(Cursor cursor) {
         // TODO(3) На текущий момент - это заглушка, требуется реализация получения значений из базы данных
-        String magicDefence = "36";
-        String physicDefence = "36";
-        String mentalShields = "2";
+
+        cursor.moveToFirst();
+        String magicDefence = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM));
+        if (null == magicDefence) magicDefence = "0";
+        String physicDefence = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE_SUM));
+        if (null == physicDefence) physicDefence = "0";
+        String mentalShields = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM));
+        if (null == mentalShields) mentalShields = "0";
+
+        cursor.close();
 
         return String.format("Щиты \n" +
                         "\t\t\t Магическая защита: %s \n" +

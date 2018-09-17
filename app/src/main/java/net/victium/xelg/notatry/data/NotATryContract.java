@@ -36,5 +36,10 @@ public class NotATryContract {
         public static final String COLUMN_MENTAL_DEFENCE = "mentalDefence";
         public static final String COLUMN_TARGET = "target";
         public static final String COLUMN_RANGE = "range";
+
+        // Названия столбцов для суммы защиты
+        public static final String COLUMN_MAGIC_DEFENCE_SUM = "magicDefenceSum";
+        public static final String COLUMN_PHYSIC_DEFENCE_SUM = "physicDefenceSum";
+        public static final String COLUMN_MENTAL_DEFENCE_SUM = "mentalDefenceSum";
     }
 }

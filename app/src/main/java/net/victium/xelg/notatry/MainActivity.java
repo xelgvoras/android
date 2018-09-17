@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(mCharacter));
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(this));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterDefence()));
         mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatus(), getDuskLayersCursor()));
     }
 
@@ -197,6 +197,25 @@ public class MainActivity extends AppCompatActivity implements
         );
     }
 
+    private Cursor getCharacterDefence() {
+
+        String[] defenceSummary = new String[]{
+                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM,
+                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE_SUM,
+                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
+        };
+
+        return mDb.query(
+                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                defenceSummary,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
     private Cursor swapCursor(Cursor oldCursor, Cursor newCursor) {
 
         if (null != oldCursor) {
@@ -237,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(this));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterDefence()));
     }
 
     @Override

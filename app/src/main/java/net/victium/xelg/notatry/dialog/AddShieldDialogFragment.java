@@ -1,8 +1,8 @@
 package net.victium.xelg.notatry.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -32,18 +32,19 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
     private SQLiteDatabase mDb;
 
     public interface AddShieldNoticeDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialogFragment);
+        void onDialogPositiveClick(DialogFragment dialogFragment);
     }
 
     AddShieldNoticeDialogListener mListener;
 
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
         try {
-            mListener = (AddShieldNoticeDialogListener) activity;
+            mListener = (AddShieldNoticeDialogListener) context;
         } catch (ClassCastException ccex) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement NoticeDialogListener");
         }
     }
@@ -339,7 +340,6 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         if (insertedRowCount <= 0) {
             errorMessage = "Нельзя повесить два одинаковых щита";
             Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
-            return;
         }
     }
 }

@@ -34,7 +34,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".AddShieldActivity"></activity>
     </application>
 
 </manifest>

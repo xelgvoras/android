@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ public class ShieldsActivity extends AppCompatActivity implements
     private ShieldListAdapter mAdapter;
     private SQLiteDatabase mDb;
     private RecyclerView mActiveShieldsRecyclerView;
-    private FloatingActionButton mAddShieldButton;
     private TextView mCurrentPower;
     private EditText mNewValuePower;
     private Cursor mCursor;
@@ -41,7 +39,6 @@ public class ShieldsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_shields);
 
         mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
-        mAddShieldButton = findViewById(R.id.fab_add_shield);
         mCurrentPower = findViewById(R.id.tv_current_power);
         mNewValuePower = findViewById(R.id.et_new_value_power);
 
@@ -118,15 +115,17 @@ public class ShieldsActivity extends AppCompatActivity implements
     private void setupCurrentPower(Cursor cursor) {
         cursor.moveToFirst();
         int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
-        mCurrentPower.setText("Текущий резерв силы: " + String.valueOf(currentPower));
+        int powerLimit = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT));
+        mCurrentPower.setText(String.format("Резерв силы: %s/%s", String.valueOf(currentPower), String.valueOf(powerLimit)));
     }
 
-    private boolean removeShield(long id) {
-        return mDb.delete(
+    private void removeShield(long id) {
+
+        mDb.delete(
                 NotATryContract.ActiveShieldsEntry.TABLE_NAME,
                 NotATryContract.ActiveShieldsEntry._ID + "=" + id,
                 null
-        ) > 0;
+        );
     }
 
     public void onClickAddShield(View view) {
@@ -137,7 +136,7 @@ public class ShieldsActivity extends AppCompatActivity implements
 
     public void onClickEditCurrentPower(View v) {
 
-        String errorMessage = "Что-то пошло не так";
+        String errorMessage;
         String newValueString = mNewValuePower.getText().toString();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);

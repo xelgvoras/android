@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
     private void setupSharedPreferences() {
 
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
-        mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfoFromPreferences(mCharacter));
+        mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
         mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterDefence()));
         mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatus(), getDuskLayersCursor()));

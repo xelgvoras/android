@@ -1,19 +1,14 @@
 package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
-import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
@@ -22,7 +17,6 @@ import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.data.Shield;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class AddShieldActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
@@ -33,8 +27,9 @@ public class AddShieldActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO(12) Перенести на экран ввода
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_shield);
+        setContentView(R.layout.add_shield_dialog);
 
         mShieldCost = findViewById(R.id.et_shield_cost);
         mShieldList = findViewById(R.id.sp_shields_list);

@@ -117,11 +117,13 @@
             android:padding="8dp"
             style="@style/Base.TextAppearance.AppCompat.Title"/>
 
+        <!-- TODO(10) Отображать только цифровую клавиатуру -->
         <EditText
             android:id="@+id/et_new_value_power"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
+            android:inputType="number"
             android:hint="На сколько изменить резерв?"/>
 
         <Button
@@ -141,6 +143,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         app:srcCompat="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"/>
+        android:tint="@android:color/white"
+        android:onClick="onClickAddShield"/>
 
 </FrameLayout>

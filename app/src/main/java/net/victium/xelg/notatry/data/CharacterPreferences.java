@@ -1,8 +1,6 @@
 package net.victium.xelg.notatry.data;
 
-import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 public class CharacterPreferences {
 
@@ -14,7 +12,7 @@ public class CharacterPreferences {
         return String.format("%s, возраст: %s", character.getCharacterName(), character.getCharacterAge());
     }
 
-    public static String getPersonalInfoFromPreferences(Character character) {
+    public static String getPersonalInfo(Character character) {
 
         String sideString;
         if (character.isCharacterSide()) {

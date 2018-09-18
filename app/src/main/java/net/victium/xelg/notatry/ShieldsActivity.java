@@ -1,12 +1,12 @@
 package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,10 +20,12 @@ import android.widget.Toast;
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
+import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 
 import java.util.ArrayList;
 
-public class ShieldsActivity extends AppCompatActivity implements View.OnClickListener {
+public class ShieldsActivity extends AppCompatActivity implements
+        AddShieldDialogFragment.AddShieldNoticeDialogListener {
 
     private ShieldListAdapter mAdapter;
     private SQLiteDatabase mDb;
@@ -42,8 +44,6 @@ public class ShieldsActivity extends AppCompatActivity implements View.OnClickLi
         mAddShieldButton = findViewById(R.id.fab_add_shield);
         mCurrentPower = findViewById(R.id.tv_current_power);
         mNewValuePower = findViewById(R.id.et_new_value_power);
-
-        mAddShieldButton.setOnClickListener(this);
 
         mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -75,6 +75,8 @@ public class ShieldsActivity extends AppCompatActivity implements View.OnClickLi
                 mAdapter.swapCursor(getAllShields());
             }
         }).attachToRecyclerView(mActiveShieldsRecyclerView);
+
+        // TODO(11) Сделать изменение резерва через диалоговое окно
     }
 
     @Override
@@ -127,18 +129,10 @@ public class ShieldsActivity extends AppCompatActivity implements View.OnClickLi
         ) > 0;
     }
 
-    @Override
-    public void onClick(View v) {
+    public void onClickAddShield(View view) {
 
-        if (v instanceof FloatingActionButton) {
-            FloatingActionButton clickedButton = (FloatingActionButton) v;
-            int buttonId = v.getId();
-
-            if (R.id.fab_add_shield == buttonId) {
-                Intent intent = new Intent(this, AddShieldActivity.class);
-                startActivity(intent);
-            }
-        }
+        DialogFragment dialogFragment = new AddShieldDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "AddShieldDialogFragment");
     }
 
     public void onClickEditCurrentPower(View v) {
@@ -199,5 +193,10 @@ public class ShieldsActivity extends AppCompatActivity implements View.OnClickLi
             errorMessage = "Введите число со знаком плюс или минус";
             Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialogFragment) {
+        mAdapter.swapCursor(getAllShields());
     }
 }

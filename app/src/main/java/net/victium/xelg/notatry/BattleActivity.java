@@ -19,9 +19,11 @@ import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
+import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 
 public class BattleActivity extends AppCompatActivity implements
-        AddShieldDialogFragment.AddShieldNoticeDialogListener {
+        AddShieldDialogFragment.AddShieldDialogListener,
+        DamageDialogFragment.DamageDialogListener {
 
     private TextView mFullNameTextView;
     private TextView mPersonalInfoTextView;
@@ -31,6 +33,9 @@ public class BattleActivity extends AppCompatActivity implements
     private Button mCheckActionButton;
     private Button mShieldScanButton;
     private FloatingActionButton mAddShieldActionButton;
+
+    /* Для тестов */
+    private TextView mTestJournal;
 
     private SQLiteDatabase mDb;
     private Character mCharacter;
@@ -48,9 +53,12 @@ public class BattleActivity extends AppCompatActivity implements
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
         mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
-        mCheckActionButton = findViewById(R.id.bt_check_action);
+        mCheckActionButton = findViewById(R.id.bt_check_damage);
         mShieldScanButton = findViewById(R.id.bt_shield_scan);
         mAddShieldActionButton = findViewById(R.id.fab_add_shield);
+
+        /* Для тестов */
+        mTestJournal = findViewById(R.id.tv_test_journal);
 
         mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -135,8 +143,20 @@ public class BattleActivity extends AppCompatActivity implements
         dialogFragment.show(getSupportFragmentManager(), "AddShieldDialogFragment");
     }
 
+    public void onClickCheckDamage(View view) {
+
+        DialogFragment dialogFragment = new DamageDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "CheckDamageDialogFragment");
+    }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
-        mShieldListAdapter.swapCursor(getAllShields());
+
+        if (dialogFragment instanceof AddShieldDialogFragment) {
+            mShieldListAdapter.swapCursor(getAllShields());
+        } else if (dialogFragment instanceof DamageDialogFragment) {
+            mTestJournal.setText(((DamageDialogFragment) dialogFragment).mResultSummary);
+            mShieldListAdapter.swapCursor(getAllShields());
+        }
     }
 }

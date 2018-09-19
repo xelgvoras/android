@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/et_damage_power"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:inputType="number"
+        android:hint="Сила воздействия"
+        android:padding="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Тип воздействия"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:weightSum="3">
+
+            <Button
+                android:id="@+id/bt_magic_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/materialBlue"
+                android:text="маг"
+                android:textColor="@android:color/primary_text_light"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"/>
+
+            <Button
+                android:id="@+id/bt_physic_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/materialRed"
+                android:text="физ"
+                android:textColor="@android:color/primary_text_light"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"/>
+
+            <Button
+                android:id="@+id/bt_mental_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/materialPurple"
+                android:text="мент"
+                android:textColor="@android:color/primary_text_light"
+                android:layout_weight="1"
+                style="?android:attr/buttonBarButtonStyle"/>
+        </LinearLayout>
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:weightSum="3">
+
+            <RadioButton
+                android:id="@+id/rb_magic_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:theme="@style/WhiteRadioButton" />
+
+            <RadioButton
+                android:id="@+id/rb_physic_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:theme="@style/WhiteRadioButton" />
+
+            <RadioButton
+                android:id="@+id/rb_mental_damage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:theme="@style/WhiteRadioButton" />
+
+        </RadioGroup>
+
+    </FrameLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="Заклинание (не обязательно)"/>
+
+    <Spinner
+        android:id="@+id/sp_spells_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"/>
+
+</LinearLayout>

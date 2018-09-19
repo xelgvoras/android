@@ -150,10 +150,11 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/bt_check_action"
+                    android:id="@+id/bt_check_damage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Воздействие"/>
+                    android:hint="Воздействие"
+                    android:onClick="onClickCheckDamage"/>
 
                 <Button
                     android:id="@+id/bt_shield_scan"
@@ -167,6 +168,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Журнал боя:"/>
+
+            <TextView
+                android:id="@+id/tv_test_journal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_battle_journal"

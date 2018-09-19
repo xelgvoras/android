@@ -24,7 +24,7 @@ import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import java.util.ArrayList;
 
 public class ShieldsActivity extends AppCompatActivity implements
-        AddShieldDialogFragment.AddShieldNoticeDialogListener {
+        AddShieldDialogFragment.AddShieldDialogListener {
 
     private ShieldListAdapter mAdapter;
     private SQLiteDatabase mDb;

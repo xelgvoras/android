@@ -31,19 +31,19 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
     private Spinner mShieldList;
     private SQLiteDatabase mDb;
 
-    public interface AddShieldNoticeDialogListener {
+    public interface AddShieldDialogListener {
         void onDialogPositiveClick(DialogFragment dialogFragment);
     }
 
-    AddShieldNoticeDialogListener mListener;
+    AddShieldDialogListener mListener;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
         try {
-            mListener = (AddShieldNoticeDialogListener) context;
-        } catch (ClassCastException ccex) {
+            mListener = (AddShieldDialogListener) context;
+        } catch (ClassCastException exception) {
             throw new ClassCastException(context.toString()
                     + " must implement NoticeDialogListener");
         }

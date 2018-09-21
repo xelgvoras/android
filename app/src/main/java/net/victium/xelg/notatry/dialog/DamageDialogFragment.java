@@ -1,5 +1,6 @@
 package net.victium.xelg.notatry.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -165,7 +167,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     return builder.append("Внешний щит лопнул, воздействие не прошло").toString();
                 case DROP:
                     delShields("_id=" + shieldId, null);
-                    mInputDamage = mTypeDamage - shieldDefence;
+                    mInputDamage = mInputDamage - shieldDefence;
                     builder.append("Внещний щит пробит\n");
                     break;
             }
@@ -223,7 +225,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                             return builder.append("Персональный щит лопнул, воздействие не прошло").toString();
                         case DROP:
                             delShields("_id=" + shieldId, null);
-                            mInputDamage = mTypeDamage - shieldDefence;
+                            mInputDamage = mInputDamage - shieldDefence;
                             builder.append("Персональный щит пробит\n");
                             break;
                     }
@@ -232,6 +234,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 String[] columns = new String[]{"SUM(" + mColumnDefenceKey + ") as " + mColumnDefenceSumKey};
                 cursor.close();
                 cursor = getShields(columns, selection, mSelectPersonalShieldArg);
+                cursor.moveToFirst();
                 int columnShieldSum = cursor.getColumnIndex(mColumnDefenceSumKey);
                 int shieldDefence = cursor.getInt(columnShieldSum);
 

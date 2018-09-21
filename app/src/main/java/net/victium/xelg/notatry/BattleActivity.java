@@ -20,10 +20,13 @@ import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
 
 public class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
-        DamageDialogFragment.DamageDialogListener {
+        DamageDialogFragment.DamageDialogListener,
+        UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
+        View.OnClickListener {
 
     private TextView mFullNameTextView;
     private TextView mPersonalInfoTextView;
@@ -52,6 +55,7 @@ public class BattleActivity extends AppCompatActivity implements
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
+        mMagicPowerTextView.setOnClickListener(this);
         mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
         mCheckActionButton = findViewById(R.id.bt_check_damage);
         mShieldScanButton = findViewById(R.id.bt_shield_scan);
@@ -158,5 +162,24 @@ public class BattleActivity extends AppCompatActivity implements
             mTestJournal.setText(((DamageDialogFragment) dialogFragment).mResultSummary);
             mShieldListAdapter.swapCursor(getAllShields());
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if (v instanceof TextView) {
+            TextView clickedTextView = (TextView) v;
+            int textViewId = clickedTextView.getId();
+
+            if (textViewId == R.id.tv_current_power) {
+                DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
+            }
+        }
+    }
+
+    @Override
+    public void onDialogClick(DialogFragment dialogFragment) {
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
     }
 }

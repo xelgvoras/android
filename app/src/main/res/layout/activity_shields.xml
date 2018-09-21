@@ -117,23 +117,13 @@
             android:padding="8dp"
             style="@style/Base.TextAppearance.AppCompat.Title"/>
 
-        <!-- TODO(10) Отображать только цифровую клавиатуру -->
-        <EditText
-            android:id="@+id/et_new_value_power"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:inputType="number"
-            android:hint="На сколько изменить резерв?"/>
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
 
-        <Button
-            android:id="@+id/bt_edit_current_power"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="Изменить резерв силы"
-            android:onClick="onClickEditCurrentPower"/>
-
+        <!-- COMPLETED(10) Отображать только цифровую клавиатуру -->
+        <!-- В рамках xml уже не актуально, редактирование резерва реализовано через диалоговые окна -->
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

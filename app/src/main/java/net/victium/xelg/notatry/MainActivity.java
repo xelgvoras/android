@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements
         NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
         mDb = notATryDbHelper.getWritableDatabase();
 
+        // TODO(12) Добавить механизм импорта/экспорта персонажа из файла описания
         collectCharacterStatusIntoDb(mCharacter);
         setupDuskLayers(mCharacter);
 
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterDefence()));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatus(), getCharacterDefence()));
         mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatus(), getDuskLayersCursor()));
     }
 
@@ -256,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterDefence()));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatus(), getCharacterDefence()));
     }
 
     @Override

@@ -38,24 +38,28 @@ public class CharacterPreferences {
                 character.getCharacterPowerLimit());
     }
 
-    public static String getCharacterDefence(Cursor cursor) {
-        // TODO(3) На текущий момент - это заглушка, требуется реализация получения значений из базы данных
+    public static String getCharacterDefence(Cursor characterStatusCursor, Cursor shieldsCursor) {
+        // COMPLETED(3) На текущий момент - это заглушка, требуется реализация получения значений из базы данных
 
-        cursor.moveToFirst();
-        String magicDefence = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM));
+        shieldsCursor.moveToFirst();
+        String magicDefence = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM));
         if (null == magicDefence) magicDefence = "0";
-        String physicDefence = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE_SUM));
+        String physicDefence = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE_SUM));
         if (null == physicDefence) physicDefence = "0";
-        String mentalShields = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM));
+        String mentalShields = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM));
         if (null == mentalShields) mentalShields = "0";
 
-        cursor.close();
+        shieldsCursor.close();
+
+        characterStatusCursor.moveToFirst();
+        String naturalDefence = characterStatusCursor.getString(characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
 
         return String.format("Щиты \n" +
                         "\t\t\t Магическая защита: %s \n" +
                         "\t\t\t Физическая защита: %s \n" +
-                        "\t\t\t Ментальная защита: %s",
-                magicDefence, physicDefence, mentalShields);
+                        "\t\t\t Ментальная защита: %s \n" +
+                        "\t\t\t Естественная защита: %s",
+                magicDefence, physicDefence, mentalShields, naturalDefence);
     }
 
     public static String getCharacterDetails(Cursor characterStatusCursor, Cursor duskLayersCursor) {

@@ -66,7 +66,7 @@ public class BattleActivity extends AppCompatActivity implements
 
         mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mShieldListAdapter = new ShieldListAdapter(getAllShields(), this);
+        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this);
         mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
         mCharacter = new Character(this);
@@ -83,7 +83,7 @@ public class BattleActivity extends AppCompatActivity implements
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 long id = (long) viewHolder.itemView.getTag();
                 removeShield(id);
-                mShieldListAdapter.swapCursor(getAllShields());
+                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
         }).attachToRecyclerView(mActiveShieldsRecyclerView);
     }
@@ -91,7 +91,7 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mShieldListAdapter.swapCursor(getAllShields());
+        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
     }
 
     @Override
@@ -119,13 +119,13 @@ public class BattleActivity extends AppCompatActivity implements
         );
     }
 
-    private Cursor getAllShields() {
+    private Cursor getAllShields(String[] columns, String selection, String[] selectionArgs) {
 
         return mDb.query(
                 NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                null,
-                null,
-                null,
+                columns,
+                selection,
+                selectionArgs,
                 null,
                 null,
                 NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC"
@@ -153,14 +153,87 @@ public class BattleActivity extends AppCompatActivity implements
         dialogFragment.show(getSupportFragmentManager(), "CheckDamageDialogFragment");
     }
 
+    public void onClickScanShields(View view) {
+        StringBuilder builder = new StringBuilder();
+
+        String[] columns = new String[]{"MAX(" + NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + ") as maxRange"};
+        Cursor cursor = getAllShields(columns, null, null);
+        cursor.moveToFirst();
+        int columnMaxRange = cursor.getColumnIndex("maxRange");
+        int maxRange = cursor.getInt(columnMaxRange);
+
+        for (int i = maxRange; i >= 0; i--) {
+            boolean isStop = false;
+            String[] selectionArgs = new String[]{String.valueOf(i)};
+            cursor = getAllShields(null, NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + "=?", selectionArgs);
+            int columnName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
+            int columnType = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_TYPE);
+            int columnCost = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST);
+            String shieldName;
+            String shieldType;
+            int shieldCost;
+            String shieldLevel;
+
+            for (int j = 0; j < cursor.getCount(); j++) {
+                cursor.moveToPosition(j);
+                shieldName = cursor.getString(columnName);
+                shieldType = cursor.getString(columnType);
+                shieldCost = cursor.getInt(columnCost);
+
+                if (shieldName.equals(getString(R.string.shields_cloack_of_darkness))) {
+                    mTestJournal.setText("Зондирование ничего не показывает");
+                    return;
+                }
+
+                shieldLevel = getShieldLevel(shieldCost);
+
+                builder.append(shieldName).append(": ").append(shieldLevel).append("\n");
+
+                if (shieldType.equals("маг") || shieldType.equals("унив")) {
+                    isStop = true;
+                }
+            }
+
+            if (isStop) {
+                mTestJournal.setText(builder.toString());
+                return;
+            }
+        }
+
+        mTestJournal.setText(builder.toString());
+    }
+
+    private String getShieldLevel(int shieldCost) {
+
+        if (shieldCost < 4) {
+            return "7го уровня";
+        } else if (shieldCost < 8) {
+            return "7го или 6го уровня";
+        } else if (shieldCost < 16) {
+            return "6го или 5го уровня";
+        } else if (shieldCost < 32) {
+            return "5го или 4го уровня";
+        } else if (shieldCost < 64) {
+            return "4го или 3го уровня";
+        } else if (shieldCost < 128) {
+            return "3го или 2го уровня";
+        } else if (shieldCost < 256) {
+            return "2го или 1го уровня";
+        } else if (shieldCost < 512) {
+            return "1го уровня";
+        } else {
+            return "0го уровня";
+        }
+    }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
 
         if (dialogFragment instanceof AddShieldDialogFragment) {
-            mShieldListAdapter.swapCursor(getAllShields());
+            mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         } else if (dialogFragment instanceof DamageDialogFragment) {
             mTestJournal.setText(((DamageDialogFragment) dialogFragment).mResultSummary);
-            mShieldListAdapter.swapCursor(getAllShields());
+            mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         }
     }
 

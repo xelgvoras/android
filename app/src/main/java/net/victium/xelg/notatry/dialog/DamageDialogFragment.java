@@ -87,7 +87,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         mColumnDefenceSumKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM;
 
         builder.setTitle("Входящее воздействие")
-                .setMessage("Укажите тип и силу воздействия, в случае необходимости - выберете заклинение из списка")
+                .setMessage("Укажите тип и силу воздействия, в случае необходимости - выберите заклинение из списка")
                 .setView(view)
                 .setPositiveButton("проверить", new DialogInterface.OnClickListener() {
                     @Override

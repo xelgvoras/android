@@ -161,7 +161,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         ));
         shieldArrayList.add(new Shield(
                 getString(R.string.shields_cloack_of_darkness),
-                "особый",
+                "маг",
                 0,
                 0,
                 false,

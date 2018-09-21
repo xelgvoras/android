@@ -160,7 +160,8 @@
                     android:id="@+id/bt_shield_scan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Скан щитов"/>
+                    android:hint="Скан щитов"
+                    android:onClick="onClickScanShields"/>
 
             </LinearLayout>
 

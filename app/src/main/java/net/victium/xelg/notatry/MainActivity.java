@@ -242,6 +242,10 @@ public class MainActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
+        } else if (itemId == R.id.action_import_export) {
+            Intent intent = new Intent(this, ImportExportActivity.class);
+            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

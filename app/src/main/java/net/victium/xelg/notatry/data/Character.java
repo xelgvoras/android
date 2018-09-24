@@ -246,6 +246,15 @@ public class Character {
         return characterSide;
     }
 
+    public String getCharacterSideToString() {
+
+        if (isCharacterSide()) {
+            return mContext.getString(R.string.pref_side_light_value);
+        } else {
+            return mContext.getString(R.string.pref_side_dark_value);
+        }
+    }
+
     public void setCharacterSide(SharedPreferences sharedPreferences) {
         String sideKey = mContext.getString(R.string.pref_side_key);
         String sideDefault = mContext.getString(R.string.pref_side_light_value);

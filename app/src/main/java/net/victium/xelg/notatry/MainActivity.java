@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements
         mDb = notATryDbHelper.getWritableDatabase();
 
         // TODO(12) Добавить механизм импорта/экспорта персонажа из файла описания
+        // TODO(14) Добавить логирование действий и вывод журнала логов
         collectCharacterStatusIntoDb(mCharacter);
         setupDuskLayers(mCharacter);
 

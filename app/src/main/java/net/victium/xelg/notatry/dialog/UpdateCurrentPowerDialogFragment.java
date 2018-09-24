@@ -105,6 +105,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
             Toast.makeText(getActivity(), "Вы не можете превысить свой лимит силы", Toast.LENGTH_LONG).show();
             newValue = mPowerLimit;
         } else if (newValue < 0) {
+            // TODO(13) Выводить только сообщение с ошибкой, но не тратить сам резерв (?)
             Toast.makeText(getActivity(), "Резерв не может быть отрицательным", Toast.LENGTH_LONG).show();
             newValue = 0;
         }

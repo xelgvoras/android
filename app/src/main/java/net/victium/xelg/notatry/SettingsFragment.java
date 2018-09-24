@@ -14,7 +14,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = String.valueOf(value);
-        String key = preference.getKey();
 
         if (preference instanceof ListPreference) {
             ListPreference listPreference = (ListPreference) preference;
@@ -79,8 +78,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         Toast errorMessage = Toast.makeText(getContext(), "Вводить можно только положительные целые числа", Toast.LENGTH_LONG);
 
-        //COMPLETED(5) Добавить проверку ввода значений, выходящих за предел типа
-        //COMPLETED(6) Добавить проверку ввода минимальных и максимальных значений запаса силы от уровня игрока
+        // COMPLETED(5) Добавить проверку ввода значений, выходящих за предел типа
+        // COMPLETED(6) Добавить проверку ввода минимальных и максимальных значений запаса силы от уровня игрока
+        // TODO(9) Рефакторинг проверки вводимых значений
+        // - поправить текст ошибки
+        // - при изменении возраста, проверяет указанный размер силы (исправить)
 
         String ageKey = getString(R.string.pref_age_key);
         String powerKey = getString(R.string.pref_power_key);

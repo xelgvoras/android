@@ -70,7 +70,7 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
         }
     }
 
-    public class ShieldViewHolder extends RecyclerView.ViewHolder {
+    class ShieldViewHolder extends RecyclerView.ViewHolder {
 
         TextView shieldNameTextView;
         TextView shieldCostTextView;
@@ -79,7 +79,7 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
         TextView mentalDefenceTextView;
         TextView shieldRangeTextView;
 
-        public ShieldViewHolder(View itemView) {
+        ShieldViewHolder(View itemView) {
             super(itemView);
             shieldNameTextView = itemView.findViewById(R.id.tv_shield_name);
             shieldCostTextView = itemView.findViewById(R.id.tv_shield_cost);

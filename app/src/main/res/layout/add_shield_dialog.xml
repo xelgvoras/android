@@ -10,22 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="start"
-        android:hint="Какое количество у.е. вложить в щит?"
+        android:inputType="number"
+        android:hint="сила щита"
         android:padding="8dp"/>
 
     <Spinner
         android:id="@+id/sp_shields_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"/>
-
-    <Button
-        android:id="@+id/bt_add_shield_activity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Повесить щит"
-        android:onClick="onClickAddShield"
         android:padding="8dp"/>
 
 </LinearLayout>

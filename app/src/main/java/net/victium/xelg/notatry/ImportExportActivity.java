@@ -1,10 +1,15 @@
 package net.victium.xelg.notatry;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +26,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -29,6 +35,9 @@ public class ImportExportActivity extends AppCompatActivity {
 
     private SQLiteDatabase mDb;
     private Character mCharacter;
+    private File mDefaultPath;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 42;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +48,8 @@ public class ImportExportActivity extends AppCompatActivity {
         mDb = notATryDbHelper.getWritableDatabase();
 
         mCharacter = new Character(this);
+
+        mDefaultPath = new File(Environment.getExternalStorageDirectory() + "/notatry");
     }
 
     public void onClickExportCharacter(View view) {
@@ -80,11 +91,70 @@ public class ImportExportActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String testJson = jsonExport.toString();
+        String exportCharacter = jsonExport.toString();
 
-        OpenFileDialogFragment openFileDialogFragment = new OpenFileDialogFragment();
-        openFileDialogFragment.show(getSupportFragmentManager(), "ChooseDirectoryToSaveFile");
+        checkWriteExternalStoragePermission();
 
+        if (isExternalStorageWritable()) {
+            if (!mDefaultPath.exists()) {
+                mDefaultPath.mkdirs();
+            }
+
+            File fileName = new File(mDefaultPath + "/" + characterName + ".json");
+            if (!fileName.exists()) {
+                try {
+                    fileName.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            try {
+                FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+                fileOutputStream.write(exportCharacter.getBytes());
+                fileOutputStream.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Toast.makeText(this, "Персонаж успешно экспортирован в файл: " + fileName.toString(),
+                    Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Нет доступа к внутренней памяти", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public void onClickImportCharacter(View view) {}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
+
+            if (!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                Toast.makeText(this, "Разрешение не предоставлено, невозможно экспортировать персонажа",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void checkWriteExternalStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Toast.makeText(this, "Для экспорта персонажа нужны права на запись в внутреннюю память",
+                        Toast.LENGTH_LONG).show();
+            }
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_EXTERNAL_STORAGE);
+        }
     }
 
     private JSONArray getCurrentShieldsToJSON() {
@@ -93,7 +163,8 @@ public class ImportExportActivity extends AppCompatActivity {
         JSONObject jsonObject;
 
         Cursor cursor = getCurrentShield();
-        int columnCount = cursor.getColumnCount();
+        int columnName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
+        int columnCost = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST);
 
         if (!cursor.moveToFirst()) {
             return null;
@@ -102,12 +173,11 @@ public class ImportExportActivity extends AppCompatActivity {
         while (hasShields) {
             jsonObject = new JSONObject();
 
-            for (int i = 0; i < columnCount; i++) {
-                try {
-                    jsonObject.put(cursor.getColumnName(i), cursor.getString(i));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            try {
+                jsonObject.put("name", cursor.getString(columnName));
+                jsonObject.put("cost", cursor.getString(columnCost));
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
 
             jsonArray.put(jsonObject);
@@ -118,6 +188,14 @@ public class ImportExportActivity extends AppCompatActivity {
         }
 
         return jsonArray;
+    }
+
+    private boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
     }
 
     private Cursor getCharacterStatus() {

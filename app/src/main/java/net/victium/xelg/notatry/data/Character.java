@@ -3,6 +3,7 @@ package net.victium.xelg.notatry.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceScreen;
 
 import net.victium.xelg.notatry.R;
 
@@ -156,6 +157,10 @@ public class Character {
         this.characterName = sharedPreferences.getString(nameKey, nameDefault);
     }
 
+    public void setCharacterName(String characterName) {
+        this.characterName = characterName;
+    }
+
     public String getCharacterType() {
         return characterType;
     }
@@ -168,6 +173,10 @@ public class Character {
         setupNaturalDefence();
     }
 
+    public void setCharacterType(String characterType) {
+        this.characterType = characterType;
+    }
+
     public int getCharacterAge() {
         return characterAge;
     }
@@ -176,6 +185,10 @@ public class Character {
         String ageKey = mContext.getString(R.string.pref_age_key);
         String ageDefault = mContext.getString(R.string.pref_age_default);
         this.characterAge = Integer.parseInt(sharedPreferences.getString(ageKey, ageDefault));
+    }
+
+    public void setCharacterAge(int characterAge) {
+        this.characterAge = characterAge;
     }
 
     public int getCharacterLevel() {
@@ -191,6 +204,13 @@ public class Character {
         setupReactionsNumber();
     }
 
+    public void setCharacterLevel(int characterLevel) {
+        this.characterLevel = characterLevel;
+        setupPersonalShieldsLimit();
+        setupAmuletsLimit();
+        setupReactionsNumber();
+    }
+
     public int getCharacterPowerLimit() {
         return characterPowerLimit;
     }
@@ -199,6 +219,11 @@ public class Character {
         String powerKey = mContext.getString(R.string.pref_power_key);
         String powerDefault = mContext.getString(R.string.pref_power_default);
         this.characterPowerLimit = Integer.parseInt(sharedPreferences.getString(powerKey, powerDefault));
+        setupDuskLayerLimit();
+    }
+
+    public void setCharacterPowerLimit(int characterPowerLimit) {
+        this.characterPowerLimit = characterPowerLimit;
         setupDuskLayerLimit();
     }
 
@@ -260,5 +285,10 @@ public class Character {
         String sideDefault = mContext.getString(R.string.pref_side_light_value);
         String sideString = sharedPreferences.getString(sideKey, sideDefault);
         this.characterSide = sideString.equals(sideDefault);
+    }
+
+    public void setCharacterSide(String characterSide) {
+        String sideDefault = mContext.getString(R.string.pref_side_light_value);
+        this.characterSide = characterSide.equals(sideDefault);
     }
 }

@@ -1,7 +1,9 @@
 package net.victium.xelg.notatry.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -21,24 +23,59 @@ import java.util.List;
 
 public class OpenFileDialogFragment extends DialogFragment {
 
+    private File mDefaultPath;
+    public File mSelectedFileName;
+
+    public interface OpenFileDialogListener {
+        void onDialogFileSelected(DialogFragment dialogFragment);
+    }
+
+    OpenFileDialogListener mListener;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            mListener = (OpenFileDialogListener) context;
+        } catch (ClassCastException exception) {
+            throw new ClassCastException(context.toString()
+                    + " must implement NoticeDialogListener");
+        }
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        String currentPath = Environment.getExternalStorageDirectory().getPath();
+        mDefaultPath = new File(Environment.getExternalStorageDirectory() + "/notatry");
 
-        builder.setPositiveButton("ок", null)
-                .setNegativeButton("отмена", null)
-                .setAdapter(new FileAdapter(getActivity(), getFiles(currentPath)), null);
+        if (!mDefaultPath.exists()) {
+            mDefaultPath.mkdirs();
+        }
+
+        builder.setTitle("Выберете файл для импорта")
+                .setNegativeButton("отмена", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        return;
+                    }
+                })
+                .setAdapter(new FileAdapter(getActivity(), getFiles(mDefaultPath)), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mSelectedFileName = getFiles(mDefaultPath).get(which).getAbsoluteFile();
+                        mListener.onDialogFileSelected(OpenFileDialogFragment.this);
+                    }
+                });
 
         return builder.create();
     }
 
-    private List<File> getFiles(String directoryPath) {
-        File directory = new File(directoryPath);
-        List<File> fileList = Arrays.asList(directory.listFiles());
+    private List<File> getFiles(File directoryPath) {
+        List<File> fileList = Arrays.asList(directoryPath.listFiles());
         Collections.sort(fileList, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {

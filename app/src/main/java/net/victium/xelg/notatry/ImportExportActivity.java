@@ -3,15 +3,20 @@ package net.victium.xelg.notatry;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
+import android.support.v7.preference.PreferenceScreen;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,23 +24,29 @@ import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.OpenFileDialogFragment;
+import net.victium.xelg.notatry.utilities.ImportCharacterJsonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class ImportExportActivity extends AppCompatActivity {
+public class ImportExportActivity extends AppCompatActivity implements
+        OpenFileDialogFragment.OpenFileDialogListener {
 
     private SQLiteDatabase mDb;
     private Character mCharacter;
     private File mDefaultPath;
+    private File mSelectedFile;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 42;
 
@@ -113,8 +124,6 @@ public class ImportExportActivity extends AppCompatActivity {
                 FileOutputStream fileOutputStream = new FileOutputStream(fileName);
                 fileOutputStream.write(exportCharacter.getBytes());
                 fileOutputStream.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -127,7 +136,11 @@ public class ImportExportActivity extends AppCompatActivity {
 
     }
 
-    public void onClickImportCharacter(View view) {}
+    public void onClickImportCharacter(View view) {
+
+        DialogFragment dialogFragment = new OpenFileDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "OpenFileDialogFragment");
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -192,10 +205,7 @@ public class ImportExportActivity extends AppCompatActivity {
 
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     private Cursor getCharacterStatus() {
@@ -222,5 +232,33 @@ public class ImportExportActivity extends AppCompatActivity {
                 null,
                 null
         );
+    }
+
+    @Override
+    public void onDialogFileSelected(DialogFragment dialogFragment) {
+
+        if (dialogFragment instanceof OpenFileDialogFragment) {
+            mSelectedFile = ((OpenFileDialogFragment) dialogFragment).mSelectedFileName;
+        }
+
+        String importCharacter = "";
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(mSelectedFile));
+            importCharacter = bufferedReader.readLine();
+            bufferedReader.close();
+        } catch (IOException e) {
+            Toast.makeText(this, "Не удалось прочитать файл", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            return;
+        }
+
+        try {
+            ImportCharacterJsonUtils.importCharacterFromJson(this, importCharacter);
+            Toast.makeText(this, "Персонаж успешно импортирован из файла: " + mSelectedFile, Toast.LENGTH_LONG).show();
+        } catch (JSONException e) {
+            Toast.makeText(this, "Импорт не удался, почему-то", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 }

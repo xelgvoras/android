@@ -1,9 +1,6 @@
 package net.victium.xelg.notatry;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,9 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.preference.PreferenceScreen;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,13 +26,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class ImportExportActivity extends AppCompatActivity implements
@@ -54,6 +45,7 @@ public class ImportExportActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import_export);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
         mDb = notATryDbHelper.getWritableDatabase();
@@ -108,13 +100,19 @@ public class ImportExportActivity extends AppCompatActivity implements
 
         if (isExternalStorageWritable()) {
             if (!mDefaultPath.exists()) {
-                mDefaultPath.mkdirs();
+                if (!mDefaultPath.mkdirs()) {
+                    Toast.makeText(this, "Не удалось создать каталог: " + mDefaultPath, Toast.LENGTH_LONG).show();
+                    return;
+                }
             }
 
             File fileName = new File(mDefaultPath + "/" + characterName + ".json");
             if (!fileName.exists()) {
                 try {
-                    fileName.createNewFile();
+                    if (!fileName.createNewFile()) {
+                        Toast.makeText(this, "Не удалось создать файл: " + fileName, Toast.LENGTH_LONG).show();
+                        return;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -153,6 +151,17 @@ public class ImportExportActivity extends AppCompatActivity implements
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void checkWriteExternalStoragePermission() {
@@ -208,19 +217,6 @@ public class ImportExportActivity extends AppCompatActivity implements
         return Environment.MEDIA_MOUNTED.equals(state);
     }
 
-    private Cursor getCharacterStatus() {
-
-        return mDb.query(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
-
     private Cursor getCurrentShield () {
 
         return mDb.query(
@@ -241,7 +237,7 @@ public class ImportExportActivity extends AppCompatActivity implements
             mSelectedFile = ((OpenFileDialogFragment) dialogFragment).mSelectedFileName;
         }
 
-        String importCharacter = "";
+        String importCharacter;
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(mSelectedFile));

@@ -24,7 +24,6 @@ public class ShieldsActivity extends AppCompatActivity implements
 
     private ShieldListAdapter mAdapter;
     private SQLiteDatabase mDb;
-    private RecyclerView mActiveShieldsRecyclerView;
     private TextView mCurrentPower;
     private Cursor mCursor;
 
@@ -33,11 +32,11 @@ public class ShieldsActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shields);
 
-        mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
+        RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mCurrentPower = findViewById(R.id.tv_current_power);
         mCurrentPower.setOnClickListener(this);
 
-        mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
 
@@ -46,7 +45,7 @@ public class ShieldsActivity extends AppCompatActivity implements
         mCursor = getAllShields();
 
         mAdapter = new ShieldListAdapter(mCursor, this);
-        mActiveShieldsRecyclerView.setAdapter(mAdapter);
+        activeShieldsRecyclerView.setAdapter(mAdapter);
 
         mCursor.close();
         mCursor = getCharacterStatus();
@@ -66,7 +65,7 @@ public class ShieldsActivity extends AppCompatActivity implements
                 removeShield(id);
                 mAdapter.swapCursor(getAllShields());
             }
-        }).attachToRecyclerView(mActiveShieldsRecyclerView);
+        }).attachToRecyclerView(activeShieldsRecyclerView);
 
         // COMPLETED(11) Сделать изменение резерва через диалоговое окно
     }

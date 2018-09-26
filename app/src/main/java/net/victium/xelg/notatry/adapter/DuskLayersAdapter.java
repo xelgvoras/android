@@ -35,12 +35,12 @@ public class DuskLayersAdapter extends RecyclerView.Adapter<DuskLayersAdapter.Du
         return 0;
     }
 
-    public class DuskViewHolder extends RecyclerView.ViewHolder {
+    class DuskViewHolder extends RecyclerView.ViewHolder {
         TextView duskLayerTextView;
         TextView duskRoundTextView;
         TextView duskTimeTextView;
 
-        public DuskViewHolder(View itemView) {
+        DuskViewHolder(View itemView) {
             super(itemView);
             duskLayerTextView = itemView.findViewById(R.id.tv_dusk_layer);
             duskRoundTextView = itemView.findViewById(R.id.tv_dusk_rounds);

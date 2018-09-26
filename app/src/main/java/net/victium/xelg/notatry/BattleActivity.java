@@ -3,14 +3,12 @@ package net.victium.xelg.notatry;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
@@ -33,9 +31,6 @@ public class BattleActivity extends AppCompatActivity implements
     private TextView mMagicPowerTextView;
     private RecyclerView mActiveShieldsRecyclerView;
     private RecyclerView mBattleJournalRecyclerView;
-    private Button mCheckActionButton;
-    private Button mShieldScanButton;
-    private FloatingActionButton mAddShieldActionButton;
 
     /* Для тестов */
     private TextView mTestJournal;
@@ -57,9 +52,6 @@ public class BattleActivity extends AppCompatActivity implements
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
         mMagicPowerTextView.setOnClickListener(this);
         mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
-        mCheckActionButton = findViewById(R.id.bt_check_damage);
-        mShieldScanButton = findViewById(R.id.bt_shield_scan);
-        mAddShieldActionButton = findViewById(R.id.fab_add_shield);
 
         /* Для тестов */
         mTestJournal = findViewById(R.id.tv_test_journal);

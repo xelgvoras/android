@@ -1,6 +1,5 @@
 package net.victium.xelg.notatry.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,7 +17,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import net.victium.xelg.notatry.BattleActivity;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
 import net.victium.xelg.notatry.data.NotATryContract;

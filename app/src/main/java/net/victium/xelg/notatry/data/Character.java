@@ -3,7 +3,6 @@ package net.victium.xelg.notatry.data;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.preference.PreferenceScreen;
 
 import net.victium.xelg.notatry.R;
 

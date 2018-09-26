@@ -1,6 +1,5 @@
 package net.victium.xelg.notatry.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.Arrays;
@@ -53,7 +53,9 @@ public class OpenFileDialogFragment extends DialogFragment {
         mDefaultPath = new File(Environment.getExternalStorageDirectory() + "/notatry");
 
         if (!mDefaultPath.exists()) {
-            mDefaultPath.mkdirs();
+            if (!mDefaultPath.mkdirs()) {
+                Toast.makeText(getActivity(), "Не удалось создать каталог для импорта: " + mDefaultPath, Toast.LENGTH_LONG).show();
+            }
         }
 
         builder.setTitle("Выберете файл для импорта")
@@ -94,7 +96,7 @@ public class OpenFileDialogFragment extends DialogFragment {
 
     private class FileAdapter extends ArrayAdapter<File> {
 
-        public FileAdapter(@NonNull Context context, List<File> files) {
+        FileAdapter(@NonNull Context context, List<File> files) {
             super(context, android.R.layout.simple_list_item_1, files);
         }
 

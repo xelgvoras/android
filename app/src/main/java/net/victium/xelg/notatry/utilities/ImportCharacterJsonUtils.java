@@ -64,7 +64,15 @@ public final class ImportCharacterJsonUtils  {
                 .putString(characterSideKey, characterJson.getString(CHARACTER_SIDE))
                 .apply();
 
+        if (!importJson.getJSONObject(SHIELD_BLOCK).has(SHIELD_LIST)) {
+            return;
+        }
+
         JSONArray shieldsJsonArray = importJson.getJSONObject(SHIELD_BLOCK).getJSONArray(SHIELD_LIST);
+
+        if (shieldsJsonArray.length() == 0) {
+            return;
+        }
 
         ArrayList<Shield> shieldArray = createShieldArrayList(context);
 

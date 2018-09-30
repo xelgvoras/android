@@ -1,10 +1,20 @@
 package net.victium.xelg.notatry.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class NotATryContract {
 
+    public static final String CONTENT_AUTHORITY = "net.victium.xelg.notatry";
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final String CHARACTER_STATUS_PATH = "characterStatus";
+    public static final String DUSK_LAYERS_PATH = "duskLayers";
+    public static final String ACTIVE_SHIELDS_PATH = "activeShields";
+
     public static final class CharacterStatusEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(CHARACTER_STATUS_PATH).build();
 
         public static final String TABLE_NAME = "characterStatus";
         public static final String COLUMN_CURRENT_POWER = "currentPower";
@@ -20,12 +30,18 @@ public class NotATryContract {
 
     public static final class DuskLayersSummaryEntry implements BaseColumns {
 
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(DUSK_LAYERS_PATH).build();
+
         public static final String TABLE_NAME = "duskLayers";
         public static final String COLUMN_LAYER = "layer";
         public static final String COLUMN_ROUNDS = "rounds";
     }
 
     public static final class ActiveShieldsEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(ACTIVE_SHIELDS_PATH).build();
 
         public static final String TABLE_NAME = "activeShields";
         public static final String COLUMN_NAME = "name";

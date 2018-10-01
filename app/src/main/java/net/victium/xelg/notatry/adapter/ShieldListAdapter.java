@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.R;
@@ -17,9 +19,16 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
     private Cursor mCursor;
     private Context mContext;
 
-    public ShieldListAdapter(Cursor mCursor, Context mContext) {
+    private final ShieldListAdapterOnClickHandler mClickHandler;
+
+    public interface  ShieldListAdapterOnClickHandler {
+        void onClick(long itemId);
+    }
+
+    public ShieldListAdapter(Cursor mCursor, Context mContext, ShieldListAdapterOnClickHandler clickHandler) {
         this.mCursor = mCursor;
         this.mContext = mContext;
+        mClickHandler = clickHandler;
     }
 
     @NonNull
@@ -70,7 +79,7 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
         }
     }
 
-    class ShieldViewHolder extends RecyclerView.ViewHolder {
+    class ShieldViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView shieldNameTextView;
         TextView shieldCostTextView;
@@ -87,6 +96,14 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
             physicDefenceTextView = itemView.findViewById(R.id.tv_physic_defence);
             mentalDefenceTextView = itemView.findViewById(R.id.tv_mental_defence);
             shieldRangeTextView = itemView.findViewById(R.id.tv_shield_range);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            long itemId = (long) v.getTag();
+            mClickHandler.onClick(itemId);
         }
     }
 }

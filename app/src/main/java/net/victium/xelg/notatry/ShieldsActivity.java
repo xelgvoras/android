@@ -2,6 +2,8 @@ package net.victium.xelg.notatry;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,23 +11,27 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 
 public class ShieldsActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        ShieldListAdapter.ShieldListAdapterOnClickHandler,
+        UpdateShieldDialogFragment.UpdateShieldDialogListener {
 
     private ShieldListAdapter mAdapter;
-    private SQLiteDatabase mDb;
     private TextView mCurrentPower;
-    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +44,10 @@ public class ShieldsActivity extends AppCompatActivity implements
 
         activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
-
-        mDb = notATryDbHelper.getWritableDatabase();
-
-        mCursor = getAllShields();
-
-        mAdapter = new ShieldListAdapter(mCursor, this);
+        mAdapter = new ShieldListAdapter(getAllShields(), this, this);
         activeShieldsRecyclerView.setAdapter(mAdapter);
 
-        mCursor.close();
-        mCursor = getCharacterStatus();
-        setupCurrentPower(mCursor);
+        setupCurrentPower(getCharacterStatus());
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -67,6 +65,8 @@ public class ShieldsActivity extends AppCompatActivity implements
             }
         }).attachToRecyclerView(activeShieldsRecyclerView);
 
+
+
         // COMPLETED(11) Сделать изменение резерва через диалоговое окно
     }
 
@@ -79,31 +79,17 @@ public class ShieldsActivity extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mCursor.close();
     }
 
     private Cursor getAllShields() {
-        return mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC"
-        );
+        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
+        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null, null, null, sortOrder);
     }
 
     private Cursor getCharacterStatus() {
-        return mDb.query(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        return getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
     }
 
     private void setupCurrentPower(Cursor cursor) {
@@ -111,15 +97,13 @@ public class ShieldsActivity extends AppCompatActivity implements
         int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
         int powerLimit = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT));
         mCurrentPower.setText(String.format("Резерв силы: %s/%s", String.valueOf(currentPower), String.valueOf(powerLimit)));
+        cursor.close();
     }
 
     private void removeShield(long id) {
+        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
 
-        mDb.delete(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                NotATryContract.ActiveShieldsEntry._ID + "=" + id,
-                null
-        );
+        getContentResolver().delete(uri, null, null);
     }
 
     public void onClickAddShield(View view) {
@@ -150,5 +134,16 @@ public class ShieldsActivity extends AppCompatActivity implements
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
             }
         }
+    }
+
+    @Override
+    public void onClick(long itemId) {
+        Bundle args = new Bundle();
+        String stringItemId = String.valueOf(itemId);
+        args.putString("itemId", stringItemId);
+
+        DialogFragment dialogFragment = new UpdateShieldDialogFragment();
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getSupportFragmentManager(), "UpdateShieldPower");
     }
 }

@@ -71,6 +71,8 @@ public class NotATryContentProvider extends ContentProvider {
 
         int match = sUriMatcher.match(uri);
         Cursor retCursor;
+        String mSelection;
+        String[] mSelectionArgs;
 
         switch (match) {
             case CHARACTER_STATUS:
@@ -100,10 +102,23 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+            case ACTIVE_SHIELDS_WITH_ID:
+                String shieldId = uri.getPathSegments().get(1);
+                mSelection = NotATryContract.ActiveShieldsEntry._ID + "=?";
+                mSelectionArgs = new String[]{shieldId};
+
+                retCursor = db.query(NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                        null,
+                        mSelection,
+                        mSelectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
             case ACTIVE_SHIELDS_WITH_NAME:
                 String shieldName = uri.getPathSegments().get(1);
-                String mSelection = NotATryContract.ActiveShieldsEntry.COLUMN_NAME + "=?";
-                String[] mSelectionArgs = new String[]{shieldName};
+                mSelection = NotATryContract.ActiveShieldsEntry.COLUMN_NAME + "=?";
+                mSelectionArgs = new String[]{shieldName};
 
                 retCursor = db.query(NotATryContract.ActiveShieldsEntry.TABLE_NAME,
                         null,

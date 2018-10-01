@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.data.Character;
 
 public class MainActivity extends AppCompatActivity implements
@@ -38,9 +36,6 @@ public class MainActivity extends AppCompatActivity implements
     Button mShieldsButton;
     Button mBattleButton;
 
-    private SQLiteDatabase mDb;
-    private Cursor mCharacterStatusCursor;
-    private Cursor mDuskLayersCursor;
     private Character mCharacter;
 
     @Override
@@ -63,9 +58,6 @@ public class MainActivity extends AppCompatActivity implements
         mBattleButton.setOnClickListener(this);
 
         mCharacter = new Character(this);
-
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
-        mDb = notATryDbHelper.getWritableDatabase();
 
         // TODO(12) Добавить механизм импорта/экспорта персонажа из файла описания
         // TODO(14) Добавить логирование действий и вывод журнала логов
@@ -161,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements
 
             getContentResolver().insert(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI, contentValues);
         }
+
+        cursor.close();
     }
 
     private void updateDuskLayers(Character character) {
@@ -236,11 +230,12 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null, null, null, null);
+        Cursor cursor = getCharacterStatusCursor();
 
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, cursor));
         mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(cursor, getCharacterDefence()));
+
+        cursor.close();
     }
 
     @Override
@@ -248,8 +243,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
-        mCharacterStatusCursor.close();
-        mDuskLayersCursor.close();
     }
 
     @Override
@@ -323,8 +316,9 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             updateCharacterStatus(contentValues);
-
             updateDuskLayers(mCharacter);
+
+            cursor.close();
         }
 
         setupSharedPreferences();

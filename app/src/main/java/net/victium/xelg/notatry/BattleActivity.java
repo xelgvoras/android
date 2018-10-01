@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.Character;
@@ -19,12 +20,15 @@ import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 
 public class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
         DamageDialogFragment.DamageDialogListener,
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        ShieldListAdapter.ShieldListAdapterOnClickHandler,
+        UpdateShieldDialogFragment.UpdateShieldDialogListener {
 
     private TextView mFullNameTextView;
     private TextView mPersonalInfoTextView;
@@ -58,7 +62,7 @@ public class BattleActivity extends AppCompatActivity implements
 
         mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this);
+        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
         mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
         mCharacter = new Character(this);
@@ -221,7 +225,7 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
 
-        if (dialogFragment instanceof AddShieldDialogFragment) {
+        if (dialogFragment instanceof AddShieldDialogFragment || dialogFragment instanceof UpdateShieldDialogFragment) {
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         } else if (dialogFragment instanceof DamageDialogFragment) {
             mTestJournal.setText(((DamageDialogFragment) dialogFragment).mResultSummary);
@@ -246,5 +250,16 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+    }
+
+    @Override
+    public void onClick(long itemId) {
+        Bundle args = new Bundle();
+        String stringItemId = String.valueOf(itemId);
+        args.putString("itemId", stringItemId);
+
+        DialogFragment dialogFragment = new UpdateShieldDialogFragment();
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getSupportFragmentManager(), "UpdateShieldPower");
     }
 }

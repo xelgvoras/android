@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.data.CharacterPreferences;
@@ -50,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_character_magic_power);
         mDefenceTextView = findViewById(R.id.tv_character_defence);
-        // TODO(1) Сделать раскрывающееся текстовое поле
         mCharacterDetailsTextView = findViewById(R.id.tv_character_details);
         mDuskLayersRecyclerView = findViewById(R.id.rv_dusk_layers);
         mShieldsButton = findViewById(R.id.b_shields);
@@ -82,16 +83,17 @@ public class MainActivity extends AppCompatActivity implements
 
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatus(), getCharacterDefence()));
-        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatus(), getDuskLayersCursor()));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatusCursor()));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatusCursor(), getCharacterDefence()));
+        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatusCursor(), getDuskLayersCursor()));
     }
 
     private void collectCharacterStatusIntoDb(Character character) {
 
-        mCharacterStatusCursor = swapCursor(mCharacterStatusCursor, getCharacterStatus());
+        Cursor cursor = getCharacterStatusCursor();
 
-        if (mCharacterStatusCursor.moveToFirst()) {
+        if (cursor.moveToFirst()) {
+            cursor.close();
             return;
         }
 
@@ -106,97 +108,85 @@ public class MainActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, character.getCharacterNaturalDefence());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, character.getCharacterReactionsNumber());
 
-        mDb.insert(NotATryContract.CharacterStatusEntry.TABLE_NAME, null, contentValues);
+        Uri uri = getContentResolver().insert(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues);
+
+        if (uri != null) {
+            String message = "Персонаж настроен:\n";
+            Toast.makeText(this, message + uri.toString(), Toast.LENGTH_LONG).show();
+        }
+
+        cursor.close();
     }
 
     private void updateCharacterStatus(ContentValues contentValues){
 
-        mCharacterStatusCursor = swapCursor(mCharacterStatusCursor, getCharacterStatus());
+        int updatedRows = getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                contentValues, null, null);
 
-        mCharacterStatusCursor.moveToFirst();
-        long id = mCharacterStatusCursor.getLong(mCharacterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry._ID));
-
-        mDb.update(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                contentValues,
-                NotATryContract.CharacterStatusEntry._ID + "=" + id,
-                null
-        );
+        if (updatedRows == 0) {
+            Toast.makeText(this, "Не удалось обновить информацию о персонаже в БД", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void setupDuskLayers(Character character) {
 
-        boolean isTableEmpty = true;
+        Cursor cursor = getDuskLayersCursor();
 
-        mDuskLayersCursor = swapCursor(mDuskLayersCursor, getDuskLayersCursor());
-
-        if (mDuskLayersCursor.moveToFirst()) {
-            isTableEmpty = false;
+        if (cursor.moveToFirst()) {
+            cursor.close();
+            return;
         }
 
         ContentValues contentValues = new ContentValues();
 
-        int[] stsForLayers = new int[]{32,128,512,512,128,32};
-        int powerLimit = character.getCharacterPowerLimit();
+        float[] stsForLayers = new float[]{32f,128f,512f,512f,128f,32f};
+        float powerLimit = (float) character.getCharacterPowerLimit();
         int duskLayer = 1;
 
-        for (int sts : stsForLayers) {
-            Integer rounds;
+        for (float sts : stsForLayers) {
+            double rounds;
 
             try {
-                rounds = Math.round((float)(10 * powerLimit / (sts - powerLimit)));
+                rounds = Math.ceil((10f * powerLimit / (sts - powerLimit)));
             } catch (ArithmeticException ax) {
                 rounds = 999;
             }
 
             if (rounds < 0) {
                 rounds = 999;
-            } else if (rounds == 0) {
-                rounds = null;
             }
 
             contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER, duskLayer);
             contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_ROUNDS, rounds);
 
-            if (isTableEmpty) {
-                mDb.insert(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
-                        null,
-                        contentValues);
-            } else {
-                mDb.update(NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
-                        contentValues,
-                        NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER + "=?",
-                        new String[]{String.valueOf(duskLayer)});
-            }
-
-            duskLayer++;
+            getContentResolver().insert(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI, contentValues);
         }
+    }
+
+    private void updateDuskLayers(Character character) {
+
+        getContentResolver().delete(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI,
+                null, null);
+
+        setupDuskLayers(character);
     }
 
     private Cursor getDuskLayersCursor() {
 
-        return mDb.query(
-                NotATryContract.DuskLayersSummaryEntry.TABLE_NAME,
+        return getContentResolver().query(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI,
                 null,
                 null,
                 null,
-                null,
-                null,
-                NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER
-        );
+                NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER);
     }
 
-    private Cursor getCharacterStatus() {
+    private Cursor getCharacterStatusCursor() {
 
-        return mDb.query(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
+        return getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                 null,
                 null,
                 null,
-                null,
-                null,
-                null
-        );
+                null);
     }
 
     private Cursor getCharacterDefence() {
@@ -207,24 +197,8 @@ public class MainActivity extends AppCompatActivity implements
                 "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
         };
 
-        return mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                defenceSummary,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
-
-    private Cursor swapCursor(Cursor oldCursor, Cursor newCursor) {
-
-        if (null != oldCursor) {
-            oldCursor.close();
-        }
-
-        return newCursor;
+        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                defenceSummary, null, null, null);
     }
 
     @Override
@@ -261,8 +235,12 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatus(), getCharacterDefence()));
+
+        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, cursor));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(cursor, getCharacterDefence()));
     }
 
     @Override
@@ -334,7 +312,8 @@ public class MainActivity extends AppCompatActivity implements
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT,
                     mCharacter.getCharacterDuskLayerLimit());
 
-            Cursor cursor = getCharacterStatus();
+            Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                    null, null, null, null);
             cursor.moveToFirst();
             int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
             int powerLimit = mCharacter.getCharacterPowerLimit();
@@ -345,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements
 
             updateCharacterStatus(contentValues);
 
-            setupDuskLayers(mCharacter);
+            updateDuskLayers(mCharacter);
         }
 
         setupSharedPreferences();

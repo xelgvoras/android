@@ -9,13 +9,11 @@ import android.support.v7.preference.PreferenceManager;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
-import net.victium.xelg.notatry.data.Shield;
+import net.victium.xelg.notatry.data.ShieldUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 public final class ImportCharacterJsonUtils  {
 
@@ -74,168 +72,28 @@ public final class ImportCharacterJsonUtils  {
             return;
         }
 
-        ArrayList<Shield> shieldArray = createShieldArrayList(context);
-
         for (int i = 0; i < shieldsJsonArray.length(); i++) {
 
             JSONObject jsonShield = shieldsJsonArray.getJSONObject(i);
             String shieldName = jsonShield.getString(SHIELD_NAME);
             int shieldCost = jsonShield.getInt(SHIELD_COST);
 
-            for (Shield shield : shieldArray) {
-
-                if (shieldName.equals(shield.name)) {
-
-                    addShield(sqLiteDatabase, shield, shieldCost);
-                    break;
-                }
-            }
+            ShieldUtil.Shield shield = ShieldUtil.getShield(context, shieldName);
+            addShield(context, shield, shieldCost);
         }
     }
 
-    private static ArrayList<Shield> createShieldArrayList(Context context) {
-        ArrayList<Shield> shieldArrayList = new ArrayList<>();
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_mag_shield),
-                "унив",
-                1,
-                1,
-                true,
-                true,
-                1
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_clean_mind),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_will_barrier),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_sphere_of_tranquility),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_icecrown),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_concave_shield),
-                "физ",
-                0,
-                2,
-                false,
-                true,
-                2
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_sphere_of_negation),
-                "маг",
-                2,
-                0,
-                false,
-                true,
-                2
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_pair_shield),
-                "унив",
-                1,
-                1,
-                true,
-                false,
-                4
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_cloack_of_darkness),
-                "маг",
-                0,
-                0,
-                false,
-                false,
-                4
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_rainbow_sphere),
-                "унив",
-                2,
-                2,
-                true,
-                true,
-                3
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_highest_mag_shield),
-                "унив",
-                2,
-                2,
-                true,
-                true,
-                1
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_big_rainbow_sphere),
-                "унив",
-                2,
-                2,
-                true,
-                false,
-                4
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_protective_dome),
-                "унив",
-                2,
-                2,
-                true,
-                false,
-                5
-        ));
-        shieldArrayList.add(new Shield(
-                context.getString(R.string.shields_crystal_shield),
-                "физ",
-                0,
-                100,
-                false,
-                false,
-                5
-        ));
+    private static void addShield(Context context, ShieldUtil.Shield shield, int cost) {
 
-        return shieldArrayList;
-    }
-
-    private static void addShield(SQLiteDatabase db, Shield shield, int cost) {
-
-        String name = shield.name;
-        String type = shield.type;
-        int magicDefence = shield.magicDefenceMultiplier * cost;
-        int physicDefence = shield.physicDefenceMultiplier * cost;
+        String name = shield.getName();
+        String type = shield.getType();
+        int magicDefence = shield.getMagicDefenceMultiplier() * cost;
+        int physicDefence = shield.getPhysicDefenceMultiplier() * cost;
         int mentalDefence = 0;
-        if (shield.hasMentalDefence) mentalDefence = 1;
+        if (shield.hasMentalDefence()) mentalDefence = 1;
         String target = "персональный";
-        if (!shield.isPersonalShield) target = "групповой";
-        int range = shield.range;
+        if (!shield.isPersonalShield()) target = "групповой";
+        int range = shield.getRange();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_NAME, name);
@@ -247,10 +105,6 @@ public final class ImportCharacterJsonUtils  {
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET, target);
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_RANGE, range);
 
-        db.insert(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                null,
-                contentValues
-        );
+        context.getContentResolver().insert(NotATryContract.ActiveShieldsEntry.CONTENT_URI, contentValues);
     }
 }

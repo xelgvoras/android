@@ -1,9 +1,7 @@
 package net.victium.xelg.notatry;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,14 +9,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;

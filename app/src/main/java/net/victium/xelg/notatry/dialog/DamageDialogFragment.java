@@ -1,11 +1,12 @@
 package net.victium.xelg.notatry.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -18,19 +19,19 @@ import android.widget.Toast;
 
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 
 public class DamageDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    private final String TARGET_GROUP = "групповой";
-    private final String TARGET_PERSONAL = "персональный";
-    private final String TYPE_UNIVERSAL = "унив";
-    private final String TYPE_SPECIAL = "особый";
-    private final String CONCAVE_SHIELD = "Вогнутый щит";
+    private static final String TARGET_GROUP = "групповой";
+    private static final String TARGET_PERSONAL = "персональный";
+    private static final String TYPE_UNIVERSAL = "унив";
+    private static final String TYPE_SPECIAL = "особый";
+    private static final String CONCAVE_SHIELD = "Вогнутый щит";
+
+    private Activity mActivity;
 
     private String[] mSelectGroupShieldArg;
     private String[] mSelectPersonalShieldArg;
-    private String[] mCheckConcaveShield;
 
     private int mTypeDamage;
     private int mInputDamage;
@@ -38,7 +39,6 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String mColumnDefenceKey;
     private String mColumnDefenceSumKey;
     private EditText mDamagePower;
-    private SQLiteDatabase mDb;
 
     public String mResultSummary;
 
@@ -64,10 +64,9 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        mActivity = getActivity();
 
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(getActivity());
-        mDb = notATryDbHelper.getWritableDatabase();
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.damage_dialog, null);
@@ -114,7 +113,6 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
         mSelectGroupShieldArg = new String[]{TARGET_GROUP, mTypeDamageArg, TYPE_UNIVERSAL, TYPE_SPECIAL};
         mSelectPersonalShieldArg = new String[]{TARGET_PERSONAL, mTypeDamageArg, TYPE_UNIVERSAL, TYPE_SPECIAL};
-        mCheckConcaveShield = new String[]{TARGET_PERSONAL, mTypeDamageArg, CONCAVE_SHIELD};
 
         switch (mTypeDamage) {
             case 1:
@@ -138,15 +136,18 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         StringBuilder builder = new StringBuilder();
         String selection = createSelection();
 
-        Cursor cursor = getShields(null, selection, mSelectGroupShieldArg);
+        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null, selection, mSelectGroupShieldArg, null);
         int columnShieldId = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID);
         int columnShieldName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
         int columnShieldDefence = cursor.getColumnIndex(mColumnDefenceKey);
 
         if (cursor.moveToFirst()) {
-            int shieldId = cursor.getInt(columnShieldId);
+            String shieldId = cursor.getString(columnShieldId);
             String shieldName = cursor.getString(columnShieldName);
             int shieldDefence = cursor.getInt(columnShieldDefence);
+
+            Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
             switch (shieldName){
                 case "Плащ тьмы":
@@ -159,10 +160,10 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 case BLOCK:
                     return builder.append("Воздействие заблокировано").toString();
                 case BURST:
-                    delShields("_id=" + shieldId, null);
+                    mActivity.getContentResolver().delete(uri, null, null);
                     return builder.append("Внешний щит лопнул, воздействие не прошло").toString();
                 case DROP:
-                    delShields("_id=" + shieldId, null);
+                    mActivity.getContentResolver().delete(uri, null, null);
                     mInputDamage = mInputDamage - shieldDefence;
                     builder.append("Внещний щит пробит\n");
                     break;
@@ -170,21 +171,23 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         }
         cursor.close();
 
-        cursor = getShields(null, selection, mSelectPersonalShieldArg);
+        cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null, selection, mSelectPersonalShieldArg, null);
         columnShieldId = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID);
         columnShieldName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
         columnShieldDefence = cursor.getColumnIndex(mColumnDefenceKey);
 
         String specialEffect = "";
-        if (checkConcaveShield(mCheckConcaveShield)) {
+        if (checkConcaveShield()) {
             specialEffect = "\nПротивник в полете";
         }
 
         if (cursor.moveToFirst()) {
             if (cursor.getCount() == 1) {
-                int shieldId = cursor.getInt(columnShieldId);
+                String shieldId = cursor.getString(columnShieldId);
                 String shieldName = cursor.getString(columnShieldName);
                 int shieldDefence = cursor.getInt(columnShieldDefence);
+                Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
                 if (shieldName.equals(getString(R.string.shields_mag_shield))) {
                     switch (checkDamage(mInputDamage, shieldDefence)) {
@@ -196,23 +199,18 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                                 contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, shieldDefence);
                                 contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, shieldDefence);
 
-                                mDb.update(
-                                        NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                                        contentValues,
-                                        "_id=" + shieldId,
-                                        null
-                                );
+                                mActivity.getContentResolver().update(uri, contentValues, null, null);
 
                                 return builder.append("Воздействие заблокировано, щит мага ослаб").toString();
                             } else {
-                                delShields("_id=" + shieldId, null);
+                                mActivity.getContentResolver().delete(uri, null, null);
                                 return builder.append("Воздействие заблокировано, щит мага иссяк").toString();
                             }
                         case BURST:
-                            delShields("_id=" + shieldId, null);
+                            mActivity.getContentResolver().delete(uri, null, null);
                             return builder.append("Щит мага лопнул, воздействие не прошло").toString();
                         case DROP:
-                            delShields("_id=" + shieldId, null);
+                            mActivity.getContentResolver().delete(uri, null, null);
                             mInputDamage = mInputDamage - shieldDefence;
                             builder.append("Щит мага пробит\n");
                             break;
@@ -222,19 +220,20 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                         case BLOCK:
                             return builder.append("Воздействие заблокировано").append(specialEffect).toString();
                         case BURST:
-                            delShields("_id=" + shieldId, null);
+                            mActivity.getContentResolver().delete(uri, null, null);
                             return builder.append("Персональный щит лопнул, воздействие не прошло").append(specialEffect).toString();
                         case DROP:
-                            delShields("_id=" + shieldId, null);
+                            mActivity.getContentResolver().delete(uri, null, null);
                             mInputDamage = mInputDamage - shieldDefence;
                             builder.append("Персональный щит пробит\n");
                             break;
                     }
                 }
             } else {
-                String[] columns = new String[]{"SUM(" + mColumnDefenceKey + ") as " + mColumnDefenceSumKey};
+                String[] projection = new String[]{"SUM(" + mColumnDefenceKey + ") as " + mColumnDefenceSumKey};
                 cursor.close();
-                cursor = getShields(columns, selection, mSelectPersonalShieldArg);
+                cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                        projection, selection, mSelectPersonalShieldArg, null);
                 cursor.moveToFirst();
                 int columnShieldSum = cursor.getColumnIndex(mColumnDefenceSumKey);
                 int shieldDefence = cursor.getInt(columnShieldSum);
@@ -243,10 +242,12 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     case BLOCK:
                         return builder.append("Воздействие заблокировано").append(specialEffect).toString();
                     case BURST:
-                        delShields(selection, mSelectPersonalShieldArg);
+                        mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                                selection, mSelectPersonalShieldArg);
                         return builder.append("Персональные щиты лопнули, воздействие не прошло").append(specialEffect).toString();
                     case DROP:
-                        delShields(selection, mSelectPersonalShieldArg);
+                        mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                                selection, mSelectPersonalShieldArg);
                         mInputDamage = mInputDamage - shieldDefence;
                         builder.append("Персональные щиты пробиты\n");
                         break;
@@ -255,13 +256,8 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         }
         cursor.close();
 
-        cursor = mDb.query(NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+        cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
         cursor.moveToFirst();
 
         int columnNaturalDefence = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE);
@@ -307,12 +303,13 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String checkMentalAttack(int damage) {
         StringBuilder builder = new StringBuilder();
 
-        String[] columns = new String[]{
+        String[] projection = new String[]{
                 "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " +
                         NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
         };
 
-        Cursor cursor = getShields(columns, null, null);
+        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                projection, null, null, null);
         int columnMentalDefenceId =
                 cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM);
 
@@ -323,7 +320,8 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 String selection =
                         NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
                 String[] selectionArgs = new String[]{"мент"};
-                int deletedShieldsCount = delShields(selection, selectionArgs);
+                int deletedShieldsCount = mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                        selection, selectionArgs);
 
                 if (deletedShieldsCount > 0) {
                     builder.append("Ментальные щиты развеяны, ");
@@ -335,45 +333,20 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
             }
         }
 
+        cursor.close();
+
         return builder.append("заклинание прошло").toString();
     }
 
-    private Cursor getShields(String[] columns, String selection, String[] selectionArgs) {
+    private boolean checkConcaveShield() {
 
-        return mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                columns,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-    }
+        if (!mTypeDamageArg.equals("физ")) {
+            return false;
+        }
 
-    private int delShields(String selection, String[] selectionArgs) {
+        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(CONCAVE_SHIELD).build();
 
-        return  mDb.delete(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                selection,
-                selectionArgs
-        );
-    }
-
-    private boolean checkConcaveShield(String[] selectionArgs) {
-
-        Cursor cursor = mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                null,
-                NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=? AND " +
-                        NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? AND " +
-                        NotATryContract.ActiveShieldsEntry.COLUMN_NAME + "=?",
-                selectionArgs,
-                null,
-                null,
-                null
-        );
-
+        Cursor cursor = mActivity.getContentResolver().query(uri, null, null, null, null);
         int count = cursor.getCount();
         cursor.close();
 

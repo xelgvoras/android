@@ -3,7 +3,6 @@ package net.victium.xelg.notatry;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.OpenFileDialogFragment;
 import net.victium.xelg.notatry.utilities.ImportCharacterJsonUtils;
 
@@ -34,7 +32,6 @@ import java.io.IOException;
 public class ImportExportActivity extends AppCompatActivity implements
         OpenFileDialogFragment.OpenFileDialogListener {
 
-    private SQLiteDatabase mDb;
     private Character mCharacter;
     private File mDefaultPath;
     private File mSelectedFile;
@@ -46,9 +43,6 @@ public class ImportExportActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import_export);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
-        mDb = notATryDbHelper.getWritableDatabase();
 
         mCharacter = new Character(this);
 
@@ -219,15 +213,8 @@ public class ImportExportActivity extends AppCompatActivity implements
 
     private Cursor getCurrentShield () {
 
-        return mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null, null, null, null);
     }
 
     @Override

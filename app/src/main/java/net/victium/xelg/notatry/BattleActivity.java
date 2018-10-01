@@ -1,8 +1,8 @@
 package net.victium.xelg.notatry;
 
+import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,13 +10,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
@@ -39,7 +37,6 @@ public class BattleActivity extends AppCompatActivity implements
     /* Для тестов */
     private TextView mTestJournal;
 
-    private SQLiteDatabase mDb;
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
 
@@ -47,9 +44,6 @@ public class BattleActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
-
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
-        mDb = notATryDbHelper.getWritableDatabase();
 
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
@@ -104,37 +98,22 @@ public class BattleActivity extends AppCompatActivity implements
 
     private Cursor getCharacterStatus() {
 
-        return mDb.query(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        return getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
     }
 
     private Cursor getAllShields(String[] columns, String selection, String[] selectionArgs) {
 
-        return mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                columns,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC"
-        );
+        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                columns, selection, selectionArgs, NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC");
     }
 
     private void removeShield(long id) {
 
-        mDb.delete(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                NotATryContract.ActiveShieldsEntry._ID + "=" + id,
-                null
-        );
+        String stringId = String.valueOf(id);
+        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(stringId).build();
+
+        getContentResolver().delete(uri, null, null);
     }
 
     public void onClickAddShield(View view) {

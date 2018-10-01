@@ -16,12 +16,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import net.victium.xelg.notatry.BattleActivity;
-import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.ShieldsActivity;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.Shield;
-
-import java.util.ArrayList;
+import net.victium.xelg.notatry.data.ShieldUtil;
 
 public class UpdateShieldDialogFragment extends DialogFragment {
 
@@ -30,7 +27,6 @@ public class UpdateShieldDialogFragment extends DialogFragment {
     private int mShieldPowerLimit;
     private int mCurrentShieldPower;
     private String mShieldName;
-    private ArrayList<Shield> mShieldList;
     private Uri mSelectedShield;
 
     public interface UpdateShieldDialogListener {
@@ -71,8 +67,6 @@ public class UpdateShieldDialogFragment extends DialogFragment {
             setupShieldPowerLimit(2);
         }
 
-        mShieldList = createShieldArrayList();
-
         mInputPowerEditText = new EditText(mActivity);
         mInputPowerEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         mInputPowerEditText.setHint("на сколько усилить щит?");
@@ -93,7 +87,6 @@ public class UpdateShieldDialogFragment extends DialogFragment {
                 .setNegativeButton("Отмена", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        return;
                     }
                 });
 
@@ -144,22 +137,15 @@ public class UpdateShieldDialogFragment extends DialogFragment {
             }
         }
 
-        Shield currentShield = null;
-
-        for (Shield shield : mShieldList) {
-            if (mShieldName.equals(shield.name)) {
-                currentShield = shield;
-                break;
-            }
-        }
+        ShieldUtil.Shield currentShield = ShieldUtil.getShield(mActivity, mShieldName);
 
         if (currentShield == null) {
             Toast.makeText(mActivity, "Не найден такой щит в системе", Toast.LENGTH_LONG).show();
             return;
         }
 
-        int magicDefence = currentShield.magicDefenceMultiplier * newValue;
-        int physicDefence = currentShield.physicDefenceMultiplier * newValue;
+        int magicDefence = currentShield.getMagicDefenceMultiplier() * newValue;
+        int physicDefence = currentShield.getPhysicDefenceMultiplier() * newValue;
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, newValue);
@@ -169,137 +155,5 @@ public class UpdateShieldDialogFragment extends DialogFragment {
         mActivity.getContentResolver().update(mSelectedShield, contentValues, null, null);
 
         Toast.makeText(mActivity, updateMessage, Toast.LENGTH_LONG).show();
-    }
-
-    private ArrayList<Shield> createShieldArrayList() {
-        ArrayList<Shield> shieldArrayList = new ArrayList<>();
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_mag_shield),
-                "унив",
-                1,
-                1,
-                true,
-                true,
-                1
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_clean_mind),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_will_barrier),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_sphere_of_tranquility),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_icecrown),
-                "мент",
-                0,
-                0,
-                true,
-                true,
-                0
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_concave_shield),
-                "физ",
-                0,
-                2,
-                false,
-                true,
-                2
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_sphere_of_negation),
-                "маг",
-                2,
-                0,
-                false,
-                true,
-                2
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_pair_shield),
-                "унив",
-                1,
-                1,
-                true,
-                false,
-                4
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_cloack_of_darkness),
-                "маг",
-                0,
-                0,
-                false,
-                false,
-                4
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_rainbow_sphere),
-                "унив",
-                2,
-                2,
-                true,
-                true,
-                3
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_highest_mag_shield),
-                "унив",
-                2,
-                2,
-                true,
-                true,
-                1
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_big_rainbow_sphere),
-                "унив",
-                2,
-                2,
-                true,
-                false,
-                4
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_protective_dome),
-                "унив",
-                2,
-                2,
-                true,
-                false,
-                5
-        ));
-        shieldArrayList.add(new Shield(
-                getString(R.string.shields_crystal_shield),
-                "физ",
-                0,
-                100,
-                false,
-                false,
-                5
-        ));
-
-        return shieldArrayList;
     }
 }

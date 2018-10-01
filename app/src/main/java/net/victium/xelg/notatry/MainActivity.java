@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements
                 rounds = 999;
             }
 
-            if (rounds < 0) {
+            if (rounds < 0 || Double.isInfinite(rounds)) {
                 rounds = 999;
             }
 

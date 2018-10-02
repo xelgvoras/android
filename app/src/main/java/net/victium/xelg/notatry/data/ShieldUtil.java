@@ -19,11 +19,12 @@ public class ShieldUtil {
         private int mPhysicDefenceMultiplier;
         private boolean mHasMentalDefence;
         private boolean mPersonalShield;
+        private boolean mCanBeDestroyed;
         private int mRange;
 
         public Shield(String name, String type, int minCost, int magicDefenceMultiplier, 
                       int physicDefenceMultiplier, boolean hasMentalDefence, 
-                      boolean personalShield, int range) {
+                      boolean personalShield, boolean canBeDestroyed, int range) {
             this.mName = name;
             this.mType = type;
             this.mMinCost = minCost;
@@ -31,6 +32,7 @@ public class ShieldUtil {
             this.mPhysicDefenceMultiplier = physicDefenceMultiplier;
             this.mHasMentalDefence = hasMentalDefence;
             this.mPersonalShield = personalShield;
+            this.mCanBeDestroyed = canBeDestroyed;
             this.mRange = range;
         }
 
@@ -60,6 +62,10 @@ public class ShieldUtil {
 
         public boolean isPersonalShield() {
             return mPersonalShield;
+        }
+
+        public boolean canPersonalShield() {
+            return mCanBeDestroyed;
         }
 
         public int getRange() {
@@ -92,6 +98,7 @@ public class ShieldUtil {
                 1,
                 true,
                 true,
+                true,
                 1
         ));
         shieldArrayList.add(new Shield(
@@ -102,6 +109,7 @@ public class ShieldUtil {
                 0,
                 true,
                 true,
+                false,
                 0
         ));
         shieldArrayList.add(new Shield(
@@ -112,6 +120,7 @@ public class ShieldUtil {
                 0,
                 true,
                 true,
+                false,
                 0
         ));
         shieldArrayList.add(new Shield(
@@ -122,6 +131,7 @@ public class ShieldUtil {
                 0,
                 true,
                 true,
+                false,
                 0
         ));
         shieldArrayList.add(new Shield(
@@ -132,7 +142,19 @@ public class ShieldUtil {
                 0,
                 true,
                 true,
+                false,
                 0
+        ));
+        shieldArrayList.add(new Shield(
+                context.getString(R.string.shields_force_barrier),
+                "унив",
+                4,
+                1,
+                1,
+                false,
+                true,
+                true,
+                2
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_concave_shield),
@@ -142,7 +164,8 @@ public class ShieldUtil {
                 2,
                 false,
                 true,
-                2
+                false,
+                3
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_sphere_of_negation),
@@ -152,7 +175,8 @@ public class ShieldUtil {
                 0,
                 false,
                 true,
-                2
+                false,
+                3
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_pair_shield),
@@ -162,7 +186,8 @@ public class ShieldUtil {
                 1,
                 true,
                 false,
-                4
+                false,
+                5
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_cloack_of_darkness),
@@ -172,7 +197,8 @@ public class ShieldUtil {
                 0,
                 false,
                 false,
-                4
+                false,
+                5
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_rainbow_sphere),
@@ -182,7 +208,8 @@ public class ShieldUtil {
                 2,
                 true,
                 true,
-                3
+                false,
+                4
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_highest_mag_shield),
@@ -192,6 +219,7 @@ public class ShieldUtil {
                 2,
                 true,
                 true,
+                false,
                 1
         ));
         shieldArrayList.add(new Shield(
@@ -202,7 +230,8 @@ public class ShieldUtil {
                 2,
                 true,
                 false,
-                4
+                false,
+                5
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_protective_dome),
@@ -212,7 +241,8 @@ public class ShieldUtil {
                 2,
                 true,
                 false,
-                5
+                false,
+                6
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_crystal_shield),
@@ -222,7 +252,8 @@ public class ShieldUtil {
                 100,
                 false,
                 false,
-                5
+                false,
+                6
         ));
 
         return shieldArrayList;

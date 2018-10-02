@@ -6,7 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.net.Uri;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -62,7 +62,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         if (mActivity instanceof ShieldsActivity) {
             setupShieldPowerLimit(1);
         } else if (mActivity instanceof BattleActivity) {
-            setupShieldPowerLimit(2);
+            setupShieldPowerLimit(0);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
@@ -93,6 +93,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
     }
 
     private void setupShieldPowerLimit(int module) {
+
         Cursor cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                 null, null, null, null);
         cursor.moveToFirst();
@@ -148,7 +149,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
                 if (inputInt <= 0) {
                     Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
                     return;
-                } else if (inputInt > mShieldPowerLimit) {
+                } else if (inputInt > mShieldPowerLimit && mShieldPowerLimit != 0) {
                     errorMessage = "Вы не можете создать щит больше вашего резерва";
                     Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
                     return;
@@ -173,20 +174,21 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         int range = currentShield.getRange();
 
         if (inputInt < minCost) {
-            Toast.makeText(mActivity, "Недостаточно магической силы для поддержания щита", Toast.LENGTH_LONG).show();
+            errorMessage = "Недостаточно магической силы для поддержания щита";
+            Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
             return;
         }
 
         if (target.equals("персональный")) {
             if (personalShieldsCount >= personalShieldsLimit) {
                 errorMessage = "Достигнут лимит персональных щитов";
-                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
                 return;
             }
         } else {
             if (groupShieldsCount >= 1) {
                 errorMessage = "Достигнут лимит групповых щитов";
-                Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
                 return;
             }
         }
@@ -201,12 +203,12 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET, target);
         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_RANGE, range);
 
-        Uri uri = mActivity.getContentResolver().insert(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                contentValues);
-
-        if (uri == null) {
+        try {
+            mActivity.getContentResolver().insert(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                    contentValues);
+        } catch (SQLException exception) {
             errorMessage = "Нельзя повесить два одинаковых щита";
-            Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
         }
     }
 

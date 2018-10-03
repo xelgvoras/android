@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -29,7 +29,8 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 CharacterStatusEntry.COLUMN_SHIELDS_LIMIT + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_AMULETS_LIMIT + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_NATURAL_DEFENCE + " INTEGER NOT NULL," +
-                CharacterStatusEntry.COLUMN_REACTIONS_NUMBER + " INTEGER NOT NULL);";
+                CharacterStatusEntry.COLUMN_REACTIONS_NUMBER + " INTEGER NOT NULL," +
+                CharacterStatusEntry.COLUMN_BATTLE_FORM + " TEXT NOT NULL);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_CHARACTER_STATUS_TABLE);
 

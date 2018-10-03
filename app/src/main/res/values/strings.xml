@@ -9,6 +9,8 @@
     <!-- Пункт меню для генерации паспорта игрока -->
     <string name="action_settings">Паспорт игрока</string>
 
+    <string name="action_transform">человек</string>
+
     <!-- - - - - - - - - - - - - - -->
     <!-- Используется в настройках -->
     <!-- - - - - - - - - - - - - - -->
@@ -216,6 +218,7 @@
     <string name="shields_will_barrier">Барьер воли</string>
     <string name="shields_sphere_of_tranquility">Сфера спокойствия</string>
     <string name="shields_icecrown">Ледяная кора</string>
+    <string name="shields_force_barrier">Силовой барьер</string>
     <string name="shields_concave_shield">Вогнутый щит</string>
     <string name="shields_sphere_of_negation">Сфера отрицания</string>
     <string name="shields_pair_shield">Спаренный щит</string>
@@ -225,5 +228,37 @@
     <string name="shields_big_rainbow_sphere">Большая радужная сфера</string>
     <string name="shields_protective_dome">Защитный купол</string>
     <string name="shields_crystal_shield">Хрустальный щит</string>
+
+    <!-- - - - - - - - - - - - - - - - - -->
+    <!-- Значения для массива заклинаний -->
+    <!-- - - - - - - - - - - - - - - - - -->
+    <string name="spells_triple_blade">Тройное лезвие</string>
+    <string name="spells_fireball">Файербол</string>
+    <string name="spells_ice_block">Ледяная глыба</string>
+    <string name="spells_pillar_of_fire">Столп огня (Подгорает)</string>
+    <string name="spells_ring_of_fire">Кольцо огня</string>
+    <string name="spells_wall_of_fire">Стена огня</string>
+    <string name="spells_ring_of_shaab">Кольцо Шааба</string>
+    <string name="spells_personal_kiss_of_echidna">Поцелуй ехидны (перс)</string>
+    <string name="spells_mass_kiss_of_echidna">Поцелуй ехидны (масс)</string>
+    <string name="spells_white_sword">Белый меч</string>
+    <string name="spells_spear_of_suffering">Копье страданий</string>
+    <string name="spells_spear_of_light">Копье света</string>
+    <string name="spells_vacuum_blow">Вакуумный удар</string>
+    <string name="spells_taiga">Тайга</string>
+    <string name="spells_haze_transylvania">Марево Трансильвании</string>
+    <string name="spells_sparkling_wall">Искрящаяся Стена</string>
+    <string name="spells_lash_of_shaab">Плеть Шааба</string>
+    <string name="spells_bethlehem_fire">Вифлеемский огонь</string>
+    
+    <string name="spells_telekinesis">Телекинез</string>
+    <string name="spells_press">Пресс</string>
+    <string name="spells_shock">Шок</string>
+    <string name="spells_gray_wolf">Серый волк</string>
+    <string name="spells_fetters">Путы Захви</string>
+    <string name="spells_gray_prayer">Серый молебен</string>
+    <string name="spells_freeze">Фриз</string>
+    <string name="spells_mass_press">Масс пресс</string>
+    <string name="spells_expropriation">Экспроприация</string>
 
 </resources>

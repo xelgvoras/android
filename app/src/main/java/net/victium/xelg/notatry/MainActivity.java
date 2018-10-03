@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT, character.getCharacterAmuletsLimit());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, character.getCharacterNaturalDefence());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, character.getCharacterReactionsNumber());
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, "человек");
 
         Uri uri = getContentResolver().insert(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues);
 

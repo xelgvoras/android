@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +20,10 @@ import android.widget.Toast;
 
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.NotATryContract;
+import net.victium.xelg.notatry.data.SpellsUtil;
+import net.victium.xelg.notatry.enums.SPV;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class DamageDialogFragment extends DialogFragment implements View.OnClickListener {
 
@@ -38,6 +43,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String mTypeDamageArg;
     private String mColumnDefenceKey;
     private String mColumnDefenceSumKey;
+    private String mBattleForm;
     private EditText mDamagePower;
 
     public String mResultSummary;
@@ -65,6 +71,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         mActivity = getActivity();
+        mBattleForm = getArguments().getString("battleForm");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
@@ -108,6 +115,171 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.create();
     }
 
+    private String checkMagicAttack(String spellName, int inputDamage) {
+        StringBuilder builder = new StringBuilder();
+        SpellsUtil.Spell spell;
+        ArrayMap<SPV, String> effectArrayMap = new ArrayMap<>();
+        SPV damageResult = SPV.DROP;
+
+        switch (spellName) {
+            case "Тройное лезвие":
+                effectArrayMap.put(SPV.DROP, "сильное кровотечение, ранение средней тяжести");
+                spell = new SpellsUtil.Spell(spellName, "напр", "боевое", effectArrayMap);
+                break;
+                default:
+                    Toast.makeText(mActivity, "Unknown spell: " + spellName, Toast.LENGTH_LONG).show();
+                    return "Ошибка";
+        }
+
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
+                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
+        String[] selectionArgs = new String[]{mTypeDamageArg, TYPE_UNIVERSAL};
+        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
+        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null,
+                selection,
+                selectionArgs,
+                sortOrder);
+
+        if (cursor.moveToFirst()) {
+
+            while (true) {
+                String shieldId = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID));
+                String shieldName = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME));
+                int shieldDefence = cursor.getInt(cursor.getColumnIndex(mColumnDefenceKey));
+                int shieldCost = cursor.getInt(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST));
+                Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
+                int damage = inputDamage;
+
+                if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness)) && spell.getRange().equals("напр")) {
+                    return "Заклинание промахнулось";
+                }
+
+                if (spell.getType().equals("боевое")) {
+                    damage = 2 * inputDamage;
+                }
+
+                damageResult = checkDamage(damage, shieldDefence);
+
+                switch (damageResult) {
+                    case BLOCK:
+                        builder.append("Заклинание заблокировано");
+                        if (shieldName.equals(getString(R.string.shields_mag_shield)) || shieldName.equals(getString(R.string.shields_force_barrier))) {
+                            shieldCost = shieldCost - inputDamage;
+
+                            if (shieldCost == 0) {
+                                mActivity.getContentResolver().delete(uri, null, null);
+                                return builder.append("\n").append(shieldName).append(" иссяк").toString();
+                            } else {
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, shieldCost);
+                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, shieldCost);
+                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, shieldCost);
+                                mActivity.getContentResolver().update(uri, contentValues, null, null);
+                                return builder.append("\n").append(shieldName).append(" ослаб").toString();
+                            }
+                        }
+                        return "Заклинание заблокировано";
+                    case BURST:
+                        mActivity.getContentResolver().delete(uri, null, null);
+                        return "Щит \"" + shieldName + "\" лоппнул, заклинание заблокировано";
+                    case DROP:
+                        inputDamage = inputDamage - shieldDefence;
+                        mActivity.getContentResolver().delete(uri, null, null);
+                        builder.append("Щит \"").append(shieldName).append("\" пробит\n");
+                        break;
+                }
+
+                if (!cursor.moveToNext()) {
+                    break;
+                }
+            }
+        }
+        cursor.close();
+
+        if (mBattleForm.equals("боевая форма")) {
+            cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                    null, null, null, null);
+            cursor.moveToFirst();
+            int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+
+            damageResult = checkDamage(inputDamage, naturalDefence);
+
+            switch (damageResult) {
+                case BLOCK:
+                    if (spell.getEffect().containsKey(SPV.BLOCK)) {
+                        builder.append(spell.getEffect().get(SPV.BLOCK));
+                    } else {
+                        builder.append("заклинание заблокировано");
+                    }
+
+                    if ("огонь".equals(spell.getElement())) {
+                        naturalDefence = naturalDefence - (inputDamage / 2);
+                        if (naturalDefence < 0) {
+                            naturalDefence = 0;
+                        }
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
+                        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
+                    }
+                    break;
+                case BURST:
+                    if (spell.getEffect().containsKey(SPV.BURST)) {
+                        builder.append(spell.getEffect().get(SPV.BURST));
+                    } else {
+                        builder.append("заклинание заблокировано");
+                    }
+
+                    if (spell.getElement().equals("огонь")) {
+                        naturalDefence = naturalDefence - (inputDamage / 2);
+                        if (naturalDefence < 0) {
+                            naturalDefence = 0;
+                        }
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
+                        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
+                    }
+                    break;
+                case DROP:
+                    if (spell.getEffect().containsKey(SPV.DROP)) {
+                        builder.append(spell.getEffect().get(SPV.DROP));
+                    } else {
+                        builder.append("заклинание заблокировано");
+                    }
+
+                    if (spell.getElement().equals("огонь")) {
+                        naturalDefence = naturalDefence - (inputDamage / 2);
+                        if (naturalDefence < 0) {
+                            naturalDefence = 0;
+                        }
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
+                        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
+                    }
+                    break;
+            }
+        }
+
+        switch (damageResult) {
+            case BLOCK:
+                if (spell.getEffect().containsKey(SPV.BLOCK)) {
+                    builder.append(spell.getEffect().get(SPV.BLOCK));
+                }
+                break;
+            case BURST:
+                if (spell.getEffect().containsKey(SPV.BURST)) {
+                    builder.append(spell.getEffect().get(SPV.BURST));
+                }
+                break;
+            case DROP:
+                if (spell.getEffect().containsKey(SPV.DROP)) {
+                    builder.append(spell.getEffect().get(SPV.DROP));
+                }
+        }
+
+        return builder.toString();
+    }
+
     private String checkBattle() {
         String damageResult;
 
@@ -116,7 +288,8 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
         switch (mTypeDamage) {
             case 1:
-                damageResult = testCheckAttack();
+//                damageResult = testCheckAttack();
+                damageResult = checkMagicAttack("Тройное лезвие", mInputDamage);
                 break;
             case 2:
                 damageResult = testCheckAttack();
@@ -284,20 +457,14 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?)";
     }
 
-    private spv checkDamage(int damage, int defence) {
+    private SPV checkDamage(int damage, int defence) {
         if (damage <= defence) {
-            return spv.BLOCK;
+            return SPV.BLOCK;
         } else if (damage <= (2 * defence)) {
-            return spv.BURST;
+            return SPV.BURST;
         } else {
-            return spv.DROP;
+            return SPV.DROP;
         }
-    }
-
-    enum spv {
-        BLOCK,
-        BURST,
-        DROP
     }
 
     private String checkMentalAttack(int damage) {

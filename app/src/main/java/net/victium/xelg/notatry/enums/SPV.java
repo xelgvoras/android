@@ -1,4 +1,4 @@
-package net.victium.xelg.notatry.data;
+package net.victium.xelg.notatry.enums;
 
 public enum SPV {
     BLOCK,

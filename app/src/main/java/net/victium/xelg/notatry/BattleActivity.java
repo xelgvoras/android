@@ -1,5 +1,7 @@
 package net.victium.xelg.notatry;
 
+import android.content.ContentValues;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;
@@ -8,6 +10,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,6 +24,8 @@ import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
+
+import java.util.ArrayList;
 
 public class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
@@ -37,6 +44,7 @@ public class BattleActivity extends AppCompatActivity implements
     /* Для тестов */
     private TextView mTestJournal;
 
+    private Menu mMenu;
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
 
@@ -124,7 +132,12 @@ public class BattleActivity extends AppCompatActivity implements
 
     public void onClickCheckDamage(View view) {
 
+        Bundle args = new Bundle();
+        String battleForm = getCurrentForm();
+        args.putString("battleForm", battleForm);
+
         DialogFragment dialogFragment = new DamageDialogFragment();
+        dialogFragment.setArguments(args);
         dialogFragment.show(getSupportFragmentManager(), "CheckDamageDialogFragment");
     }
 
@@ -199,6 +212,62 @@ public class BattleActivity extends AppCompatActivity implements
         } else {
             return "0го уровня";
         }
+    }
+
+    private String getCurrentForm() {
+        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+
+        return cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        mMenu = menu;
+
+        ArrayList<String> typeList = new ArrayList<>();
+        typeList.add(getString(R.string.pref_type_value_flipflop));
+        typeList.add(getString(R.string.pref_type_value_vampire));
+        typeList.add(getString(R.string.pref_type_value_werewolf));
+        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
+
+        String type = mCharacter.getCharacterType();
+
+        if (typeList.contains(type)) {
+            MenuInflater inflater = getMenuInflater();
+            inflater.inflate(R.menu.battle, menu);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_transform) {
+
+            String battleForm = getCurrentForm();
+
+            if (battleForm.equals("человек")) {
+                battleForm = "боевая форма";
+            } else {
+                battleForm = "человек";
+            }
+
+            item.setTitle(battleForm);
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
+            getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                    null, null);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

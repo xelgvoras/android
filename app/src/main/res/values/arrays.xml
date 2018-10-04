@@ -84,4 +84,42 @@
         <item>@string/shields_protective_dome</item>
         <item>@string/shields_crystal_shield</item>
     </array>
+    
+    <!-- Массив для заклинания -->
+    <array name="spells_array">
+        <item>@string/spells_triple_blade</item>
+        <item>@string/spells_fireball</item>
+        <item>@string/spells_ice_block</item>
+        <item>@string/spells_pillar_of_fire</item>
+        <item>@string/spells_ring_of_fire</item>
+        <item>@string/spells_wall_of_fire</item>
+        <item>@string/spells_ring_of_shaab</item>
+        <item>@string/spells_personal_kiss_of_echidna</item>
+        <item>@string/spells_mass_kiss_of_echidna</item>
+        <item>@string/spells_white_sword</item>
+        <item>@string/spells_spear_of_suffering</item>
+        <item>@string/spells_spear_of_light</item>
+        <item>@string/spells_vacuum_blow</item>
+        <item>@string/spells_taiga</item>
+        <item>@string/spells_haze_transylvania</item>
+        <item>@string/spells_sparkling_wall</item>
+        <item>@string/spells_lash_of_shaab</item>
+        <item>@string/spells_bethlehem_fire</item>
+        <item>@string/spells_telekinesis</item>
+        <item>@string/spells_press</item>
+        <item>@string/spells_shock</item>
+        <item>@string/spells_gray_wolf</item>
+        <item>@string/spells_fetters</item>
+        <item>@string/spells_gray_prayer</item>
+        <item>@string/spells_freeze</item>
+        <item>@string/spells_mass_press</item>
+        <item>@string/spells_expropriation</item>
+    </array>
+    <!-- Массив для ударов -->
+    <array name="attacks_array">
+        <item>@string/attacks_beat</item>
+        <item>@string/attacks_wound</item>
+        <item>@string/attacks_scuffle</item>
+        <item>@string/attacks_stun</item>
+    </array>
 </resources>

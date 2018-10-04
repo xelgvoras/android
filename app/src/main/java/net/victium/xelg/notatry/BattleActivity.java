@@ -265,6 +265,18 @@ public class BattleActivity extends AppCompatActivity implements
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
             getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
                     null, null);
+
+            String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
+            String[] selectionArgs = new String[]{"персональный"};
+            int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
+            mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+
+            String transformMessage = "Выполнена трансформация";
+            if (count > 0) {
+                transformMessage = transformMessage + ", все персональные щиты уничтожены";
+            }
+
+            mTestJournal.setText(transformMessage);
         }
 
         return super.onOptionsItemSelected(item);

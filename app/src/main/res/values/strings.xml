@@ -261,4 +261,12 @@
     <string name="spells_mass_press">Масс пресс</string>
     <string name="spells_expropriation">Экспроприация</string>
 
+    <!-- - - - - - - - - - - - - - - -->
+    <!-- Значения для массива ударов -->
+    <!-- - - - - - - - - - - - - - - -->
+    <string name="attacks_beat">Бью</string>
+    <string name="attacks_wound">Раню</string>
+    <string name="attacks_scuffle">Свалка</string>
+    <string name="attacks_stun">Оглушаю</string>
+
 </resources>

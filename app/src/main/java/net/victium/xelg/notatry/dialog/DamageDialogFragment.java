@@ -23,28 +23,19 @@ import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.SpellsUtil;
 import net.victium.xelg.notatry.enums.SPV;
 
-import java.lang.reflect.InvocationTargetException;
-
 public class DamageDialogFragment extends DialogFragment implements View.OnClickListener {
 
-    private static final String TARGET_GROUP = "групповой";
-    private static final String TARGET_PERSONAL = "персональный";
     private static final String TYPE_UNIVERSAL = "унив";
-    private static final String TYPE_SPECIAL = "особый";
-    private static final String CONCAVE_SHIELD = "Вогнутый щит";
 
     private Activity mActivity;
-
-    private String[] mSelectGroupShieldArg;
-    private String[] mSelectPersonalShieldArg;
 
     private int mTypeDamage;
     private int mInputDamage;
     private String mTypeDamageArg;
     private String mColumnDefenceKey;
-    private String mColumnDefenceSumKey;
     private String mBattleForm;
     private EditText mDamagePower;
+    private Uri mShieldUri;
 
     public String mResultSummary;
 
@@ -90,7 +81,6 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         mTypeDamage = 1;
         mTypeDamageArg = "маг";
         mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE;
-        mColumnDefenceSumKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM;
 
         builder.setTitle("Входящее воздействие")
                 .setMessage("Укажите тип и силу воздействия, в случае необходимости - выберите заклинание из списка")
@@ -115,346 +105,116 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.create();
     }
 
-    private String checkMagicAttack(String spellName, int inputDamage) {
+    private String checkMagicAttack(String spellName) {
         StringBuilder builder = new StringBuilder();
-        SpellsUtil.Spell spell;
-        ArrayMap<SPV, String> effectArrayMap = new ArrayMap<>();
         SPV damageResult = SPV.DROP;
+        SpellsUtil.Spell spell = SpellsUtil.getSpell(spellName, mBattleForm);
+        Cursor shieldsCursor = getShields();
 
-        switch (spellName) {
-            case "Тройное лезвие":
-                effectArrayMap.put(SPV.DROP, "сильное кровотечение, ранение средней тяжести");
-                spell = new SpellsUtil.Spell(spellName, "напр", "боевое", effectArrayMap);
-                break;
-                default:
-                    Toast.makeText(mActivity, "Unknown spell: " + spellName, Toast.LENGTH_LONG).show();
-                    return "Ошибка";
-        }
-
-        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
-                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
-        String[] selectionArgs = new String[]{mTypeDamageArg, TYPE_UNIVERSAL};
-        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
-        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                null,
-                selection,
-                selectionArgs,
-                sortOrder);
-
-        if (cursor.moveToFirst()) {
+        if (shieldsCursor.moveToFirst()) {
 
             while (true) {
-                String shieldId = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID));
-                String shieldName = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME));
-                int shieldDefence = cursor.getInt(cursor.getColumnIndex(mColumnDefenceKey));
-                int shieldCost = cursor.getInt(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST));
-                Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
-                int damage = inputDamage;
+                String shieldId = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID));
+                String shieldName = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME));
+                int shieldDefence = shieldsCursor.getInt(shieldsCursor.getColumnIndex(mColumnDefenceKey));
+                int shieldCost = shieldsCursor.getInt(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST));
+                int damage = mInputDamage;
 
-                if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness)) && spell.getRange().equals("напр")) {
+                mShieldUri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
+
+
+                if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness)) && spell.getTarget().equals("напр")) {
                     return "Заклинание промахнулось";
                 }
 
                 if (spell.getType().equals("боевое")) {
-                    damage = 2 * inputDamage;
+                    damage = 2 * mInputDamage;
                 }
 
                 damageResult = checkDamage(damage, shieldDefence);
 
-                switch (damageResult) {
-                    case BLOCK:
-                        builder.append("Заклинание заблокировано");
-                        if (shieldName.equals(getString(R.string.shields_mag_shield)) || shieldName.equals(getString(R.string.shields_force_barrier))) {
-                            shieldCost = shieldCost - inputDamage;
+                builder.append(checkShield(damageResult, shieldName, shieldCost, shieldDefence, damage));
 
-                            if (shieldCost == 0) {
-                                mActivity.getContentResolver().delete(uri, null, null);
-                                return builder.append("\n").append(shieldName).append(" иссяк").toString();
-                            } else {
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, shieldCost);
-                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, shieldCost);
-                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, shieldCost);
-                                mActivity.getContentResolver().update(uri, contentValues, null, null);
-                                return builder.append("\n").append(shieldName).append(" ослаб").toString();
-                            }
-                        }
-                        return "Заклинание заблокировано";
-                    case BURST:
-                        mActivity.getContentResolver().delete(uri, null, null);
-                        return "Щит \"" + shieldName + "\" лоппнул, заклинание заблокировано";
-                    case DROP:
-                        inputDamage = inputDamage - shieldDefence;
-                        mActivity.getContentResolver().delete(uri, null, null);
-                        builder.append("Щит \"").append(shieldName).append("\" пробит\n");
-                        break;
-                }
-
-                if (!cursor.moveToNext()) {
+                if (!shieldsCursor.moveToNext() || !damageResult.equals(SPV.DROP)) {
                     break;
                 }
             }
         }
-        cursor.close();
+        shieldsCursor.close();
 
-        if (mBattleForm.equals("боевая форма")) {
-            cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                    null, null, null, null);
-            cursor.moveToFirst();
-            int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
-
-            damageResult = checkDamage(inputDamage, naturalDefence);
-
-            switch (damageResult) {
-                case BLOCK:
-                    if (spell.getEffect().containsKey(SPV.BLOCK)) {
-                        builder.append(spell.getEffect().get(SPV.BLOCK));
-                    } else {
-                        builder.append("заклинание заблокировано");
-                    }
-
-                    if ("огонь".equals(spell.getElement())) {
-                        naturalDefence = naturalDefence - (inputDamage / 2);
-                        if (naturalDefence < 0) {
-                            naturalDefence = 0;
-                        }
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
-                        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
-                    }
-                    break;
-                case BURST:
-                    if (spell.getEffect().containsKey(SPV.BURST)) {
-                        builder.append(spell.getEffect().get(SPV.BURST));
-                    } else {
-                        builder.append("заклинание заблокировано");
-                    }
-
-                    if (spell.getElement().equals("огонь")) {
-                        naturalDefence = naturalDefence - (inputDamage / 2);
-                        if (naturalDefence < 0) {
-                            naturalDefence = 0;
-                        }
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
-                        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
-                    }
-                    break;
-                case DROP:
-                    if (spell.getEffect().containsKey(SPV.DROP)) {
-                        builder.append(spell.getEffect().get(SPV.DROP));
-                    } else {
-                        builder.append("заклинание заблокировано");
-                    }
-
-                    if (spell.getElement().equals("огонь")) {
-                        naturalDefence = naturalDefence - (inputDamage / 2);
-                        if (naturalDefence < 0) {
-                            naturalDefence = 0;
-                        }
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
-                        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
-                    }
-                    break;
+        if (damageResult.equals(SPV.DROP)) {
+            if (mBattleForm.equals("боевая форма")) {
+                builder.append(checkNaturalDefence(spell, null));
+            } else if (spell.getEffect().containsKey(damageResult)) {
+                builder.append(spell.getEffect().get(damageResult));
             }
-        }
-
-        switch (damageResult) {
-            case BLOCK:
-                if (spell.getEffect().containsKey(SPV.BLOCK)) {
-                    builder.append(spell.getEffect().get(SPV.BLOCK));
-                }
-                break;
-            case BURST:
-                if (spell.getEffect().containsKey(SPV.BURST)) {
-                    builder.append(spell.getEffect().get(SPV.BURST));
-                }
-                break;
-            case DROP:
-                if (spell.getEffect().containsKey(SPV.DROP)) {
-                    builder.append(spell.getEffect().get(SPV.DROP));
-                }
         }
 
         return builder.toString();
     }
 
-    private String checkBattle() {
-        String damageResult;
-
-        mSelectGroupShieldArg = new String[]{TARGET_GROUP, mTypeDamageArg, TYPE_UNIVERSAL, TYPE_SPECIAL};
-        mSelectPersonalShieldArg = new String[]{TARGET_PERSONAL, mTypeDamageArg, TYPE_UNIVERSAL, TYPE_SPECIAL};
-
-        switch (mTypeDamage) {
-            case 1:
-//                damageResult = testCheckAttack();
-                damageResult = checkMagicAttack("Тройное лезвие", mInputDamage);
-                break;
-            case 2:
-                damageResult = testCheckAttack();
-                break;
-            case 3:
-                damageResult = checkMentalAttack(mInputDamage);
-                break;
-                default:
-                    damageResult = testCheckAttack();
-                    break;
-        }
-
-        return damageResult;
-    }
-
-    private String testCheckAttack() {
+    private String checkPhysicAttack(String attackType) {
         StringBuilder builder = new StringBuilder();
-        String selection = createSelection();
+        SPV damageResult = SPV.DROP;
+        Cursor shieldsCursor = getShields();
 
-        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                null, selection, mSelectGroupShieldArg, null);
-        int columnShieldId = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID);
-        int columnShieldName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
-        int columnShieldDefence = cursor.getColumnIndex(mColumnDefenceKey);
+        if (shieldsCursor.moveToFirst()) {
 
-        if (cursor.moveToFirst()) {
-            String shieldId = cursor.getString(columnShieldId);
-            String shieldName = cursor.getString(columnShieldName);
-            int shieldDefence = cursor.getInt(columnShieldDefence);
+            while (true) {
+                String shieldId = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID));
+                String shieldName = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME));
+                int shieldDefence = shieldsCursor.getInt(shieldsCursor.getColumnIndex(mColumnDefenceKey));
+                int shieldCost = shieldsCursor.getInt(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST));
+                int damage = mInputDamage;
 
-            Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
+                mShieldUri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
-            switch (shieldName){
-                case "Плащ тьмы":
-                    return "Заклинание промахнулось";
-                case "Хрустальный щит":
+
+                if (shieldName.equals(mActivity.getString(R.string.shields_crystal_shield))) {
                     return "Хрустальный щит блокирует любые физические атаки";
-            }
+                }
 
-            switch (checkDamage(mInputDamage, shieldDefence)) {
-                case BLOCK:
-                    return builder.append("Воздействие заблокировано").toString();
-                case BURST:
-                    mActivity.getContentResolver().delete(uri, null, null);
-                    return builder.append("Внешний щит лопнул, воздействие не прошло").toString();
-                case DROP:
-                    mActivity.getContentResolver().delete(uri, null, null);
-                    mInputDamage = mInputDamage - shieldDefence;
-                    builder.append("Внещний щит пробит\n");
+                if (shieldName.equals(mActivity.getString(R.string.shields_concave_shield))) {
+                    builder.append("Противник отправлен в полет\n");
+                }
+                damageResult = checkDamage(damage, shieldDefence);
+
+                builder.append(checkShield(damageResult, shieldName, shieldCost, shieldDefence, damage));
+
+                if (!shieldsCursor.moveToNext() || !damageResult.equals(SPV.DROP)) {
                     break;
+                }
             }
         }
-        cursor.close();
+        shieldsCursor.close();
 
-        cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                null, selection, mSelectPersonalShieldArg, null);
-        columnShieldId = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID);
-        columnShieldName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
-        columnShieldDefence = cursor.getColumnIndex(mColumnDefenceKey);
-
-        String specialEffect = "";
-        if (checkConcaveShield()) {
-            specialEffect = "\nПротивник в полете";
-        }
-
-        if (cursor.moveToFirst()) {
-            if (cursor.getCount() == 1) {
-                String shieldId = cursor.getString(columnShieldId);
-                String shieldName = cursor.getString(columnShieldName);
-                int shieldDefence = cursor.getInt(columnShieldDefence);
-                Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
-
-                if (shieldName.equals(getString(R.string.shields_mag_shield))) {
-                    switch (checkDamage(mInputDamage, shieldDefence)) {
-                        case BLOCK:
-                            shieldDefence = shieldDefence - mInputDamage;
-                            if (shieldDefence > 0) {
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, shieldDefence);
-                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, shieldDefence);
-                                contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, shieldDefence);
-
-                                mActivity.getContentResolver().update(uri, contentValues, null, null);
-
-                                return builder.append("Воздействие заблокировано, щит мага ослаб").toString();
-                            } else {
-                                mActivity.getContentResolver().delete(uri, null, null);
-                                return builder.append("Воздействие заблокировано, щит мага иссяк").toString();
-                            }
-                        case BURST:
-                            mActivity.getContentResolver().delete(uri, null, null);
-                            return builder.append("Щит мага лопнул, воздействие не прошло").toString();
-                        case DROP:
-                            mActivity.getContentResolver().delete(uri, null, null);
-                            mInputDamage = mInputDamage - shieldDefence;
-                            builder.append("Щит мага пробит\n");
-                            break;
-                    }
-                } else {
-                    switch (checkDamage(mInputDamage, shieldDefence)) {
-                        case BLOCK:
-                            return builder.append("Воздействие заблокировано").append(specialEffect).toString();
-                        case BURST:
-                            mActivity.getContentResolver().delete(uri, null, null);
-                            return builder.append("Персональный щит лопнул, воздействие не прошло").append(specialEffect).toString();
-                        case DROP:
-                            mActivity.getContentResolver().delete(uri, null, null);
-                            mInputDamage = mInputDamage - shieldDefence;
-                            builder.append("Персональный щит пробит\n");
-                            break;
-                    }
-                }
+        if (damageResult.equals(SPV.DROP)) {
+            if (mBattleForm.equals("боевая форма")) {
+                builder.append(checkNaturalDefence(null, attackType));
             } else {
-                String[] projection = new String[]{"SUM(" + mColumnDefenceKey + ") as " + mColumnDefenceSumKey};
-                cursor.close();
-                cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                        projection, selection, mSelectPersonalShieldArg, null);
-                cursor.moveToFirst();
-                int columnShieldSum = cursor.getColumnIndex(mColumnDefenceSumKey);
-                int shieldDefence = cursor.getInt(columnShieldSum);
-
-                switch (checkDamage(mInputDamage, shieldDefence)) {
-                    case BLOCK:
-                        return builder.append("Воздействие заблокировано").append(specialEffect).toString();
-                    case BURST:
-                        mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                                selection, mSelectPersonalShieldArg);
-                        return builder.append("Персональные щиты лопнули, воздействие не прошло").append(specialEffect).toString();
-                    case DROP:
-                        mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                                selection, mSelectPersonalShieldArg);
-                        mInputDamage = mInputDamage - shieldDefence;
-                        builder.append("Персональные щиты пробиты\n");
+                switch (attackType) {
+                    case "бью":
+                        builder.append("Отлетаете и падаете, сломана конечность или ребра, сотрясение мозга, теряете сознание, оглушены, среднее ранение");
                         break;
+                    case "раню":
+                        builder.append("Серьезная рваная рана, теряете сознание, оглушены, тяжелое ранение");
                 }
             }
         }
-        cursor.close();
 
-        cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null, null, null, null);
-        cursor.moveToFirst();
-
-        int columnNaturalDefence = cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE);
-        int naturalDefence = cursor.getInt(columnNaturalDefence);
-
-        if (naturalDefence > 0) {
-            switch (checkDamage(mInputDamage, naturalDefence)) {
-                case BLOCK:
-                    return builder.append("Естественная защита выдержала воздействие").append(specialEffect).toString();
-                case BURST:
-                    return builder.append("Естественная защита лопнула, воздействие ослаблено").append(specialEffect).toString();
-                case DROP:
-                    return builder.append("Естественная защита пробита, полный эффект воздействия").append(specialEffect).toString();
-            }
-        }
-
-        return builder.append("Воздействие прошло, полный эффект").append(specialEffect).toString();
+        return builder.toString();
     }
 
-    private String createSelection() {
-        return NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=? AND " +
-                "(" + NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
-                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
-                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?)";
+    private Cursor getShields() {
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
+                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
+        String[] selectionArgs = new String[]{mTypeDamageArg, TYPE_UNIVERSAL};
+        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
+        return mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null,
+                selection,
+                selectionArgs,
+                sortOrder);
     }
 
     private SPV checkDamage(int damage, int defence) {
@@ -465,6 +225,118 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         } else {
             return SPV.DROP;
         }
+    }
+
+    private String checkShield(SPV damageResult, String shieldName, int shieldCost, int shieldDefence, int damage) {
+        StringBuilder builder = new StringBuilder();
+
+        String message = "Заклинание заблокировано";
+
+        if (mTypeDamageArg.equals("физ")) {
+            message = "Атака заблокирована";
+        }
+
+        switch (damageResult) {
+            case BLOCK:
+                if (shieldName.equals(getString(R.string.shields_mag_shield)) || shieldName.equals(getString(R.string.shields_force_barrier))) {
+                    shieldCost = shieldCost - damage;
+
+                    if (shieldCost == 0) {
+                        mActivity.getContentResolver().delete(mShieldUri, null, null);
+                        builder.append(shieldName).append(" иссяк").append("\n");
+                    } else {
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, shieldCost);
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, shieldCost);
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, shieldCost);
+                        mActivity.getContentResolver().update(mShieldUri, contentValues, null, null);
+                        builder.append(shieldName).append(" ослаб").append("\n");
+                    }
+                }
+                builder.append(message);
+                break;
+            case BURST:
+                mActivity.getContentResolver().delete(mShieldUri, null, null);
+                builder.append("Щит \"").append(shieldName).append("\" лопнул\n").append(message);
+                break;
+            case DROP:
+                mInputDamage = mInputDamage - shieldDefence;
+                mActivity.getContentResolver().delete(mShieldUri, null, null);
+                builder.append("Щит \"").append(shieldName).append("\" пробит");
+                break;
+        }
+
+        return builder.append("\n").toString();
+    }
+
+    private String checkNaturalDefence(SpellsUtil.Spell spell, String attackType) {
+        StringBuilder builder = new StringBuilder();
+        ArrayMap<SPV, String> attackEffect = new ArrayMap<>();
+
+        String message = "Естественная защита выдержала";
+
+        if (attackType != null) {
+            switch (attackType) {
+                case "бью":
+                    attackEffect.put(SPV.BLOCK, "Ничего не произошло");
+                    attackEffect.put(SPV.BURST, "Легкие ранения");
+                    attackEffect.put(SPV.DROP, "Средние ранения, сбит с ног");
+                    break;
+                case "раню":
+                    attackEffect.put(SPV.BLOCK, "Легкие ранения");
+                    attackEffect.put(SPV.BURST, "Средние ранения");
+                    attackEffect.put(SPV.DROP, "Тяжелые ранения");
+            }
+        }
+
+        Cursor naturalDefenceCursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        naturalDefenceCursor.moveToFirst();
+        int naturalDefence = naturalDefenceCursor.getInt(naturalDefenceCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+
+        SPV damageResult = checkDamage(mInputDamage, naturalDefence);
+
+        if (spell != null) {
+            if (spell.getEffect().containsKey(damageResult)) {
+                builder.append(spell.getEffect().get(damageResult));
+            } else {
+                builder.append(message);
+            }
+
+            if ("огонь".equals(spell.getElement())) {
+                naturalDefence = naturalDefence - (mInputDamage / 2);
+                if (naturalDefence < 0) {
+                    naturalDefence = 0;
+                }
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, naturalDefence);
+                mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues, null, null);
+            }
+        } else {
+            builder.append(attackEffect.get(damageResult));
+        }
+
+        return builder.append("\n").toString();
+    }
+
+    private String checkBattle() {
+        String damageResult;
+
+        switch (mTypeDamage) {
+            case 1:
+                damageResult = checkMagicAttack("Тройное лезвие");
+                break;
+            case 2:
+                damageResult = checkPhysicAttack("бью");
+                break;
+            case 3:
+                damageResult = checkMentalAttack(mInputDamage);
+                break;
+                default:
+                    return "Ошибка";
+        }
+
+        return damageResult;
     }
 
     private String checkMentalAttack(int damage) {
@@ -505,21 +377,6 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.append("заклинание прошло").toString();
     }
 
-    private boolean checkConcaveShield() {
-
-        if (!mTypeDamageArg.equals("физ")) {
-            return false;
-        }
-
-        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(CONCAVE_SHIELD).build();
-
-        Cursor cursor = mActivity.getContentResolver().query(uri, null, null, null, null);
-        int count = cursor.getCount();
-        cursor.close();
-
-        return count == 1;
-    }
-
     @Override
     public void onClick(View view) {
 
@@ -529,19 +386,16 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 mTypeDamage = 1;
                 mTypeDamageArg = "маг";
                 mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE;
-                mColumnDefenceSumKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM;
                 break;
             case R.id.rb_physic_damage:
                 mTypeDamage = 2;
                 mTypeDamageArg = "физ";
                 mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE;
-                mColumnDefenceSumKey = NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE_SUM;
                 break;
             case R.id.rb_mental_damage:
                 mTypeDamage = 3;
                 mTypeDamageArg = "мент";
                 mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE;
-                mColumnDefenceSumKey = NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM;
                 break;
         }
     }

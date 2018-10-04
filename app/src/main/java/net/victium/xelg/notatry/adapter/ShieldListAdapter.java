@@ -34,7 +34,7 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
     public ShieldViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.active_shield_item, parent, false);
+        View view = inflater.inflate(R.layout.item_active_shield, parent, false);
         return new ShieldViewHolder(view);
     }
 

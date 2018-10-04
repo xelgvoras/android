@@ -68,7 +68,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
         LayoutInflater inflater = mActivity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.add_shield_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_add_shield, null);
         mShieldCost = view.findViewById(R.id.et_shield_cost);
         mShieldList = view.findViewById(R.id.sp_shields_list);
 

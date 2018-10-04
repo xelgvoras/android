@@ -67,7 +67,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.damage_dialog, null);
+        View view = inflater.inflate(R.layout.dialog_damage, null);
 
         mDamagePower = view.findViewById(R.id.et_damage_power);
         RadioButton mMagicDamageRadioButton = view.findViewById(R.id.rb_magic_damage);

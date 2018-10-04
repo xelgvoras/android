@@ -21,7 +21,7 @@ public class DuskLayersAdapter extends RecyclerView.Adapter<DuskLayersAdapter.Du
     @Override
     public DuskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.dusk_layer_item, parent, false);
+        View view = inflater.inflate(R.layout.item_dusk_layer, parent, false);
         return new DuskViewHolder(view);
     }
 

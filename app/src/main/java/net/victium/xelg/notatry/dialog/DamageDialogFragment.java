@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.victium.xelg.notatry.R;
+import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.SpellsUtil;
 import net.victium.xelg.notatry.enums.SPV;
@@ -42,10 +43,15 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String mTypeDamageArg;
     private String mColumnDefenceKey;
     private String mBattleForm;
+    private String mCharacterType;
+    private String mCharacterSide;
     private EditText mDamagePower;
     private Uri mShieldUri;
 
     public String mResultSummary;
+    public boolean mShouldBeTransformed;
+
+    private final String mGrayWolf = getString(R.string.spells_gray_wolf);
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -81,6 +87,9 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
         mActivity = getActivity();
         mBattleForm = getArguments().getString("battleForm");
+        Character character = new Character(mActivity);
+        mCharacterType = character.getCharacterType();
+        mCharacterSide = character.getCharacterSideToString();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
@@ -136,8 +145,17 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String checkMagicAttack(String spellName) {
         StringBuilder builder = new StringBuilder();
         SPV damageResult = SPV.DROP;
-        SpellsUtil.Spell spell = SpellsUtil.getSpell(spellName, mBattleForm);
+        SpellsUtil.Spell spell = SpellsUtil.getSpell(spellName, mBattleForm, mCharacterType);
         Cursor shieldsCursor = getShields();
+        final String spearOfSuffering = getString(R.string.spells_spear_of_suffering);
+        final String spearOfLight = getString(R.string.spells_spear_of_light);
+        final String taiga = getString(R.string.spells_taiga);
+        final String hazeTransylvania = getString(R.string.spells_haze_transylvania);
+        final String sparklingWall = getString(R.string.spells_sparkling_wall);
+        final String shieldRainbowSphere = getString(R.string.shields_rainbow_sphere);
+        final String shieldSphereOfNegation = getString(R.string.shields_sphere_of_negation);
+        final String shieldMagShield = getString(R.string.shields_mag_shield);
+        final String shieldHighestMagShield = getString(R.string.shields_highest_mag_shield);
 
         if (shieldsCursor.moveToFirst()) {
 
@@ -147,6 +165,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 int shieldDefence = shieldsCursor.getInt(shieldsCursor.getColumnIndex(mColumnDefenceKey));
                 int shieldCost = shieldsCursor.getInt(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST));
                 int damage = mInputDamage;
+                boolean ignoreShield = false;
 
                 mShieldUri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
@@ -155,13 +174,39 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     return "Заклинание промахнулось";
                 }
 
+                if (spellName.equals(sparklingWall) && mCharacterSide.equals("тьма")) {
+                    mInputDamage = 2 * mInputDamage;
+                }
+
                 if (spell.getType().equals("боевое")) {
                     damage = 2 * mInputDamage;
                 }
 
+                if (spellName.equals(spearOfSuffering) || spellName.equals(spearOfLight)) {
+                    if (shieldsCursor.getCount() == 1) {
+                        damage = 4 * mInputDamage;
+                    } else {
+                        return "Нет эффекта";
+                    }
+                }
+
+                if (spellName.equals(hazeTransylvania)) {
+                    if (shieldName.equals(shieldSphereOfNegation) || shieldName.equals(shieldMagShield) || shieldName.equals(shieldHighestMagShield)) {
+                        ignoreShield = true;
+                    }
+                }
+
                 damageResult = checkDamage(damage, shieldDefence);
 
-                builder.append(checkShield(damageResult, shieldName, shieldCost, shieldDefence, damage));
+                if (spellName.equals(taiga) && damageResult.equals(SPV.BLOCK) && shieldName.equals(shieldRainbowSphere)) {
+                    damageResult = SPV.BURST;
+                }
+
+                if (ignoreShield) {
+                    damageResult = SPV.DROP;
+                } else {
+                    builder.append(checkShield(damageResult, shieldName, shieldCost, shieldDefence, damage));
+                }
 
                 if (!shieldsCursor.moveToNext() || !damageResult.equals(SPV.DROP)) {
                     break;
@@ -175,6 +220,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 builder.append(checkNaturalDefence(spell, null));
             } else if (spell.getEffect().containsKey(damageResult)) {
                 builder.append(spell.getEffect().get(damageResult));
+
             }
         }
 
@@ -327,6 +373,9 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         if (spell != null) {
             if (spell.getEffect().containsKey(damageResult)) {
                 builder.append(spell.getEffect().get(damageResult));
+                if (spell.getName().equals(mGrayWolf)) {
+                    mShouldBeTransformed = true;
+                }
             } else {
                 builder.append(message);
             }

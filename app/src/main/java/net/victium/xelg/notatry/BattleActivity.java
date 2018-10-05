@@ -222,6 +222,28 @@ public class BattleActivity extends AppCompatActivity implements
         return cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
     }
 
+    private int transform() {
+        String battleForm = getCurrentForm();
+
+        if (battleForm.equals("человек")) {
+            battleForm = "боевая форма";
+        } else {
+            battleForm = "человек";
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
+        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                null, null);
+
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
+        String[] selectionArgs = new String[]{"персональный"};
+        int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
+        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+
+        return count;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -251,25 +273,7 @@ public class BattleActivity extends AppCompatActivity implements
 
         if (itemId == R.id.action_transform) {
 
-            String battleForm = getCurrentForm();
-
-            if (battleForm.equals("человек")) {
-                battleForm = "боевая форма";
-            } else {
-                battleForm = "человек";
-            }
-
-            item.setTitle(battleForm);
-
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
-            getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
-                    null, null);
-
-            String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
-            String[] selectionArgs = new String[]{"персональный"};
-            int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
-            mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+            int count = transform();
 
             String transformMessage = "Выполнена трансформация";
             if (count > 0) {
@@ -288,7 +292,11 @@ public class BattleActivity extends AppCompatActivity implements
         if (dialogFragment instanceof AddShieldDialogFragment || dialogFragment instanceof UpdateShieldDialogFragment) {
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         } else if (dialogFragment instanceof DamageDialogFragment) {
-            mTestJournal.setText(((DamageDialogFragment) dialogFragment).mResultSummary);
+            DamageDialogFragment damageDialogFragment = (DamageDialogFragment) dialogFragment;
+            mTestJournal.setText(damageDialogFragment.mResultSummary);
+            if (damageDialogFragment.mShouldBeTransformed) {
+                transform();
+            }
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         }
     }

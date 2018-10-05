@@ -93,9 +93,10 @@
         <item>@string/spells_pillar_of_fire</item>
         <item>@string/spells_ring_of_fire</item>
         <item>@string/spells_wall_of_fire</item>
-        <item>@string/spells_ring_of_shaab</item>
-        <item>@string/spells_personal_kiss_of_echidna</item>
-        <item>@string/spells_mass_kiss_of_echidna</item>
+        <item>@string/spells_ring_of_ice</item>
+        <item>@string/spells_blizzard</item>
+        <item>@string/spells_kiss_of_echidna</item>
+        <item>@string/spells_dark_rain</item>
         <item>@string/spells_white_sword</item>
         <item>@string/spells_spear_of_suffering</item>
         <item>@string/spells_spear_of_light</item>
@@ -112,6 +113,7 @@
         <item>@string/spells_fetters</item>
         <item>@string/spells_gray_prayer</item>
         <item>@string/spells_freeze</item>
+        <item>@string/spells_ring_of_shaab</item>
         <item>@string/spells_mass_press</item>
         <item>@string/spells_expropriation</item>
     </array>

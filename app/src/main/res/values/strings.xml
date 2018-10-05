@@ -238,9 +238,10 @@
     <string name="spells_pillar_of_fire">Столп огня (Подгорает)</string>
     <string name="spells_ring_of_fire">Кольцо огня</string>
     <string name="spells_wall_of_fire">Стена огня</string>
-    <string name="spells_ring_of_shaab">Кольцо Шааба</string>
-    <string name="spells_personal_kiss_of_echidna">Поцелуй ехидны (перс)</string>
-    <string name="spells_mass_kiss_of_echidna">Поцелуй ехидны (масс)</string>
+    <string name="spells_ring_of_ice">Кольцо холода</string>
+    <string name="spells_blizzard">Близзард</string>
+    <string name="spells_kiss_of_echidna">Поцелуй ехидны</string>
+    <string name="spells_dark_rain">Черный дождь</string>
     <string name="spells_white_sword">Белый меч</string>
     <string name="spells_spear_of_suffering">Копье страданий</string>
     <string name="spells_spear_of_light">Копье света</string>
@@ -257,7 +258,9 @@
     <string name="spells_gray_wolf">Серый волк</string>
     <string name="spells_fetters">Путы Захви</string>
     <string name="spells_gray_prayer">Серый молебен</string>
+    <string name="spells_gray_prayer_mass">Серый молебен (массовое)</string>
     <string name="spells_freeze">Фриз</string>
+    <string name="spells_ring_of_shaab">Кольцо Шааба</string>
     <string name="spells_mass_press">Масс пресс</string>
     <string name="spells_expropriation">Экспроприация</string>
 

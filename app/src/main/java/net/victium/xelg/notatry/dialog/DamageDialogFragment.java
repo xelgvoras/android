@@ -51,7 +51,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     public String mResultSummary;
     public boolean mShouldBeTransformed;
 
-    private final String mGrayWolf = getString(R.string.spells_gray_wolf);
+    private final String mGrayWolf = "Серый волк";
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -198,8 +198,10 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                 damageResult = checkDamage(damage, shieldDefence);
 
-                if (spellName.equals(taiga) && damageResult.equals(SPV.BLOCK) && shieldName.equals(shieldRainbowSphere)) {
-                    damageResult = SPV.BURST;
+                if (spellName.equals(taiga) || spellName.equals(hazeTransylvania)) {
+                    if (damageResult.equals(SPV.BLOCK) && shieldName.equals(shieldRainbowSphere)) {
+                        damageResult = SPV.BURST;
+                    }
                 }
 
                 if (ignoreShield) {

@@ -1,7 +1,6 @@
 package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;

@@ -17,9 +17,16 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
     private Cursor mCursor;
     private Context mContext;
 
-    public ShieldListAdapter(Cursor mCursor, Context mContext) {
+    private final ShieldListAdapterOnClickHandler mClickHandler;
+
+    public interface  ShieldListAdapterOnClickHandler {
+        void onClick(long itemId);
+    }
+
+    public ShieldListAdapter(Cursor mCursor, Context mContext, ShieldListAdapterOnClickHandler clickHandler) {
         this.mCursor = mCursor;
         this.mContext = mContext;
+        mClickHandler = clickHandler;
     }
 
     @NonNull
@@ -27,7 +34,7 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
     public ShieldViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.active_shield_item, parent, false);
+        View view = inflater.inflate(R.layout.item_active_shield, parent, false);
         return new ShieldViewHolder(view);
     }
 
@@ -70,7 +77,7 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
         }
     }
 
-    class ShieldViewHolder extends RecyclerView.ViewHolder {
+    class ShieldViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView shieldNameTextView;
         TextView shieldCostTextView;
@@ -87,6 +94,14 @@ public class ShieldListAdapter extends RecyclerView.Adapter<ShieldListAdapter.Sh
             physicDefenceTextView = itemView.findViewById(R.id.tv_physic_defence);
             mentalDefenceTextView = itemView.findViewById(R.id.tv_mental_defence);
             shieldRangeTextView = itemView.findViewById(R.id.tv_shield_range);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            long itemId = (long) v.getTag();
+            mClickHandler.onClick(itemId);
         }
     }
 }

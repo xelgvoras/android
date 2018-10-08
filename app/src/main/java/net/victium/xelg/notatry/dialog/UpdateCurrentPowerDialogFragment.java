@@ -1,11 +1,11 @@
 package net.victium.xelg.notatry.dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -17,13 +17,12 @@ import android.widget.Toast;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 
 import java.util.ArrayList;
 
 public class UpdateCurrentPowerDialogFragment extends DialogFragment {
 
-    private SQLiteDatabase mDb;
+    private Activity mActivity;
     private EditText mInputPowerEditText;
     private int mCurrentPower;
     private int mPowerLimit;
@@ -50,14 +49,14 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        mActivity = getActivity();
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
         mInputPowerEditText = new EditText(getActivity());
         mInputPowerEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         mInputPowerEditText.setHint("количество у.е.");
 
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(getActivity());
-        mDb = notATryDbHelper.getWritableDatabase();
         mCurrentPower = getMagicPower(getCharacterStatus(), NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER);
         mPowerLimit = getMagicPower(getCharacterStatus(), NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT);
 
@@ -105,6 +104,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
             Toast.makeText(getActivity(), "Вы не можете превысить свой лимит силы", Toast.LENGTH_LONG).show();
             newValue = mPowerLimit;
         } else if (newValue < 0) {
+            // TODO(13) Выводить только сообщение с ошибкой, но не тратить сам резерв (?)
             Toast.makeText(getActivity(), "Резерв не может быть отрицательным", Toast.LENGTH_LONG).show();
             newValue = 0;
         }
@@ -136,15 +136,8 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
 
     private Cursor getCharacterStatus() {
 
-        return mDb.query(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        return mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
     }
 
     private int getMagicPower(Cursor cursor, String columnName) {
@@ -161,11 +154,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
 
     private void updateCharacterStatus(ContentValues contentValues) {
 
-        mDb.update(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                contentValues,
-                null,
-                null
-        );
+        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                contentValues, null, null);
     }
 }

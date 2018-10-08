@@ -1,46 +1,50 @@
 package net.victium.xelg.notatry;
 
+import android.content.ContentValues;
+import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.NotATryDbHelper;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
+
+import java.util.ArrayList;
 
 public class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
         DamageDialogFragment.DamageDialogListener,
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        ShieldListAdapter.ShieldListAdapterOnClickHandler,
+        UpdateShieldDialogFragment.UpdateShieldDialogListener {
 
     private TextView mFullNameTextView;
+    private TextView mBattleFormTextView;
     private TextView mPersonalInfoTextView;
     private TextView mMagicPowerTextView;
     private RecyclerView mActiveShieldsRecyclerView;
     private RecyclerView mBattleJournalRecyclerView;
-    private Button mCheckActionButton;
-    private Button mShieldScanButton;
-    private FloatingActionButton mAddShieldActionButton;
 
     /* Для тестов */
     private TextView mTestJournal;
 
-    private SQLiteDatabase mDb;
+    private Menu mMenu;
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
 
@@ -49,27 +53,35 @@ public class BattleActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_battle);
 
-        NotATryDbHelper notATryDbHelper = new NotATryDbHelper(this);
-        mDb = notATryDbHelper.getWritableDatabase();
-
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
+        mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
-        mMagicPowerTextView.setOnClickListener(this);
         mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
-        mCheckActionButton = findViewById(R.id.bt_check_damage);
-        mShieldScanButton = findViewById(R.id.bt_shield_scan);
-        mAddShieldActionButton = findViewById(R.id.fab_add_shield);
+
+        mMagicPowerTextView.setOnClickListener(this);
+        mBattleFormTextView.setOnClickListener(this);
+
+        ArrayList<String> typeList = new ArrayList<>();
+        typeList.add(getString(R.string.pref_type_value_flipflop));
+        typeList.add(getString(R.string.pref_type_value_vampire));
+        typeList.add(getString(R.string.pref_type_value_werewolf));
+        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
+
+        mCharacter = new Character(this);
+        String type = mCharacter.getCharacterType();
+        if (typeList.contains(type)) {
+            mBattleFormTextView.setVisibility(View.VISIBLE);
+            mBattleFormTextView.setText(getCurrentForm());
+        }
 
         /* Для тестов */
         mTestJournal = findViewById(R.id.tv_test_journal);
 
         mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this);
+        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
         mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
-
-        mCharacter = new Character(this);
 
         setupScreen();
 
@@ -108,37 +120,22 @@ public class BattleActivity extends AppCompatActivity implements
 
     private Cursor getCharacterStatus() {
 
-        return mDb.query(
-                NotATryContract.CharacterStatusEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        return getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
     }
 
     private Cursor getAllShields(String[] columns, String selection, String[] selectionArgs) {
 
-        return mDb.query(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                columns,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC"
-        );
+        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                columns, selection, selectionArgs, NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC");
     }
 
     private void removeShield(long id) {
 
-        mDb.delete(
-                NotATryContract.ActiveShieldsEntry.TABLE_NAME,
-                NotATryContract.ActiveShieldsEntry._ID + "=" + id,
-                null
-        );
+        String stringId = String.valueOf(id);
+        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(stringId).build();
+
+        getContentResolver().delete(uri, null, null);
     }
 
     public void onClickAddShield(View view) {
@@ -149,7 +146,12 @@ public class BattleActivity extends AppCompatActivity implements
 
     public void onClickCheckDamage(View view) {
 
+        Bundle args = new Bundle();
+        String battleForm = getCurrentForm();
+        args.putString("battleForm", battleForm);
+
         DialogFragment dialogFragment = new DamageDialogFragment();
+        dialogFragment.setArguments(args);
         dialogFragment.show(getSupportFragmentManager(), "CheckDamageDialogFragment");
     }
 
@@ -226,13 +228,50 @@ public class BattleActivity extends AppCompatActivity implements
         }
     }
 
+    private String getCurrentForm() {
+        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+        String returnForm = cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
+        cursor.close();
+
+        return returnForm;
+    }
+
+    private int transform() {
+        String battleForm = getCurrentForm();
+
+        if (battleForm.equals("человек")) {
+            battleForm = "боевая форма";
+        } else {
+            battleForm = "человек";
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
+        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                null, null);
+        mBattleFormTextView.setText(getCurrentForm());
+
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
+        String[] selectionArgs = new String[]{"персональный"};
+        int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
+        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+
+        return count;
+    }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
 
-        if (dialogFragment instanceof AddShieldDialogFragment) {
+        if (dialogFragment instanceof AddShieldDialogFragment || dialogFragment instanceof UpdateShieldDialogFragment) {
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         } else if (dialogFragment instanceof DamageDialogFragment) {
-            mTestJournal.setText(((DamageDialogFragment) dialogFragment).mResultSummary);
+            DamageDialogFragment damageDialogFragment = (DamageDialogFragment) dialogFragment;
+            mTestJournal.setText(damageDialogFragment.mResultSummary);
+            if (damageDialogFragment.mShouldBeTransformed) {
+                transform();
+            }
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         }
     }
@@ -247,6 +286,15 @@ public class BattleActivity extends AppCompatActivity implements
             if (textViewId == R.id.tv_current_power) {
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
+            } else if (textViewId == R.id.tv_character_battle_form) {
+                int count = transform();
+
+                String transformMessage = "Выполнена трансформация";
+                if (count > 0) {
+                    transformMessage = transformMessage + ", все персональные щиты уничтожены";
+                }
+
+                mTestJournal.setText(transformMessage);
             }
         }
     }
@@ -254,5 +302,16 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+    }
+
+    @Override
+    public void onClick(long itemId) {
+        Bundle args = new Bundle();
+        String stringItemId = String.valueOf(itemId);
+        args.putString("itemId", stringItemId);
+
+        DialogFragment dialogFragment = new UpdateShieldDialogFragment();
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getSupportFragmentManager(), "UpdateShieldPower");
     }
 }

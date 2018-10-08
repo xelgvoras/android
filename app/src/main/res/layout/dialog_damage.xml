@@ -94,16 +94,17 @@
 
     </FrameLayout>
 
-    <!--<TextView
+    <TextView
+        android:id="@+id/tv_attack_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:text="Заклинание (не обязательно)"/>
+        android:text="Заклинание"/>
 
     <Spinner
-        android:id="@+id/sp_spells_list"
+        android:id="@+id/sp_attack_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"/>-->
+        android:padding="8dp"/>
 
 </LinearLayout>

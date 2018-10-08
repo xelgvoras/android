@@ -121,7 +121,7 @@
     <array name="attacks_array">
         <item>@string/attacks_beat</item>
         <item>@string/attacks_wound</item>
-        <item>@string/attacks_scuffle</item>
-        <item>@string/attacks_stun</item>
+        <!--<item>@string/attacks_scuffle</item>
+        <item>@string/attacks_stun</item>-->
     </array>
 </resources>

@@ -36,6 +36,7 @@ public class BattleActivity extends AppCompatActivity implements
         UpdateShieldDialogFragment.UpdateShieldDialogListener {
 
     private TextView mFullNameTextView;
+    private TextView mBattleFormTextView;
     private TextView mPersonalInfoTextView;
     private TextView mMagicPowerTextView;
     private RecyclerView mActiveShieldsRecyclerView;
@@ -54,10 +55,26 @@ public class BattleActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_battle);
 
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
+        mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
-        mMagicPowerTextView.setOnClickListener(this);
         mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
+
+        mMagicPowerTextView.setOnClickListener(this);
+        mBattleFormTextView.setOnClickListener(this);
+
+        ArrayList<String> typeList = new ArrayList<>();
+        typeList.add(getString(R.string.pref_type_value_flipflop));
+        typeList.add(getString(R.string.pref_type_value_vampire));
+        typeList.add(getString(R.string.pref_type_value_werewolf));
+        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
+
+        mCharacter = new Character(this);
+        String type = mCharacter.getCharacterType();
+        if (typeList.contains(type)) {
+            mBattleFormTextView.setVisibility(View.VISIBLE);
+            mBattleFormTextView.setText(getCurrentForm());
+        }
 
         /* Для тестов */
         mTestJournal = findViewById(R.id.tv_test_journal);
@@ -66,8 +83,6 @@ public class BattleActivity extends AppCompatActivity implements
         mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
         mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
-
-        mCharacter = new Character(this);
 
         setupScreen();
 
@@ -218,8 +233,10 @@ public class BattleActivity extends AppCompatActivity implements
         Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                 null, null, null, null);
         cursor.moveToFirst();
+        String returnForm = cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
+        cursor.close();
 
-        return cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
+        return returnForm;
     }
 
     private int transform() {
@@ -235,6 +252,7 @@ public class BattleActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
         getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
                 null, null);
+        mBattleFormTextView.setText(getCurrentForm());
 
         String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
         String[] selectionArgs = new String[]{"персональный"};
@@ -242,48 +260,6 @@ public class BattleActivity extends AppCompatActivity implements
         mShieldListAdapter.swapCursor(getAllShields(null, null, null));
 
         return count;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        mMenu = menu;
-
-        ArrayList<String> typeList = new ArrayList<>();
-        typeList.add(getString(R.string.pref_type_value_flipflop));
-        typeList.add(getString(R.string.pref_type_value_vampire));
-        typeList.add(getString(R.string.pref_type_value_werewolf));
-        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
-
-        String type = mCharacter.getCharacterType();
-
-        if (typeList.contains(type)) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.battle, menu);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-
-        if (itemId == R.id.action_transform) {
-
-            int count = transform();
-
-            String transformMessage = "Выполнена трансформация";
-            if (count > 0) {
-                transformMessage = transformMessage + ", все персональные щиты уничтожены";
-            }
-
-            mTestJournal.setText(transformMessage);
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -311,6 +287,15 @@ public class BattleActivity extends AppCompatActivity implements
             if (textViewId == R.id.tv_current_power) {
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
+            } else if (textViewId == R.id.tv_character_battle_form) {
+                int count = transform();
+
+                String transformMessage = "Выполнена трансформация";
+                if (count > 0) {
+                    transformMessage = transformMessage + ", все персональные щиты уничтожены";
+                }
+
+                mTestJournal.setText(transformMessage);
             }
         }
     }

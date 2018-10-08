@@ -51,7 +51,6 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     public String mResultSummary;
     public boolean mShouldBeTransformed;
 
-    private final String mGrayWolf = getString(R.string.spells_gray_wolf);
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -346,6 +345,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String checkNaturalDefence(SpellsUtil.Spell spell, String attackType) {
         StringBuilder builder = new StringBuilder();
         ArrayMap<SPV, String> attackEffect = new ArrayMap<>();
+        final String mGrayWolf = getString(R.string.spells_gray_wolf);
 
         String message = "Естественная защита выдержала";
 

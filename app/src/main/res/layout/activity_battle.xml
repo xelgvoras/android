@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
+    <!-- TODO(15) Добавить кнопку "Закончить бой" -->
+    <!-- По окончании боя восстанавливаются реакции, естественная защита и врожденные щиты -->
+    <!-- TODO(16) Добавить отображение текущей естественной защиты -->
+    <!-- Должна быть редактируема, с возможностью увеличить/уменьшить -->
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

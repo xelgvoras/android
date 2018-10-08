@@ -104,6 +104,8 @@ public class Character {
 
         int amuletsLimit;
 
+        // TODO(bug) У вампиров и просто оборотней - 0 автоамулетов
+
         if (characterLevel >= 3) {
             amuletsLimit = 1;
         } else if (characterLevel >= 1) {

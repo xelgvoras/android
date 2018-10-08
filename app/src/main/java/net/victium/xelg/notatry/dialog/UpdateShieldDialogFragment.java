@@ -18,7 +18,7 @@ import android.widget.Toast;
 import net.victium.xelg.notatry.BattleActivity;
 import net.victium.xelg.notatry.ShieldsActivity;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.ShieldUtil;
+import net.victium.xelg.notatry.utilities.ShieldUtil;
 
 public class UpdateShieldDialogFragment extends DialogFragment {
 
@@ -106,6 +106,10 @@ public class UpdateShieldDialogFragment extends DialogFragment {
     }
 
     private void updateShield() {
+
+        // TODO(bug) Если щит изначально больше двух резервов, усиление сбрасывает силу щита до 2х резервов
+        // С точки зрения логики, если щит возможно усилить, его необходимо усилить до допустимого предела
+        // Если щит невозможно усилить, оставить текущую силу щита
 
         String updateMessage = "Щит успешно усилен";
         String errorMessage = "Можно указывать только положительные, целые числа больше нуля";

@@ -9,7 +9,6 @@ import android.support.v7.preference.PreferenceManager;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.NotATryDbHelper;
-import net.victium.xelg.notatry.data.ShieldUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;

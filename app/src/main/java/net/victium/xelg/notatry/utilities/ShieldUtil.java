@@ -1,4 +1,4 @@
-package net.victium.xelg.notatry.data;
+package net.victium.xelg.notatry.utilities;
 
 import android.content.Context;
 
@@ -244,6 +244,7 @@ public class ShieldUtil {
                 false,
                 6
         ));
+        // TODO(bug) Минимальная стоимость хрустального щита - 512 у.е.
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_crystal_shield),
                 "физ",

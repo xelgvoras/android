@@ -27,6 +27,8 @@ public class ShieldsActivity extends AppCompatActivity implements
     private ShieldListAdapter mAdapter;
     private TextView mCurrentPower;
 
+    // TODO(17) Добавить трансформацию в боевую форму
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

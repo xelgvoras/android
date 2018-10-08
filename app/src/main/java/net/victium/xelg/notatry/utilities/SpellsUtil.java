@@ -1,4 +1,4 @@
-package net.victium.xelg.notatry.data;
+package net.victium.xelg.notatry.utilities;
 
 import android.content.Context;
 import android.util.ArrayMap;
@@ -30,6 +30,8 @@ public class SpellsUtil {
     private SpellsUtil(){}
 
     public static class Spell {
+
+        // TODO(19) Добавить минимальную стоимость заклинаний, отметить с фиксированной стоимостью
 
         private String mName;
         private String mTarget;
@@ -191,6 +193,7 @@ public class SpellsUtil {
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
                 break;
             case "Тайга":
+                // TODO(bug) Объединить заклинания Тайга и Вифлеемский огонь
                 effectArrayMap.put(SPV.DROP, "Если пошевелитесь: " + YOU_DIE);
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 break;
@@ -324,6 +327,7 @@ public class SpellsUtil {
                 returnSpell.setType(TYPE_UNIVERSAL);
                 break;
             case "Экспроприация":
+                // TODO(bug) эффект только если уровень атакующего выше ващего
                 if (characterType.equals(VAMPIRE) || BATTLE_FORM.equals(battleForm)) {
                     effectArrayMap.put(SPV.BLOCK, NO_EFFECT);
                     effectArrayMap.put(SPV.BURST, NO_EFFECT);

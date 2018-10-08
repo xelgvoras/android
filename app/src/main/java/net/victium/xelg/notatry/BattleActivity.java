@@ -39,6 +39,9 @@ public class BattleActivity extends AppCompatActivity implements
     private TextView mPersonalInfoTextView;
     private TextView mMagicPowerTextView;
     private RecyclerView mActiveShieldsRecyclerView;
+    // TODO(16) Реализовать журнал боя, новое сообщение должно быть сверху
+    // Между сообщениями должен быть разделитель
+    // В сообщении должна быть информация о входящем воздействии
     private RecyclerView mBattleJournalRecyclerView;
 
     /* Для тестов */
@@ -48,6 +51,7 @@ public class BattleActivity extends AppCompatActivity implements
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
 
+    // TODO(bug) В начале боя Вампиры автоматически трансформирутся
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

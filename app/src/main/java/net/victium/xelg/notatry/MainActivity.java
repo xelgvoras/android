@@ -265,6 +265,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
+        // TODO(bug) При изменении типа персонажа или резерва, обновлять размер естественной защиты
+
         ContentValues contentValues;
 
         if (key.equals(getString(R.string.pref_full_name_key))) {

@@ -25,7 +25,7 @@ import android.widget.Toast;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.SpellsUtil;
+import net.victium.xelg.notatry.utilities.SpellsUtil;
 import net.victium.xelg.notatry.enums.SPV;
 
 public class DamageDialogFragment extends DialogFragment implements View.OnClickListener,
@@ -168,7 +168,11 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                 mShieldUri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
+                // TODO(bug) Вакуумный удар, игнорирует любые щиты, кроме универсальных
+                // СПВ для заклинания: ничего - пробит - пробит
+                // TODO(bug) Путы захви блокируются любой магической или универсальной защитой, не снижают силу щитов
 
+                // TODO(bug) Плащ тьмы должен укрывать также от физических атак
                 if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness)) && spell.getTarget().equals("напр")) {
                     return "Заклинание промахнулось";
                 }
@@ -189,6 +193,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     }
                 }
 
+                // TODO(bug) Марево Трансильвании игнорирует силовой барьер
                 if (spellName.equals(hazeTransylvania)) {
                     if (shieldName.equals(shieldSphereOfNegation) || shieldName.equals(shieldMagShield) || shieldName.equals(shieldHighestMagShield)) {
                         ignoreShield = true;
@@ -197,6 +202,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                 damageResult = checkDamage(damage, shieldDefence);
 
+                // TODO(bug) Тайга больше не лопает радужную сферу
                 if (spellName.equals(taiga) || spellName.equals(hazeTransylvania)) {
                     if (damageResult.equals(SPV.BLOCK) && shieldName.equals(shieldRainbowSphere)) {
                         damageResult = SPV.BURST;
@@ -318,6 +324,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                     if (shieldCost == 0) {
                         mActivity.getContentResolver().delete(mShieldUri, null, null);
+                        // TODO(bug) изменить текст записи с "иссяк" на "лопнул"
                         builder.append(shieldName).append(" иссяк").append("\n");
                     } else {
                         ContentValues contentValues = new ContentValues();

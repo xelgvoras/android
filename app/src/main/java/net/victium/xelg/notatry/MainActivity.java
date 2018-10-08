@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements
                 rounds = 999;
             }
 
-            contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER, duskLayer);
+            contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER, duskLayer++);
             contentValues.put(NotATryContract.DuskLayersSummaryEntry.COLUMN_ROUNDS, rounds);
 
             getContentResolver().insert(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI, contentValues);

@@ -19,6 +19,7 @@ import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateNaturalDefenceDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 import net.victium.xelg.notatry.utilities.TransformUtil;
 
@@ -30,12 +31,14 @@ public class BattleActivity extends AppCompatActivity implements
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
         View.OnClickListener,
         ShieldListAdapter.ShieldListAdapterOnClickHandler,
-        UpdateShieldDialogFragment.UpdateShieldDialogListener {
+        UpdateShieldDialogFragment.UpdateShieldDialogListener,
+        UpdateNaturalDefenceDialogFragment.UpdateNaturalDefenceDialogListener {
 
     private TextView mFullNameTextView;
     private TextView mBattleFormTextView;
     private TextView mPersonalInfoTextView;
     private TextView mMagicPowerTextView;
+    private TextView mNaturalDefenceTextView;
     private RecyclerView mActiveShieldsRecyclerView;
     // TODO(16) Реализовать журнал боя, новое сообщение должно быть сверху
     // Между сообщениями должен быть разделитель
@@ -58,10 +61,12 @@ public class BattleActivity extends AppCompatActivity implements
         mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
+        mNaturalDefenceTextView = findViewById(R.id.tv_natural_defence);
         mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
 
         mMagicPowerTextView.setOnClickListener(this);
         mBattleFormTextView.setOnClickListener(this);
+        mNaturalDefenceTextView.setOnClickListener(this);
 
         /* Для тестов */
         mTestJournal = findViewById(R.id.tv_test_journal);
@@ -121,6 +126,15 @@ public class BattleActivity extends AppCompatActivity implements
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+
+        setupNaturalDefence(getCharacterStatus());
+    }
+
+    private void setupNaturalDefence(Cursor cursor) {
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+        cursor.close();
     }
 
     private Cursor getCharacterStatus() {
@@ -233,44 +247,6 @@ public class BattleActivity extends AppCompatActivity implements
         }
     }
 
-    /*private String getCurrentForm() {
-        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null, null, null, null);
-        cursor.moveToFirst();
-        String returnForm = cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
-        cursor.close();
-
-        return returnForm;
-    }*/
-
-    /*private void transform() {
-        String battleForm = getCurrentForm();
-
-        if (battleForm.equals("человек")) {
-            battleForm = "боевая форма";
-        } else {
-            battleForm = "человек";
-        }
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
-        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
-                null, null);
-        mBattleFormTextView.setText(getCurrentForm());
-
-        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
-        String[] selectionArgs = new String[]{"персональный"};
-        int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
-        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
-
-        String transformMessage = "Выполнена трансформация";
-        if (count > 0) {
-            transformMessage = transformMessage + ", все персональные щиты уничтожены";
-        }
-
-        mTestJournal.setText(transformMessage);
-    }*/
-
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
 
@@ -302,6 +278,9 @@ public class BattleActivity extends AppCompatActivity implements
                 mTestJournal.setText(TransformUtil.makeTransform(this));
                 mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
                 mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+            } else if (textViewId == R.id.tv_natural_defence) {
+                DialogFragment dialogFragment = new UpdateNaturalDefenceDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "UpdateNaturalDefenceDialogFragment");
             }
         }
     }
@@ -309,6 +288,7 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+        setupNaturalDefence(getCharacterStatus());
     }
 
     @Override

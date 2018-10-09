@@ -17,6 +17,7 @@ import android.widget.Toast;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
+import net.victium.xelg.notatry.enums.Operation;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
             mListener = (UpdateCurrentPowerDialogListener) context;
         } catch (ClassCastException exception) {
             throw new ClassCastException(context.toString()
-                    + " must implement NoticeDialogListener");
+                    + " must implement UpdateCurrentPowerDialogListener");
         }
     }
 
@@ -53,13 +54,12 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
-        mInputPowerEditText = new EditText(getActivity());
+        mInputPowerEditText = new EditText(mActivity);
         mInputPowerEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         mInputPowerEditText.setHint("количество у.е.");
 
         mCurrentPower = getMagicPower(getCharacterStatus(), NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER);
         mPowerLimit = getMagicPower(getCharacterStatus(), NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT);
-
 
         builder.setTitle("Изменить резерв силы")
                 .setMessage("Укажите количество у.е., которые вы хотите добавить в резерв или потратить\n\n" +
@@ -87,7 +87,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
 
         String valueString = mInputPowerEditText.getText().toString();
         if (valueString.length() == 0) {
-            Toast.makeText(getActivity(), "Вы не указали количество у.е.", Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, "Вы не указали количество у.е.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -101,11 +101,11 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
         }
 
         if (newValue > mPowerLimit) {
-            Toast.makeText(getActivity(), "Вы не можете превысить свой лимит силы", Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, "Вы не можете превысить свой лимит силы", Toast.LENGTH_LONG).show();
             newValue = mPowerLimit;
         } else if (newValue < 0) {
             // COMPLETED(13) Выводить только сообщение с ошибкой, но не тратить сам резерв (?)
-            Toast.makeText(getActivity(), "Нельзя потратить больше у.е., чем есть в резерве", Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, "Нельзя потратить больше у.е., чем есть в резерве", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -118,7 +118,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
         vops.add(getString(R.string.pref_type_value_werewolf));
         vops.add(getString(R.string.pref_type_value_werewolf_mag));
 
-        Character character = new Character(getActivity());
+        Character character = new Character(mActivity);
 
         for (String type : vops) {
             if (character.getCharacterType().equals(type)) {
@@ -127,11 +127,6 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
         }
 
         updateCharacterStatus(contentValues);
-    }
-
-    enum Operation{
-        ADD_POWER,
-        DEL_POWER
     }
 
     private Cursor getCharacterStatus() {

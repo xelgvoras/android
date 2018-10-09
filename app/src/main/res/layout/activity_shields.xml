@@ -126,13 +126,22 @@
                 android:id="@+id/tv_character_battle_form"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingRight="16dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
                 style="@style/Base.TextAppearance.AppCompat.Medium"
                 android:textColor="@color/materialBlue"
                 android:gravity="center_vertical|end"
                 android:visibility="invisible"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_natural_defence"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            style="@style/Base.TextAppearance.AppCompat.Title"
+            android:text="Естественная защита: 40"/>
 
         <View
             android:layout_width="match_parent"

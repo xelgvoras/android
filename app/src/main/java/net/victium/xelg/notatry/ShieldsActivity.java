@@ -17,6 +17,7 @@ import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateNaturalDefenceDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 import net.victium.xelg.notatry.utilities.TransformUtil;
 
@@ -27,11 +28,13 @@ public class ShieldsActivity extends AppCompatActivity implements
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
         View.OnClickListener,
         ShieldListAdapter.ShieldListAdapterOnClickHandler,
-        UpdateShieldDialogFragment.UpdateShieldDialogListener {
+        UpdateShieldDialogFragment.UpdateShieldDialogListener,
+        UpdateNaturalDefenceDialogFragment.UpdateNaturalDefenceDialogListener {
 
     private ShieldListAdapter mAdapter;
     private TextView mCurrentPower;
     private TextView mBattleFormTextView;
+    private TextView mNaturalDefenceTextView;
 
     // COMPLETED(17) Добавить трансформацию в боевую форму
 
@@ -43,9 +46,11 @@ public class ShieldsActivity extends AppCompatActivity implements
         RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mCurrentPower = findViewById(R.id.tv_current_power);
         mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
+        mNaturalDefenceTextView = findViewById(R.id.tv_natural_defence);
 
         mCurrentPower.setOnClickListener(this);
         mBattleFormTextView.setOnClickListener(this);
+        mNaturalDefenceTextView.setOnClickListener(this);
 
         ArrayList<String> typeList = new ArrayList<>();
         typeList.add(getString(R.string.pref_type_value_flipflop));
@@ -66,6 +71,7 @@ public class ShieldsActivity extends AppCompatActivity implements
         activeShieldsRecyclerView.setAdapter(mAdapter);
 
         setupCurrentPower(getCharacterStatus());
+        setupNaturalDefence(getCharacterStatus());
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -118,6 +124,13 @@ public class ShieldsActivity extends AppCompatActivity implements
         cursor.close();
     }
 
+    private void setupNaturalDefence(Cursor cursor) {
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+        cursor.close();
+    }
+
     private void removeShield(long id) {
         Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
 
@@ -138,6 +151,7 @@ public class ShieldsActivity extends AppCompatActivity implements
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
         setupCurrentPower(getCharacterStatus());
+        setupNaturalDefence(getCharacterStatus());
     }
 
     @Override
@@ -154,6 +168,9 @@ public class ShieldsActivity extends AppCompatActivity implements
                 Toast.makeText(this, TransformUtil.makeTransform(this), Toast.LENGTH_LONG).show();
                 mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
                 mAdapter.swapCursor(getAllShields());
+            } else if (textViewId == R.id.tv_natural_defence) {
+                DialogFragment dialogFragment = new UpdateNaturalDefenceDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "UpdateNaturalDefenceDialogFragment");
             }
         }
     }

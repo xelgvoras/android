@@ -58,6 +58,14 @@
                 style="@style/Base.TextAppearance.AppCompat.Title"
                 android:text="Резерв силы: 25/60"/>
 
+            <TextView
+                android:id="@+id/tv_natural_defence"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                android:text="Естественная защита: 40"/>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

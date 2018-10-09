@@ -28,6 +28,8 @@ import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.utilities.SpellsUtil;
 import net.victium.xelg.notatry.enums.SPV;
 
+import java.util.ArrayList;
+
 public class DamageDialogFragment extends DialogFragment implements View.OnClickListener,
         AdapterView.OnItemSelectedListener {
 
@@ -141,26 +143,59 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.create();
     }
 
+    private String checkBattle(String selectedAttack) {
+        String damageResult;
+
+        switch (mTypeDamage) {
+            case 1:
+                damageResult = checkMagicAttack(selectedAttack);
+                break;
+            case 2:
+                damageResult = checkPhysicAttack(selectedAttack);
+                break;
+            case 3:
+                damageResult = checkMentalAttack(mInputDamage);
+                break;
+            default:
+                return "Ошибка";
+        }
+
+        return damageResult;
+    }
+
+    @NonNull
     private String checkMagicAttack(String spellName) {
         StringBuilder builder = new StringBuilder();
         SPV damageResult = SPV.DROP;
         SpellsUtil.Spell spell = SpellsUtil.getSpell(spellName, mBattleForm, mCharacterType);
         Cursor shieldsCursor = getShields();
-        final String spearOfSuffering = getString(R.string.spells_spear_of_suffering);
-        final String spearOfLight = getString(R.string.spells_spear_of_light);
-        final String taiga = getString(R.string.spells_taiga);
-        final String hazeTransylvania = getString(R.string.spells_haze_transylvania);
-        final String sparklingWall = getString(R.string.spells_sparkling_wall);
+
+        final String spellSpearOfSuffering = getString(R.string.spells_spear_of_suffering);
+        final String spellSpearOfLight = getString(R.string.spells_spear_of_light);
+        final String spellHazeTransylvania = getString(R.string.spells_haze_transylvania);
+        final String spellSparklingWall = getString(R.string.spells_sparkling_wall);
+        final String spellVacuumBlow = mActivity.getString(R.string.spells_vacuum_blow);
+        final String spellFetters = mActivity.getString(R.string.spells_fetters);
+        final String spellExpropriation = mActivity.getString(R.string.spells_expropriation);
+
         final String shieldRainbowSphere = getString(R.string.shields_rainbow_sphere);
         final String shieldSphereOfNegation = getString(R.string.shields_sphere_of_negation);
         final String shieldMagShield = getString(R.string.shields_mag_shield);
         final String shieldHighestMagShield = getString(R.string.shields_highest_mag_shield);
+        final String shieldForceBarrier = mActivity.getString(R.string.shields_force_barrier);
+
+        ArrayList<String> shieldListIgnoredHazeTransylvania = new ArrayList<>();
+        shieldListIgnoredHazeTransylvania.add(shieldSphereOfNegation);
+        shieldListIgnoredHazeTransylvania.add(shieldMagShield);
+        shieldListIgnoredHazeTransylvania.add(shieldHighestMagShield);
+        shieldListIgnoredHazeTransylvania.add(shieldForceBarrier);
 
         if (shieldsCursor.moveToFirst()) {
 
             while (true) {
                 String shieldId = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID));
                 String shieldName = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME));
+                String shieldType = shieldsCursor.getString(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_TYPE));
                 int shieldDefence = shieldsCursor.getInt(shieldsCursor.getColumnIndex(mColumnDefenceKey));
                 int shieldCost = shieldsCursor.getInt(shieldsCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST));
                 int damage = mInputDamage;
@@ -168,16 +203,20 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                 mShieldUri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
-                // TODO(bug) Вакуумный удар, игнорирует любые щиты, кроме универсальных
+                // COMPLETED(bug) Вакуумный удар, игнорирует любые щиты, кроме универсальных
                 // СПВ для заклинания: ничего - пробит - пробит
-                // TODO(bug) Путы захви блокируются любой магической или универсальной защитой, не снижают силу щитов
+                // COMPLETED(bug) Путы захви блокируются любой магической или универсальной защитой, не снижают силу щитов
 
-                // TODO(bug) Плащ тьмы должен укрывать также от физических атак
+                // COMPLETED(bug) Плащ тьмы должен укрывать также от физических атак
                 if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness)) && spell.getTarget().equals("напр")) {
                     return "Заклинание промахнулось";
                 }
 
-                if (spellName.equals(sparklingWall) && mCharacterSide.equals("тьма")) {
+                if (spellName.equals(spellFetters) || spellName.equals(spellExpropriation)) {
+                    return "Заклинание заблокировано";
+                }
+
+                if (spellName.equals(spellSparklingWall) && mCharacterSide.equals("тьма")) {
                     mInputDamage = 2 * mInputDamage;
                 }
 
@@ -185,7 +224,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     damage = 2 * mInputDamage;
                 }
 
-                if (spellName.equals(spearOfSuffering) || spellName.equals(spearOfLight)) {
+                if (spellName.equals(spellSpearOfSuffering) || spellName.equals(spellSpearOfLight)) {
                     if (shieldsCursor.getCount() == 1) {
                         damage = 4 * mInputDamage;
                     } else {
@@ -193,18 +232,28 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     }
                 }
 
-                // TODO(bug) Марево Трансильвании игнорирует силовой барьер
-                if (spellName.equals(hazeTransylvania)) {
-                    if (shieldName.equals(shieldSphereOfNegation) || shieldName.equals(shieldMagShield) || shieldName.equals(shieldHighestMagShield)) {
-                        ignoreShield = true;
-                    }
+                // COMPLETED(bug) Марево Трансильвании игнорирует силовой барьер
+
+                if (spellName.equals(spellVacuumBlow) && !shieldType.equals("унив")) {
+                    ignoreShield = true;
                 }
 
                 damageResult = checkDamage(damage, shieldDefence);
 
-                // TODO(bug) Тайга больше не лопает радужную сферу
-                if (spellName.equals(taiga) || spellName.equals(hazeTransylvania)) {
-                    if (damageResult.equals(SPV.BLOCK) && shieldName.equals(shieldRainbowSphere)) {
+                // COMPLETED(bug) Тайга больше не лопает радужную сферу
+
+                if (spellName.equals(spellVacuumBlow)) {
+                    if (!shieldType.equals("унив")) {
+                        ignoreShield = true;
+                    } else if (damageResult == SPV.BURST) {
+                        damageResult = SPV.DROP;
+                    }
+                }
+
+                if (spellName.equals(spellHazeTransylvania)) {
+                    if (shieldListIgnoredHazeTransylvania.contains(shieldName)) {
+                        ignoreShield = true;
+                    } else if (damageResult == SPV.BLOCK && shieldName.equals(shieldRainbowSphere)) {
                         damageResult = SPV.BURST;
                     }
                 }
@@ -234,6 +283,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.toString();
     }
 
+    @NonNull
     private String checkPhysicAttack(String attackType) {
         StringBuilder builder = new StringBuilder();
         SPV damageResult = SPV.DROP;
@@ -250,9 +300,12 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                 mShieldUri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
 
-
                 if (shieldName.equals(mActivity.getString(R.string.shields_crystal_shield))) {
                     return "Хрустальный щит блокирует любые физические атаки";
+                }
+
+                if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness))) {
+                    return "Невозможно атаковать через плащ тьмы";
                 }
 
                 if (shieldName.equals(mActivity.getString(R.string.shields_concave_shield))) {
@@ -286,28 +339,46 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.toString();
     }
 
-    private Cursor getShields() {
-        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
-                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
-        String[] selectionArgs = new String[]{mTypeDamageArg, TYPE_UNIVERSAL};
-        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
-        return mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                null,
-                selection,
-                selectionArgs,
-                sortOrder);
-    }
+    @NonNull
+    private String checkMentalAttack(int damage) {
+        StringBuilder builder = new StringBuilder();
 
-    private SPV checkDamage(int damage, int defence) {
-        if (damage <= defence) {
-            return SPV.BLOCK;
-        } else if (damage <= (2 * defence)) {
-            return SPV.BURST;
-        } else {
-            return SPV.DROP;
+        String[] projection = new String[]{
+                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " +
+                        NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
+        };
+
+        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                projection, null, null, null);
+        int columnMentalDefenceId =
+                cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM);
+
+        if (cursor.moveToFirst()) {
+            int mentalDefence = cursor.getInt(columnMentalDefenceId);
+
+            if (damage >= mentalDefence) {
+                String selection =
+                        NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
+                String[] selectionArgs = new String[]{"мент"};
+                int deletedShieldsCount = mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                        selection, selectionArgs);
+
+                if (deletedShieldsCount > 0) {
+                    builder.append("Ментальные щиты развеяны, ");
+                } else {
+                    builder.append("Ментальное ");
+                }
+            } else {
+                return "Ментальная атака заблокирована";
+            }
         }
+
+        cursor.close();
+
+        return builder.append("заклинание прошло").toString();
     }
 
+    @NonNull
     private String checkShield(SPV damageResult, String shieldName, int shieldCost, int shieldDefence, int damage) {
         StringBuilder builder = new StringBuilder();
 
@@ -324,8 +395,8 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
                     if (shieldCost == 0) {
                         mActivity.getContentResolver().delete(mShieldUri, null, null);
-                        // TODO(bug) изменить текст записи с "иссяк" на "лопнул"
-                        builder.append(shieldName).append(" иссяк").append("\n");
+                        // COMPLETED(bug) изменить текст записи с "иссяк" на "лопнул"
+                        builder.append("Щит \"").append(shieldName).append("\" лопнул\n");
                     } else {
                         ContentValues contentValues = new ContentValues();
                         contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, shieldCost);
@@ -351,6 +422,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.append("\n").toString();
     }
 
+    @NonNull
     private String checkNaturalDefence(SpellsUtil.Spell spell, String attackType) {
         StringBuilder builder = new StringBuilder();
         ArrayMap<SPV, String> attackEffect = new ArrayMap<>();
@@ -405,62 +477,26 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.append("\n").toString();
     }
 
-    private String checkBattle(String selectedAttack) {
-        String damageResult;
-
-        switch (mTypeDamage) {
-            case 1:
-                damageResult = checkMagicAttack(selectedAttack);
-                break;
-            case 2:
-                damageResult = checkPhysicAttack(selectedAttack);
-                break;
-            case 3:
-                damageResult = checkMentalAttack(mInputDamage);
-                break;
-                default:
-                    return "Ошибка";
-        }
-
-        return damageResult;
+    private Cursor getShields() {
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
+                NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
+        String[] selectionArgs = new String[]{mTypeDamageArg, TYPE_UNIVERSAL};
+        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
+        return mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null,
+                selection,
+                selectionArgs,
+                sortOrder);
     }
 
-    private String checkMentalAttack(int damage) {
-        StringBuilder builder = new StringBuilder();
-
-        String[] projection = new String[]{
-                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " +
-                        NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
-        };
-
-        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                projection, null, null, null);
-        int columnMentalDefenceId =
-                cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM);
-
-        if (cursor.moveToFirst()) {
-            int mentalDefence = cursor.getInt(columnMentalDefenceId);
-
-            if (damage >= mentalDefence) {
-                String selection =
-                        NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
-                String[] selectionArgs = new String[]{"мент"};
-                int deletedShieldsCount = mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                        selection, selectionArgs);
-
-                if (deletedShieldsCount > 0) {
-                    builder.append("Ментальные щиты развеяны, ");
-                } else {
-                    builder.append("Ментальное ");
-                }
-            } else {
-                return "Ментальная атака заблокирована";
-            }
+    private SPV checkDamage(int damage, int defence) {
+        if (damage <= defence) {
+            return SPV.BLOCK;
+        } else if (damage <= (2 * defence)) {
+            return SPV.BURST;
+        } else {
+            return SPV.DROP;
         }
-
-        cursor.close();
-
-        return builder.append("заклинание прошло").toString();
     }
 
     @Override

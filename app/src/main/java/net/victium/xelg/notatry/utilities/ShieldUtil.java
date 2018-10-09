@@ -191,7 +191,7 @@ public class ShieldUtil {
         ));
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_cloack_of_darkness),
-                "маг",
+                "унив",
                 16,
                 0,
                 0,
@@ -244,11 +244,11 @@ public class ShieldUtil {
                 false,
                 6
         ));
-        // TODO(bug) Минимальная стоимость хрустального щита - 512 у.е.
+        // COMPLETED(bug) Минимальная стоимость хрустального щита - 512 у.е.
         shieldArrayList.add(new Shield(
                 context.getString(R.string.shields_crystal_shield),
                 "физ",
-                128,
+                512,
                 0,
                 100,
                 false,

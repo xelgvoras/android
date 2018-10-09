@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -47,11 +44,10 @@ public class BattleActivity extends AppCompatActivity implements
     /* Для тестов */
     private TextView mTestJournal;
 
-    private Menu mMenu;
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
 
-    // TODO(bug) В начале боя Вампиры автоматически трансформирутся
+    // COMPLETED(bug) В начале боя Вампиры автоматически трансформирутся
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +62,14 @@ public class BattleActivity extends AppCompatActivity implements
         mMagicPowerTextView.setOnClickListener(this);
         mBattleFormTextView.setOnClickListener(this);
 
+        /* Для тестов */
+        mTestJournal = findViewById(R.id.tv_test_journal);
+
+        mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
+        mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
+        mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
+
         ArrayList<String> typeList = new ArrayList<>();
         typeList.add(getString(R.string.pref_type_value_flipflop));
         typeList.add(getString(R.string.pref_type_value_vampire));
@@ -75,17 +79,12 @@ public class BattleActivity extends AppCompatActivity implements
         mCharacter = new Character(this);
         String type = mCharacter.getCharacterType();
         if (typeList.contains(type)) {
+            if (type.equals(getString(R.string.pref_type_value_vampire)) && getCurrentForm().equals("человек")) {
+                transform();
+            }
             mBattleFormTextView.setVisibility(View.VISIBLE);
             mBattleFormTextView.setText(getCurrentForm());
         }
-
-        /* Для тестов */
-        mTestJournal = findViewById(R.id.tv_test_journal);
-
-        mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
-        mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
-        mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
         setupScreen();
 
@@ -242,7 +241,7 @@ public class BattleActivity extends AppCompatActivity implements
         return returnForm;
     }
 
-    private int transform() {
+    private void transform() {
         String battleForm = getCurrentForm();
 
         if (battleForm.equals("человек")) {
@@ -262,7 +261,12 @@ public class BattleActivity extends AppCompatActivity implements
         int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
         mShieldListAdapter.swapCursor(getAllShields(null, null, null));
 
-        return count;
+        String transformMessage = "Выполнена трансформация";
+        if (count > 0) {
+            transformMessage = transformMessage + ", все персональные щиты уничтожены";
+        }
+
+        mTestJournal.setText(transformMessage);
     }
 
     @Override
@@ -291,14 +295,7 @@ public class BattleActivity extends AppCompatActivity implements
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
             } else if (textViewId == R.id.tv_character_battle_form) {
-                int count = transform();
-
-                String transformMessage = "Выполнена трансформация";
-                if (count > 0) {
-                    transformMessage = transformMessage + ", все персональные щиты уничтожены";
-                }
-
-                mTestJournal.setText(transformMessage);
+                transform();
             }
         }
     }

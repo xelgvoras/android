@@ -2,6 +2,7 @@ package net.victium.xelg.notatry.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
@@ -104,7 +105,7 @@ public class Character {
 
         int amuletsLimit;
 
-        // TODO(bug) У вампиров и просто оборотней - 0 автоамулетов
+        // COMPLETED(bug) У вампиров и просто оборотней - 0 автоамулетов
 
         if (characterLevel >= 3) {
             amuletsLimit = 1;
@@ -112,6 +113,11 @@ public class Character {
             amuletsLimit = 2;
         } else {
             amuletsLimit = 3;
+        }
+
+        if (characterType.equals(mContext.getString(R.string.pref_type_value_vampire))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_werewolf))) {
+            amuletsLimit = 0;
         }
 
         characterAmuletsLimit = amuletsLimit;
@@ -142,7 +148,16 @@ public class Character {
         int naturalDefence = 0;
 
         if (listOfSpecialTypes.contains(characterType)) {
-            naturalDefence = characterPowerLimit;
+            Cursor characterStatusCursor = mContext.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                    null, null, null, null);
+            if (characterStatusCursor.moveToFirst()) {
+                int currentPower = characterStatusCursor.getInt(
+                        characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER)
+                );
+                naturalDefence = currentPower;
+            } else {
+                naturalDefence = characterPowerLimit;
+            }
         }
 
         characterNaturalDefence = naturalDefence;
@@ -172,10 +187,14 @@ public class Character {
         this.characterType = sharedPreferences.getString(typeKey, typeDefault);
         setupReactionsNumber();
         setupNaturalDefence();
+        setupAmuletsLimit();
     }
 
     public void setCharacterType(String characterType) {
         this.characterType = characterType;
+        setupReactionsNumber();
+        setupNaturalDefence();
+        setupAmuletsLimit();
     }
 
     public int getCharacterAge() {

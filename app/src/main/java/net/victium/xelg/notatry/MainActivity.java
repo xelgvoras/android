@@ -23,6 +23,8 @@ import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.Character;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -59,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mCharacter = new Character(this);
 
-        // TODO(12) Добавить механизм импорта/экспорта персонажа из файла описания
+        // COMPLETED(12) Добавить механизм импорта/экспорта персонажа из файла описания
         // TODO(14) Добавить логирование действий и вывод журнала логов
         collectCharacterStatusIntoDb(mCharacter);
         setupDuskLayers(mCharacter);
@@ -265,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        // TODO(bug) При изменении типа персонажа или резерва, обновлять размер естественной защиты
+        // COMPLETED(bug) При изменении типа персонажа или резерва, обновлять размер естественной защиты
 
         ContentValues contentValues;
 
@@ -283,6 +285,8 @@ public class MainActivity extends AppCompatActivity implements
                     mCharacter.getCharacterNaturalDefence());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER,
                     mCharacter.getCharacterReactionsNumber());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
+                    mCharacter.getCharacterAmuletsLimit());
 
             updateCharacterStatus(contentValues);
 
@@ -300,6 +304,12 @@ public class MainActivity extends AppCompatActivity implements
             updateCharacterStatus(contentValues);
 
         } else if (key.equals(getString(R.string.pref_power_key))) {
+            ArrayList<String> listOfVops = new ArrayList<>();
+            listOfVops.add(getString(R.string.pref_type_value_flipflop));
+            listOfVops.add(getString(R.string.pref_type_value_vampire));
+            listOfVops.add(getString(R.string.pref_type_value_werewolf));
+            listOfVops.add(getString(R.string.pref_type_value_werewolf_mag));
+
             mCharacter.setCharacterPowerLimit(sharedPreferences);
 
             contentValues = new ContentValues();
@@ -316,6 +326,9 @@ public class MainActivity extends AppCompatActivity implements
 
             if (currentPower > powerLimit) {
                 contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER, powerLimit);
+                if (listOfVops.contains(mCharacter.getCharacterType())) {
+                    contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, powerLimit);
+                }
             }
 
             updateCharacterStatus(contentValues);

@@ -193,16 +193,11 @@ public class SpellsUtil {
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
                 break;
             case "Тайга":
-                // TODO(bug) Объединить заклинания Тайга и Вифлеемский огонь
                 effectArrayMap.put(SPV.DROP, "Если пошевелитесь: " + YOU_DIE);
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 break;
             case "Марево Трансильвании":
                 effectArrayMap.put(SPV.DROP, YOU_DIE + " особо неприглядным образом");
-                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
-                break;
-            case "Вифлеемский огонь":
-                effectArrayMap.put(SPV.DROP, "Кучка пепла, " + YOU_DIE);
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 break;
             case "Искрящаяся Стена":
@@ -327,13 +322,13 @@ public class SpellsUtil {
                 returnSpell.setType(TYPE_UNIVERSAL);
                 break;
             case "Экспроприация":
-                // TODO(bug) эффект только если уровень атакующего выше ващего
+                // COMPLETED(bug) эффект только если уровень атакующего выше ващего
                 if (characterType.equals(VAMPIRE) || BATTLE_FORM.equals(battleForm)) {
                     effectArrayMap.put(SPV.BLOCK, NO_EFFECT);
                     effectArrayMap.put(SPV.BURST, NO_EFFECT);
                     effectArrayMap.put(SPV.DROP, NO_EFFECT);
                 } else {
-                    effectArrayMap.put(SPV.DROP, "Заблокированы все способности иного, включая базовые");
+                    effectArrayMap.put(SPV.DROP, "Заблокированы все способности иного, включая базовые, если уровень атакующего выше вашего");
                 }
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);

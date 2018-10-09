@@ -10,12 +10,17 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
+import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
+import net.victium.xelg.notatry.utilities.TransformUtil;
+
+import java.util.ArrayList;
 
 public class ShieldsActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
@@ -26,8 +31,9 @@ public class ShieldsActivity extends AppCompatActivity implements
 
     private ShieldListAdapter mAdapter;
     private TextView mCurrentPower;
+    private TextView mBattleFormTextView;
 
-    // TODO(17) Добавить трансформацию в боевую форму
+    // COMPLETED(17) Добавить трансформацию в боевую форму
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +42,23 @@ public class ShieldsActivity extends AppCompatActivity implements
 
         RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         mCurrentPower = findViewById(R.id.tv_current_power);
+        mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
+
         mCurrentPower.setOnClickListener(this);
+        mBattleFormTextView.setOnClickListener(this);
+
+        ArrayList<String> typeList = new ArrayList<>();
+        typeList.add(getString(R.string.pref_type_value_flipflop));
+        typeList.add(getString(R.string.pref_type_value_vampire));
+        typeList.add(getString(R.string.pref_type_value_werewolf));
+        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
+
+        Character character = new Character(this);
+        String type = character.getCharacterType();
+        if (typeList.contains(type)) {
+            mBattleFormTextView.setVisibility(View.VISIBLE);
+            mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+        }
 
         activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -128,6 +150,10 @@ public class ShieldsActivity extends AppCompatActivity implements
             if (textViewId == R.id.tv_current_power) {
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
+            } else if (textViewId == R.id.tv_character_battle_form) {
+                Toast.makeText(this, TransformUtil.makeTransform(this), Toast.LENGTH_LONG).show();
+                mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+                mAdapter.swapCursor(getAllShields());
             }
         }
     }

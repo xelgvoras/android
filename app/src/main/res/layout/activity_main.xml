@@ -25,6 +25,14 @@
             style="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="Темный иной, оборотень, 4 уровень"/>
 
+        <TextView
+            android:id="@+id/tv_character_battle_form"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:visibility="invisible"
+            android:text="Текущая форма иного: "/>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

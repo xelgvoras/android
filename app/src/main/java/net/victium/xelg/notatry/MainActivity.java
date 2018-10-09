@@ -15,6 +15,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Gallery;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +26,7 @@ import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.Character;
+import net.victium.xelg.notatry.utilities.TransformUtil;
 
 import java.util.ArrayList;
 
@@ -31,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements
 
     TextView mFullNameTextView;
     TextView mPersonalInfoTextView;
+    TextView mBattleFormTextView;
     TextView mMagicPowerTextView;
     TextView mDefenceTextView;
     TextView mCharacterDetailsTextView;
@@ -47,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
+        mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
         mMagicPowerTextView = findViewById(R.id.tv_character_magic_power);
         mDefenceTextView = findViewById(R.id.tv_character_defence);
         mCharacterDetailsTextView = findViewById(R.id.tv_character_details);
@@ -80,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatusCursor()));
         mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatusCursor(), getCharacterDefence()));
         mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatusCursor(), getDuskLayersCursor()));
+
+        setupBattleForm(mCharacter);
     }
 
     private void collectCharacterStatusIntoDb(Character character) {
@@ -168,6 +177,30 @@ public class MainActivity extends AppCompatActivity implements
         setupDuskLayers(character);
     }
 
+    private void setupBattleForm(Character character) {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+
+        ArrayList<String> typeList = new ArrayList<>();
+        typeList.add(getString(R.string.pref_type_value_flipflop));
+        typeList.add(getString(R.string.pref_type_value_vampire));
+        typeList.add(getString(R.string.pref_type_value_werewolf));
+        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
+
+        String type = character.getCharacterType();
+
+        if (typeList.contains(type)) {
+            params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            mBattleFormTextView.setVisibility(View.VISIBLE);
+            String stringBattleForm = "текущая форма: " + TransformUtil.getCurrentForm(this);
+            mBattleFormTextView.setText(stringBattleForm);
+        } else {
+            params.height = 0;
+            mBattleFormTextView.setVisibility(View.INVISIBLE);
+        }
+
+        mBattleFormTextView.setLayoutParams(params);
+    }
+
     private Cursor getDuskLayersCursor() {
 
         return getContentResolver().query(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI,
@@ -237,6 +270,8 @@ public class MainActivity extends AppCompatActivity implements
 
         mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, cursor));
         mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(cursor, getCharacterDefence()));
+
+        setupBattleForm(mCharacter);
 
         cursor.close();
     }

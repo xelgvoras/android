@@ -20,6 +20,7 @@ import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
+import net.victium.xelg.notatry.utilities.TransformUtil;
 
 import java.util.ArrayList;
 
@@ -79,11 +80,12 @@ public class BattleActivity extends AppCompatActivity implements
         mCharacter = new Character(this);
         String type = mCharacter.getCharacterType();
         if (typeList.contains(type)) {
-            if (type.equals(getString(R.string.pref_type_value_vampire)) && getCurrentForm().equals("человек")) {
-                transform();
+            if (type.equals(getString(R.string.pref_type_value_vampire)) && TransformUtil.getCurrentForm(this).equals("человек")) {
+                mTestJournal.setText(TransformUtil.makeTransform(this));
+                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
             mBattleFormTextView.setVisibility(View.VISIBLE);
-            mBattleFormTextView.setText(getCurrentForm());
+            mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
         }
 
         setupScreen();
@@ -150,7 +152,7 @@ public class BattleActivity extends AppCompatActivity implements
     public void onClickCheckDamage(View view) {
 
         Bundle args = new Bundle();
-        String battleForm = getCurrentForm();
+        String battleForm = TransformUtil.getCurrentForm(this);
         args.putString("battleForm", battleForm);
 
         DialogFragment dialogFragment = new DamageDialogFragment();
@@ -231,7 +233,7 @@ public class BattleActivity extends AppCompatActivity implements
         }
     }
 
-    private String getCurrentForm() {
+    /*private String getCurrentForm() {
         Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                 null, null, null, null);
         cursor.moveToFirst();
@@ -239,9 +241,9 @@ public class BattleActivity extends AppCompatActivity implements
         cursor.close();
 
         return returnForm;
-    }
+    }*/
 
-    private void transform() {
+    /*private void transform() {
         String battleForm = getCurrentForm();
 
         if (battleForm.equals("человек")) {
@@ -267,7 +269,7 @@ public class BattleActivity extends AppCompatActivity implements
         }
 
         mTestJournal.setText(transformMessage);
-    }
+    }*/
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
@@ -278,7 +280,9 @@ public class BattleActivity extends AppCompatActivity implements
             DamageDialogFragment damageDialogFragment = (DamageDialogFragment) dialogFragment;
             mTestJournal.setText(damageDialogFragment.mResultSummary);
             if (damageDialogFragment.mShouldBeTransformed) {
-                transform();
+                mTestJournal.setText(TransformUtil.makeTransform(this));
+                mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         }
@@ -295,7 +299,9 @@ public class BattleActivity extends AppCompatActivity implements
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
             } else if (textViewId == R.id.tv_character_battle_form) {
-                transform();
+                mTestJournal.setText(TransformUtil.makeTransform(this));
+                mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
         }
     }

@@ -15,10 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Gallery;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +24,6 @@ import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.utilities.TransformUtil;
-
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
@@ -84,16 +79,38 @@ public class MainActivity extends AppCompatActivity implements
 
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatusCursor()));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(getCharacterStatusCursor(), getCharacterDefence()));
-        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(getCharacterStatusCursor(), getDuskLayersCursor()));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, this));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(mCharacter, this));
+        mCharacterDetailsTextView.setText(CharacterPreferences.getCharacterDetails(mCharacter, this));
 
-        setupBattleForm(mCharacter);
+        if (mCharacter.isCharacterVop()) {
+            setVopsInfoVisible();
+        } else {
+            setVopsInfoInvisible();
+        }
+    }
+
+    private void setVopsInfoVisible() {
+        String stringBattleForm = "текущая форма: " + TransformUtil.getCurrentForm(this);
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mBattleFormTextView.setVisibility(View.VISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+        mBattleFormTextView.setText(stringBattleForm);
+    }
+
+    private void setVopsInfoInvisible() {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = 0;
+        mBattleFormTextView.setVisibility(View.INVISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
     }
 
     private void collectCharacterStatusIntoDb(Character character) {
 
-        Cursor cursor = getCharacterStatusCursor();
+        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
 
         if (cursor.moveToFirst()) {
             cursor.close();
@@ -177,30 +194,6 @@ public class MainActivity extends AppCompatActivity implements
         setupDuskLayers(character);
     }
 
-    private void setupBattleForm(Character character) {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
-
-        ArrayList<String> typeList = new ArrayList<>();
-        typeList.add(getString(R.string.pref_type_value_flipflop));
-        typeList.add(getString(R.string.pref_type_value_vampire));
-        typeList.add(getString(R.string.pref_type_value_werewolf));
-        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
-
-        String type = character.getCharacterType();
-
-        if (typeList.contains(type)) {
-            params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            mBattleFormTextView.setVisibility(View.VISIBLE);
-            String stringBattleForm = "текущая форма: " + TransformUtil.getCurrentForm(this);
-            mBattleFormTextView.setText(stringBattleForm);
-        } else {
-            params.height = 0;
-            mBattleFormTextView.setVisibility(View.INVISIBLE);
-        }
-
-        mBattleFormTextView.setLayoutParams(params);
-    }
-
     private Cursor getDuskLayersCursor() {
 
         return getContentResolver().query(NotATryContract.DuskLayersSummaryEntry.CONTENT_URI,
@@ -208,27 +201,6 @@ public class MainActivity extends AppCompatActivity implements
                 null,
                 null,
                 NotATryContract.DuskLayersSummaryEntry.COLUMN_LAYER);
-    }
-
-    private Cursor getCharacterStatusCursor() {
-
-        return getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null,
-                null,
-                null,
-                null);
-    }
-
-    private Cursor getCharacterDefence() {
-
-        String[] defenceSummary = new String[]{
-                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE_SUM,
-                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE_SUM,
-                "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
-        };
-
-        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                defenceSummary, null, null, null);
     }
 
     @Override
@@ -266,14 +238,14 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        Cursor cursor = getCharacterStatusCursor();
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, this));
+        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(mCharacter, this));
 
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, cursor));
-        mDefenceTextView.setText(CharacterPreferences.getCharacterDefence(cursor, getCharacterDefence()));
-
-        setupBattleForm(mCharacter);
-
-        cursor.close();
+        if (mCharacter.isCharacterVop()) {
+            setVopsInfoVisible();
+        } else {
+            setVopsInfoInvisible();
+        }
     }
 
     @Override
@@ -322,6 +294,8 @@ public class MainActivity extends AppCompatActivity implements
                     mCharacter.getCharacterReactionsNumber());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
                     mCharacter.getCharacterAmuletsLimit());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM,
+                    "человек");
 
             updateCharacterStatus(contentValues);
 
@@ -339,11 +313,6 @@ public class MainActivity extends AppCompatActivity implements
             updateCharacterStatus(contentValues);
 
         } else if (key.equals(getString(R.string.pref_power_key))) {
-            ArrayList<String> listOfVops = new ArrayList<>();
-            listOfVops.add(getString(R.string.pref_type_value_flipflop));
-            listOfVops.add(getString(R.string.pref_type_value_vampire));
-            listOfVops.add(getString(R.string.pref_type_value_werewolf));
-            listOfVops.add(getString(R.string.pref_type_value_werewolf_mag));
 
             mCharacter.setCharacterPowerLimit(sharedPreferences);
 
@@ -361,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements
 
             if (currentPower > powerLimit) {
                 contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER, powerLimit);
-                if (listOfVops.contains(mCharacter.getCharacterType())) {
+                if (mCharacter.isCharacterVop()) {
                     contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, powerLimit);
                 }
             }

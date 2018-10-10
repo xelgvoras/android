@@ -2,6 +2,7 @@ package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
@@ -26,8 +28,6 @@ import net.victium.xelg.notatry.dialog.UpdateNaturalDefenceDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 import net.victium.xelg.notatry.utilities.ShieldUtil;
 import net.victium.xelg.notatry.utilities.TransformUtil;
-
-import java.util.ArrayList;
 
 public class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
@@ -79,21 +79,11 @@ public class BattleActivity extends AppCompatActivity implements
         mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
         activeShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
-        ArrayList<String> typeList = new ArrayList<>();
-        typeList.add(getString(R.string.pref_type_value_flipflop));
-        typeList.add(getString(R.string.pref_type_value_vampire));
-        typeList.add(getString(R.string.pref_type_value_werewolf));
-        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
-
         mCharacter = new Character(this);
         String type = mCharacter.getCharacterType();
-        if (typeList.contains(type)) {
-            if (type.equals(getString(R.string.pref_type_value_vampire)) && TransformUtil.getCurrentForm(this).equals("человек")) {
-                mTestJournal.setText(TransformUtil.makeTransform(this));
-                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
-            }
-            mBattleFormTextView.setVisibility(View.VISIBLE);
-            mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+        if (type.equals(getString(R.string.pref_type_value_vampire)) && TransformUtil.getCurrentForm(this).equals("человек")) {
+            mTestJournal.setText(TransformUtil.makeTransform(this));
+            mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         }
 
         setupScreen();
@@ -128,12 +118,51 @@ public class BattleActivity extends AppCompatActivity implements
 
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, this));
 
         setupNaturalDefence(getCharacterStatus());
+
+        if (mCharacter.isCharacterVop()) {
+            setVopsInfoVisible();
+        } else {
+            setVopsInfoInvisible();
+        }
     }
 
-    private void setupNaturalDefence(Cursor cursor) {
+    private void setVopsInfoVisible() {
+        String stringBattleForm = TransformUtil.getCurrentForm(this);
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mBattleFormTextView.setVisibility(View.VISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+        mBattleFormTextView.setText(stringBattleForm);
+
+        Cursor cursor = getCharacterStatus();
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        cursor.close();
+
+        params = (LinearLayout.LayoutParams) mNaturalDefenceTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mNaturalDefenceTextView.setVisibility(View.VISIBLE);
+        mNaturalDefenceTextView.setLayoutParams(params);
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+    }
+
+    private void setVopsInfoInvisible() {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = 0;
+        mBattleFormTextView.setVisibility(View.INVISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+
+        params = (LinearLayout.LayoutParams) mNaturalDefenceTextView.getLayoutParams();
+        params.height = 0;
+        mNaturalDefenceTextView.setVisibility(View.INVISIBLE);
+        mNaturalDefenceTextView.setLayoutParams(params);
+    }
+
+    private void setupNaturalDefence(@NonNull Cursor cursor) {
         cursor.moveToFirst();
         int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
         mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
@@ -227,6 +256,7 @@ public class BattleActivity extends AppCompatActivity implements
         mTestJournal.setText(builder.toString());
     }
 
+    @NonNull
     private String getShieldLevel(int shieldCost) {
 
         if (shieldCost < 4) {
@@ -370,7 +400,8 @@ public class BattleActivity extends AppCompatActivity implements
 
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, this));
         setupNaturalDefence(getCharacterStatus());
     }
 

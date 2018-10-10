@@ -22,6 +22,7 @@ public class Character {
     private int characterReactionsNumber;
     private int characterNaturalDefence;
     private boolean characterSide;
+    private boolean characterVop;
     private Context mContext;
 
     private ArrayList<String> listOfSpecialTypes = new ArrayList<>();
@@ -59,6 +60,8 @@ public class Character {
         listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_vampire));
         listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_werewolf));
         listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_werewolf_mag));
+
+        characterVop = listOfSpecialTypes.contains(characterType);
 
         setupDuskLayerLimit();
         setupPersonalShieldsLimit();
@@ -127,7 +130,7 @@ public class Character {
 
         int reactionsNumber = 1;
 
-        if (listOfSpecialTypes.contains(characterType)) {
+        if (characterVop) {
 
             if (characterLevel >= 5) {
                 reactionsNumber = 2;
@@ -147,17 +150,17 @@ public class Character {
 
         int naturalDefence = 0;
 
-        if (listOfSpecialTypes.contains(characterType)) {
+        if (characterVop) {
             Cursor characterStatusCursor = mContext.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                     null, null, null, null);
             if (characterStatusCursor.moveToFirst()) {
-                int currentPower = characterStatusCursor.getInt(
+                naturalDefence = characterStatusCursor.getInt(
                         characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER)
                 );
-                naturalDefence = currentPower;
             } else {
                 naturalDefence = characterPowerLimit;
             }
+            characterStatusCursor.close();
         }
 
         characterNaturalDefence = naturalDefence;
@@ -185,6 +188,7 @@ public class Character {
         String typeKey = mContext.getString(R.string.pref_type_key);
         String typeDefault = mContext.getString(R.string.pref_type_value_mag);
         this.characterType = sharedPreferences.getString(typeKey, typeDefault);
+        characterVop = listOfSpecialTypes.contains(characterType);
         setupReactionsNumber();
         setupNaturalDefence();
         setupAmuletsLimit();
@@ -192,6 +196,7 @@ public class Character {
 
     public void setCharacterType(String characterType) {
         this.characterType = characterType;
+        characterVop = listOfSpecialTypes.contains(characterType);
         setupReactionsNumber();
         setupNaturalDefence();
         setupAmuletsLimit();
@@ -310,5 +315,9 @@ public class Character {
     public void setCharacterSide(String characterSide) {
         String sideDefault = mContext.getString(R.string.pref_side_light_value);
         this.characterSide = characterSide.equals(sideDefault);
+    }
+
+    public boolean isCharacterVop() {
+        return characterVop;
     }
 }

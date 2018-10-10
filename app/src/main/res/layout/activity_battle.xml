@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <!-- TODO(15) Добавить кнопку "Закончить бой" -->
+    <!-- COMPLETED(15) Добавить кнопку "Закончить бой" -->
     <!-- По окончании боя восстанавливаются реакции, естественная защита и врожденные щиты -->
-    <!-- TODO(16) Добавить отображение текущей естественной защиты -->
+    <!-- COMPLETED(16) Добавить отображение текущей естественной защиты -->
     <!-- Должна быть редактируема, с возможностью увеличить/уменьшить -->
 
     <ScrollView
@@ -28,8 +28,7 @@
                     android:id="@+id/tv_character_full_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/Base.TextAppearance.AppCompat.Title"
-                    android:text="Александр Бойко (Шурик), 20 лет"/>
+                    style="@style/Base.TextAppearance.AppCompat.Title" />
 
                 <TextView
                     android:id="@+id/tv_character_battle_form"
@@ -38,7 +37,7 @@
                     style="@style/Base.TextAppearance.AppCompat.Medium"
                     android:textColor="@color/materialBlue"
                     android:gravity="end"
-                    android:visibility="invisible"/>
+                    android:visibility="invisible" />
 
             </LinearLayout>
 
@@ -46,8 +45,7 @@
                 android:id="@+id/tv_character_personal_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/Base.TextAppearance.AppCompat.Medium"
-                android:text="Темный иной, оборотень, 4 уровень"/>
+                style="@style/Base.TextAppearance.AppCompat.Medium" />
 
             <TextView
                 android:id="@+id/tv_current_power"
@@ -55,16 +53,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"
-                style="@style/Base.TextAppearance.AppCompat.Title"
-                android:text="Резерв силы: 25/60"/>
+                style="@style/Base.TextAppearance.AppCompat.Title" />
 
             <TextView
                 android:id="@+id/tv_natural_defence"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
-                style="@style/Base.TextAppearance.AppCompat.Title"
-                android:text="Естественная защита: 40"/>
+                style="@style/Base.TextAppearance.AppCompat.Title" />
 
             <View
                 android:layout_width="match_parent"
@@ -95,7 +91,7 @@
                     android:background="#fff"
                     android:gravity="center"
                     style="@style/Base.TextAppearance.AppCompat.Small"
-                    android:text="Название"/>
+                    android:text="@string/table_column_name" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -109,7 +105,7 @@
                     android:background="#fff"
                     android:gravity="center"
                     style="@style/Base.TextAppearance.AppCompat.Small"
-                    android:text="у.е"/>
+                    android:text="@string/table_column_cost" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -123,7 +119,7 @@
                     android:background="#fff"
                     android:gravity="center"
                     style="@style/Base.TextAppearance.AppCompat.Small"
-                    android:text="МЗ"/>
+                    android:text="@string/table_column_magic_defence" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -137,7 +133,7 @@
                     android:background="#fff"
                     android:gravity="center"
                     style="@style/Base.TextAppearance.AppCompat.Small"
-                    android:text="ФЗ"/>
+                    android:text="@string/table_column_physic_defence" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -151,7 +147,7 @@
                     android:background="#fff"
                     android:gravity="center"
                     style="@style/Base.TextAppearance.AppCompat.Small"
-                    android:text="Мент."/>
+                    android:text="@string/table_column_mental_defence" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -165,13 +161,14 @@
                     android:background="#fff"
                     android:gravity="center"
                     style="@style/Base.TextAppearance.AppCompat.Small"
-                    android:text="ЛЗ"/>
+                    android:text="@string/table_column_range" />
+
             </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_active_shields"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -182,22 +179,22 @@
                     android:id="@+id/bt_check_damage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Воздействие"
-                    android:onClick="onClickCheckDamage"/>
+                    android:hint="@string/button_check_damage"
+                    android:onClick="onClickCheckDamage" />
 
                 <Button
                     android:id="@+id/bt_shield_scan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Скан щитов"
-                    android:onClick="onClickScanShields"/>
+                    android:hint="@string/button_scan_shields"
+                    android:onClick="onClickScanShields" />
 
             </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Журнал боя:"/>
+                android:text="@string/battle_journal" />
 
             <TextView
                 android:id="@+id/tv_test_journal"
@@ -207,7 +204,7 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_battle_journal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

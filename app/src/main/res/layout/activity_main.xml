@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <!-- TODO(18) Добавить отображение текущей боевой формы -->
+    <!-- COMPLETED(18) Добавить отображение текущей боевой формы -->
 
     <LinearLayout
         android:orientation="vertical"
@@ -15,23 +15,20 @@
             android:id="@+id/tv_character_full_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Title"
-            android:text="Александр Бойко (Шурик), 20 лет"/>
+            style="@style/Base.TextAppearance.AppCompat.Title" />
 
         <TextView
             android:id="@+id/tv_character_personal_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="Темный иной, оборотень, 4 уровень"/>
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/tv_character_battle_form"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             style="@style/Base.TextAppearance.AppCompat.Small"
-            android:visibility="invisible"
-            android:text="Текущая форма иного: "/>
+            android:visibility="invisible" />
 
         <View
             android:layout_width="match_parent"
@@ -44,27 +41,19 @@
             android:id="@+id/tv_character_magic_power"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="Резерв силы: 50/78"/>
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/tv_character_defence"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="Щиты \n
-            Магическая защита: 36 \n
-            Физическая защита: 36 \n
-            Ментальная защита: 2"/>
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/tv_character_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium"
-            android:text="Максимальный слой сумрака: 2 \n
-            Максимальное количество персональных щитов: 2 \n
-            Максимальное количество авто-амулетов: 1 \n" />
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_dusk_layers"
@@ -80,14 +69,14 @@
                 android:id="@+id/b_shields"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Щиты"
+                android:text="@string/button_start_activity_shields"
                 android:padding="16dp"/>
 
             <Button
                 android:id="@+id/b_battle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Бой"
+                android:text="@string/button_start_activity_battle"
                 android:padding="16dp"/>
 
         </LinearLayout>

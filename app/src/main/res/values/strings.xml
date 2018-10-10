@@ -6,10 +6,43 @@
     <!-- Название приложения -->
     <string name="app_name">Not A Try</string>
 
+    <!-- Заголовок для журнала боя -->
+    <string name="battle_journal">Журнал боя:</string>
+
+    <!-- Заголовок для выбора типа воздействия -->
+    <string name="type_of_attack">Тип воздействия</string>
+
+    <!-- Подсказка для поля ввода количества у.е. для щита -->
+    <string name="hint_shield_power">сила щита</string>
+
+    <!-- Подсказка для поля ввода силы входящего воздействия -->
+    <string name="hint_attack_power">сила воздействия</string>
+
+    <!-- Названия кнопок -->
+    <string name="button_check_damage">Воздействие</string>
+    <string name="button_scan_shields">Скан щитов</string>
+    <string name="button_export_character">Экспортировать персонажа</string>
+    <string name="button_import_character">Импортировать персонажа</string>
+    <string name="button_start_activity_shields">Подготовка</string>
+    <string name="button_start_activity_battle">Начать бой</string>
+    <string name="button_magic_defence">маг</string>
+    <string name="button_physic_defence">физ</string>
+    <string name="button_mental_defence">мент</string>
+
     <!-- Для пунктов меню -->
     <string name="action_settings">Паспорт игрока</string>
     <string name="action_import_export">Импорт/экспорт</string>
     <string name="action_finish_battle">Закончить бой</string>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- Название столбцов в таблице щитов экрана боя  -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - -->
+    <string name="table_column_name">Название</string>
+    <string name="table_column_cost">у.е.</string>
+    <string name="table_column_magic_defence">МЗ</string>
+    <string name="table_column_physic_defence">ФЗ</string>
+    <string name="table_column_mental_defence">Мент.</string>
+    <string name="table_column_range">ЛЗ</string>
 
     <!-- - - - - - - - - - - - - - -->
     <!-- Используется в настройках -->

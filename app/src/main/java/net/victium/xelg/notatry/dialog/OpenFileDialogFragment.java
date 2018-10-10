@@ -76,7 +76,7 @@ public class OpenFileDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-    private List<File> getFiles(File directoryPath) {
+    private List<File> getFiles(@NonNull File directoryPath) {
         List<File> fileList = Arrays.asList(directoryPath.listFiles());
         Collections.sort(fileList, new Comparator<File>() {
             @Override

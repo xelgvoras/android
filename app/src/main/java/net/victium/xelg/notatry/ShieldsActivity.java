@@ -2,6 +2,7 @@ package net.victium.xelg.notatry;
 
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,8 +23,6 @@ import net.victium.xelg.notatry.dialog.UpdateNaturalDefenceDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 import net.victium.xelg.notatry.utilities.TransformUtil;
 
-import java.util.ArrayList;
-
 public class ShieldsActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
@@ -31,11 +31,11 @@ public class ShieldsActivity extends AppCompatActivity implements
         UpdateShieldDialogFragment.UpdateShieldDialogListener,
         UpdateNaturalDefenceDialogFragment.UpdateNaturalDefenceDialogListener {
 
-    private ShieldListAdapter mAdapter;
-    private TextView mCurrentPower;
+    private TextView mCurrentPowerTextView;
     private TextView mBattleFormTextView;
     private TextView mNaturalDefenceTextView;
 
+    private ShieldListAdapter mAdapter;
     // COMPLETED(17) Добавить трансформацию в боевую форму
 
     @Override
@@ -44,34 +44,26 @@ public class ShieldsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_shields);
 
         RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
-        mCurrentPower = findViewById(R.id.tv_current_power);
+        mCurrentPowerTextView = findViewById(R.id.tv_current_power);
         mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
         mNaturalDefenceTextView = findViewById(R.id.tv_natural_defence);
 
-        mCurrentPower.setOnClickListener(this);
+        mCurrentPowerTextView.setOnClickListener(this);
         mBattleFormTextView.setOnClickListener(this);
         mNaturalDefenceTextView.setOnClickListener(this);
 
-        ArrayList<String> typeList = new ArrayList<>();
-        typeList.add(getString(R.string.pref_type_value_flipflop));
-        typeList.add(getString(R.string.pref_type_value_vampire));
-        typeList.add(getString(R.string.pref_type_value_werewolf));
-        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
-
-        Character character = new Character(this);
-        String type = character.getCharacterType();
-        if (typeList.contains(type)) {
-            mBattleFormTextView.setVisibility(View.VISIBLE);
-            mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
-        }
-
         activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         mAdapter = new ShieldListAdapter(getAllShields(), this, this);
         activeShieldsRecyclerView.setAdapter(mAdapter);
 
         setupCurrentPower(getCharacterStatus());
-        setupNaturalDefence(getCharacterStatus());
+
+        Character character = new Character(this);
+        if (character.isCharacterVop()) {
+            setVopsInfoVisible();
+        } else {
+            setVopsInfoInvisible();
+        }
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -89,8 +81,6 @@ public class ShieldsActivity extends AppCompatActivity implements
             }
         }).attachToRecyclerView(activeShieldsRecyclerView);
 
-
-
         // COMPLETED(11) Сделать изменение резерва через диалоговое окно
     }
 
@@ -105,6 +95,39 @@ public class ShieldsActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
+    private void setVopsInfoVisible() {
+        String stringBattleForm = TransformUtil.getCurrentForm(this);
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mBattleFormTextView.setVisibility(View.VISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+        mBattleFormTextView.setText(stringBattleForm);
+
+        Cursor cursor = getCharacterStatus();
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        cursor.close();
+
+        params = (LinearLayout.LayoutParams) mNaturalDefenceTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mNaturalDefenceTextView.setVisibility(View.VISIBLE);
+        mNaturalDefenceTextView.setLayoutParams(params);
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+    }
+
+    private void setVopsInfoInvisible() {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = 0;
+        mBattleFormTextView.setVisibility(View.INVISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+
+        params = (LinearLayout.LayoutParams) mNaturalDefenceTextView.getLayoutParams();
+        params.height = 0;
+        mNaturalDefenceTextView.setVisibility(View.INVISIBLE);
+        mNaturalDefenceTextView.setLayoutParams(params);
+    }
+
     private Cursor getAllShields() {
         String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
         return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
@@ -116,18 +139,11 @@ public class ShieldsActivity extends AppCompatActivity implements
                 null, null, null, null);
     }
 
-    private void setupCurrentPower(Cursor cursor) {
+    private void setupCurrentPower(@NonNull Cursor cursor) {
         cursor.moveToFirst();
         int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
         int powerLimit = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT));
-        mCurrentPower.setText(String.format("Резерв силы: %s/%s", String.valueOf(currentPower), String.valueOf(powerLimit)));
-        cursor.close();
-    }
-
-    private void setupNaturalDefence(Cursor cursor) {
-        cursor.moveToFirst();
-        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
-        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+        mCurrentPowerTextView.setText(String.format("Резерв силы: %s/%s", String.valueOf(currentPower), String.valueOf(powerLimit)));
         cursor.close();
     }
 
@@ -150,8 +166,14 @@ public class ShieldsActivity extends AppCompatActivity implements
 
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
+
         setupCurrentPower(getCharacterStatus());
-        setupNaturalDefence(getCharacterStatus());
+
+        Cursor cursor = getCharacterStatus();
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        cursor.close();
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
     }
 
     @Override

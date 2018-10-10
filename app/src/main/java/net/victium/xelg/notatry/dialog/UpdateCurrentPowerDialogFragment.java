@@ -112,18 +112,9 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER, newValue);
 
-        ArrayList<String> vops = new ArrayList<>();
-        vops.add(getString(R.string.pref_type_value_flipflop));
-        vops.add(getString(R.string.pref_type_value_vampire));
-        vops.add(getString(R.string.pref_type_value_werewolf));
-        vops.add(getString(R.string.pref_type_value_werewolf_mag));
-
         Character character = new Character(mActivity);
-
-        for (String type : vops) {
-            if (character.getCharacterType().equals(type)) {
-                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, newValue);
-            }
+        if (character.isCharacterVop()) {
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, newValue);
         }
 
         updateCharacterStatus(contentValues);
@@ -135,7 +126,7 @@ public class UpdateCurrentPowerDialogFragment extends DialogFragment {
                 null, null, null, null);
     }
 
-    private int getMagicPower(Cursor cursor, String columnName) {
+    private int getMagicPower(@NonNull Cursor cursor, String columnName) {
         int value = 0;
 
         if (cursor.moveToFirst()) {

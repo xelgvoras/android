@@ -7,13 +7,13 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Экспортировать персонажа"
-        android:onClick="onClickExportCharacter"/>
+        android:hint="@string/button_export_character"
+        android:onClick="onClickExportCharacter" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Импортировать персонажа"
-        android:onClick="onClickImportCharacter"/>
+        android:hint="@string/button_import_character"
+        android:onClick="onClickImportCharacter" />
 
 </LinearLayout>

@@ -8,21 +8,21 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            style="@style/Base.TextAppearance.AppCompat.Medium"/>
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/tv_dusk_rounds"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            style="@style/Base.TextAppearance.AppCompat.Medium"/>
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/tv_dusk_time"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            style="@style/Base.TextAppearance.AppCompat.Medium"/>
+            style="@style/Base.TextAppearance.AppCompat.Medium" />
 
 </LinearLayout>
 

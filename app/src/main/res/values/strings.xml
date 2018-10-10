@@ -6,10 +6,10 @@
     <!-- Название приложения -->
     <string name="app_name">Not A Try</string>
 
-    <!-- Пункт меню для генерации паспорта игрока -->
+    <!-- Для пунктов меню -->
     <string name="action_settings">Паспорт игрока</string>
-
-    <string name="action_transform">человек</string>
+    <string name="action_import_export">Импорт/экспорт</string>
+    <string name="action_finish_battle">Закончить бой</string>
 
     <!-- - - - - - - - - - - - - - -->
     <!-- Используется в настройках -->

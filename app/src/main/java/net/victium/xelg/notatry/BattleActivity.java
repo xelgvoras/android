@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,6 +24,7 @@ import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateNaturalDefenceDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
+import net.victium.xelg.notatry.utilities.ShieldUtil;
 import net.victium.xelg.notatry.utilities.TransformUtil;
 
 import java.util.ArrayList;
@@ -39,7 +43,6 @@ public class BattleActivity extends AppCompatActivity implements
     private TextView mPersonalInfoTextView;
     private TextView mMagicPowerTextView;
     private TextView mNaturalDefenceTextView;
-    private RecyclerView mActiveShieldsRecyclerView;
     // TODO(16) Реализовать журнал боя, новое сообщение должно быть сверху
     // Между сообщениями должен быть разделитель
     // В сообщении должна быть информация о входящем воздействии
@@ -71,10 +74,10 @@ public class BattleActivity extends AppCompatActivity implements
         /* Для тестов */
         mTestJournal = findViewById(R.id.tv_test_journal);
 
-        mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
-        mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
+        activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
-        mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
+        activeShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
         ArrayList<String> typeList = new ArrayList<>();
         typeList.add(getString(R.string.pref_type_value_flipflop));
@@ -107,7 +110,7 @@ public class BattleActivity extends AppCompatActivity implements
                 removeShield(id);
                 mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
-        }).attachToRecyclerView(mActiveShieldsRecyclerView);
+        }).attachToRecyclerView(activeShieldsRecyclerView);
     }
 
     @Override
@@ -245,6 +248,86 @@ public class BattleActivity extends AppCompatActivity implements
         } else {
             return "0го уровня";
         }
+    }
+
+    private void reloadNaturalDefence() {
+        Cursor cursor = getCharacterStatus();
+        cursor.moveToFirst();
+        int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
+        cursor.close();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, currentPower);
+        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                null, null);
+
+        setupNaturalDefence(getCharacterStatus());
+    }
+
+    private void resetShields() {
+
+        int powerLimit = mCharacter.getCharacterPowerLimit();
+
+        Cursor cursor = getAllShields(null, null, null);
+        int columnId = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID);
+        int columnName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
+        int columnCost = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST);
+        int columnTarget = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET);
+
+        if (cursor.moveToFirst()) {
+            while (true) {
+                String shieldId = cursor.getString(columnId);
+                Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
+
+                String shieldTarget = cursor.getString(columnTarget);
+                if (!shieldTarget.equals("персональный")) {
+                    getContentResolver().delete(uri, null, null);
+                } else {
+                    String shieldName = cursor.getString(columnName);
+                    int shieldCost = cursor.getInt(columnCost);
+                    ShieldUtil.Shield shield = ShieldUtil.getShield(this, shieldName);
+
+                    if (powerLimit < shield.getMinCost() || shieldCost < shield.getMinCost()) {
+                        getContentResolver().delete(uri, null, null);
+                    } else if (shieldCost > powerLimit) {
+                        int newMagicDefence = shield.getMagicDefenceMultiplier() * powerLimit;
+                        int newPhysicDefence = shield.getPhysicDefenceMultiplier() * powerLimit;
+
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, powerLimit);
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, newMagicDefence);
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, newPhysicDefence);
+
+                        getContentResolver().update(uri, contentValues, null, null);
+                    }
+                }
+
+                if (!cursor.moveToNext()) {
+                    break;
+                }
+            }
+        }
+
+        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.battle_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_finish_battle) {
+            reloadNaturalDefence();
+            resetShields();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

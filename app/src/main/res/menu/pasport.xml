@@ -9,7 +9,7 @@
 
     <item
         android:id="@+id/action_import_export"
-        android:title="импорт/экспорт"
+        android:title="@string/action_import_export"
         android:orderInCategory="2"
         app:showAsAction="never"/>
 

@@ -136,6 +136,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                         mInputDamage = Integer.parseInt(input);
                         String selectedAttack = mAttackListSpinner.getSelectedItem().toString();
                         mResultSummary = checkBattle(selectedAttack);
+                        insertMessageToBattleJournal(selectedAttack);
                         mListener.onDialogPositiveClick(DamageDialogFragment.this);
                     }
                 });
@@ -487,6 +488,17 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 selection,
                 selectionArgs,
                 sortOrder);
+    }
+
+    private void insertMessageToBattleJournal(String selectedAttack) {
+
+        String attackMessage = "Атака:\n" + mTypeDamageArg + " " + selectedAttack + " " + mInputDamage;
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_ATTACK_MESSAGE, attackMessage);
+        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_RESULT_MESSAGE, mResultSummary);
+
+        mActivity.getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
     }
 
     private SPV checkDamage(int damage, int defence) {

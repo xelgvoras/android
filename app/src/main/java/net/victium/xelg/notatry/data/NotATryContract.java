@@ -10,6 +10,7 @@ public class NotATryContract {
     public static final String CHARACTER_STATUS_PATH = "characterStatus";
     public static final String DUSK_LAYERS_PATH = "duskLayers";
     public static final String ACTIVE_SHIELDS_PATH = "activeShields";
+    public static final String BATTLE_JOURNAL_PATH = "battleJournal";
 
     public static final class CharacterStatusEntry implements BaseColumns {
 
@@ -58,5 +59,16 @@ public class NotATryContract {
         public static final String COLUMN_MAGIC_DEFENCE_SUM = "magicDefenceSum";
         public static final String COLUMN_PHYSIC_DEFENCE_SUM = "physicDefenceSum";
         public static final String COLUMN_MENTAL_DEFENCE_SUM = "mentalDefenceSum";
+    }
+
+    public static final class BattleJournalEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(BATTLE_JOURNAL_PATH).build();
+
+        public static final String TABLE_NAME = "battleJournal";
+        public static final String COLUMN_ATTACK_MESSAGE = "attackMessage";
+        public static final String COLUMN_RESULT_MESSAGE = "resultMessage";
+        public static final String COLUMN_SYSTEM_MESSAGE = "systemMessage";
     }
 }

@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -53,6 +53,14 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 ActiveShieldsEntry.COLUMN_RANGE + " INTEGER NOT NULL);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_SHIELDS_TABLE);
+
+        final String SQL_CREATE_BATTLE_JOURNAL_TABLE = "CREATE TABLE " + BattleJournalEntry.TABLE_NAME + " (" +
+                BattleJournalEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                BattleJournalEntry.COLUMN_ATTACK_MESSAGE + " TEXT," +
+                BattleJournalEntry.COLUMN_RESULT_MESSAGE + " TEXT," +
+                BattleJournalEntry.COLUMN_SYSTEM_MESSAGE + " TEXT);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_BATTLE_JOURNAL_TABLE);
     }
 
     @Override
@@ -61,6 +69,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + CharacterStatusEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DuskLayersSummaryEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveShieldsEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + BattleJournalEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

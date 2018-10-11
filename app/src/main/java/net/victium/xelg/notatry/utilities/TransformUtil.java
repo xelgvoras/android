@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
 
 public class TransformUtil {

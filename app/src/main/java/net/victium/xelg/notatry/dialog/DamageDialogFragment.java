@@ -42,6 +42,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
 
     private int mTypeDamage;
     private int mInputDamage;
+    private int mReactionCount;
     private String mTypeDamageArg;
     private String mColumnDefenceKey;
     private String mBattleForm;
@@ -49,6 +50,8 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     private String mCharacterSide;
     private EditText mDamagePower;
     private Uri mShieldUri;
+    private boolean mUseReaction;
+    private boolean mSuccessDodge;
 
     public String mResultSummary;
     public boolean mShouldBeTransformed;
@@ -119,6 +122,9 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         mAttackListSpinner.setAdapter(mAdapterSpinner);
         mAttackListSpinner.setOnItemSelectedListener(this);
 
+        mReactionCount = getReactionCount();
+        mUseReaction = false;
+
         builder.setTitle("Входящее воздействие")
                 .setMessage("Укажите тип и силу воздействия, в случае необходимости - выберите заклинание из списка")
                 .setView(view)
@@ -126,7 +132,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        String input = mDamagePower.getText().toString();
+                        /*String input = mDamagePower.getText().toString();
 
                         if (input.length() == 0) {
                             Toast.makeText(getActivity(), "Не указана сила воздействия", Toast.LENGTH_LONG).show();
@@ -137,12 +143,56 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                         String stringInputDamage = String.valueOf(mInputDamage);
                         String selectedAttack = mAttackListSpinner.getSelectedItem().toString();
                         mResultSummary = checkBattle(selectedAttack);
-                        insertMessageToBattleJournal(selectedAttack, stringInputDamage);
+                        insertMessageToBattleJournal(selectedAttack, stringInputDamage);*/
+                        testCheckBattle();
+                        mListener.onDialogPositiveClick(DamageDialogFragment.this);
+                    }
+                })
+                .setNegativeButton("реакция(" + mReactionCount + ")", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        if (mReactionCount == 0) {
+                            Toast.makeText(mActivity, "У вас закончились реакции, выполнена стандартная проверка воздействия", Toast.LENGTH_LONG).show();
+                        } else {
+                            mUseReaction = true;
+                        }
+
+                        testCheckBattle();
                         mListener.onDialogPositiveClick(DamageDialogFragment.this);
                     }
                 });
 
         return builder.create();
+    }
+
+    private void testCheckBattle() {
+        String input = mDamagePower.getText().toString();
+
+        if (input.length() == 0) {
+            Toast.makeText(getActivity(), "Не указана сила воздействия", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        mInputDamage = Integer.parseInt(input);
+        String stringInputDamage = String.valueOf(mInputDamage);
+        String selectedAttack = mAttackListSpinner.getSelectedItem().toString();
+
+        switch (mTypeDamage) {
+            case 1:
+                mResultSummary = checkMagicAttack(selectedAttack);
+                break;
+            case 2:
+                mResultSummary = checkPhysicAttack(selectedAttack);
+                break;
+            case 3:
+                mResultSummary = checkMentalAttack(mInputDamage);
+                break;
+            default:
+                break;
+        }
+
+        insertMessageToBattleJournal(selectedAttack, stringInputDamage);
     }
 
     private String checkBattle(String selectedAttack) {
@@ -191,6 +241,15 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         shieldListIgnoredHazeTransylvania.add(shieldMagShield);
         shieldListIgnoredHazeTransylvania.add(shieldHighestMagShield);
         shieldListIgnoredHazeTransylvania.add(shieldForceBarrier);
+
+        if (mUseReaction) {
+            builder.append(dropGroupShield()).append("\n").append(checkReaction(spell)).append("\n\n");
+            updateReactionCount();
+        }
+
+        if (mSuccessDodge) {
+            return builder.toString();
+        }
 
         if (shieldsCursor.moveToFirst()) {
 
@@ -479,6 +538,24 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         return builder.append("\n").toString();
     }
 
+    private String checkReaction(SpellsUtil.Spell spell) {
+
+        if (!spell.isCanDodge()) {
+            mSuccessDodge = false;
+            return "От заклинания невозможно увернуться";
+        }
+
+        if (mBattleForm.equals("боевая форма")) {
+            mSuccessDodge = true;
+            return "Вы успешно увернулись от атаки";
+        } else if (spell.getTarget().equals("область") && spell.getSpeed().equals("медленное")) {
+            mSuccessDodge = true;
+            return "Вы успешно увернилсь от атаки";
+        }
+
+        return "Вам не удалось увернуться от атаки";
+    }
+
     private Cursor getShields() {
         String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=? OR " +
                 NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
@@ -489,6 +566,35 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 selection,
                 selectionArgs,
                 sortOrder);
+    }
+
+    private String dropGroupShield() {
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
+        String[] selectionArgs = new String[]{"групповой"};
+        int deletedShields = mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                selection, selectionArgs);
+        if (deletedShields > 0) {
+            return "Использована реакция, групповые щиты распались";
+        }
+
+        return "Использована реакция";
+    }
+
+    private int getReactionCount() {
+        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+        int returnReactionCount = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER));
+        cursor.close();
+
+        return returnReactionCount;
+    }
+
+    private void updateReactionCount() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, --mReactionCount);
+        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                contentValues, null, null);
     }
 
     private void insertMessageToBattleJournal(String selectedAttack, String inputDamage) {

@@ -95,10 +95,8 @@ public class Character {
             shieldsLimit = 2;
         } else if (characterLevel >= 2) {
             shieldsLimit = 3;
-        } else if (characterLevel == 1){
-            shieldsLimit = 4;
         } else {
-            shieldsLimit = 5;
+            shieldsLimit = 4;
         }
 
         characterPersonalShieldsLimit = shieldsLimit;

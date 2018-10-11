@@ -309,7 +309,7 @@ public class BattleActivity extends AppCompatActivity implements
         }
     }
 
-    private void reloadNaturalDefence() {
+    private void resetNaturalDefence() {
         Cursor cursor = getCharacterStatus();
         cursor.moveToFirst();
         int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
@@ -370,6 +370,29 @@ public class BattleActivity extends AppCompatActivity implements
         mShieldListAdapter.swapCursor(getAllShields(null, null, null));
     }
 
+    private void resetBattleJournal() {
+        getContentResolver().delete(NotATryContract.BattleJournalEntry.CONTENT_URI, null, null);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_SYSTEM_MESSAGE, "Бой окончен, журнал очищен");
+        getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
+        mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
+    }
+
+    private void resetReactionCount() {
+        int reactionCount;
+
+        if (TransformUtil.getCurrentForm(this).equals("человек")) {
+            reactionCount = 1;
+        } else {
+            reactionCount = mCharacter.getCharacterReactionsNumber();
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, reactionCount);
+        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                null, null);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -382,14 +405,13 @@ public class BattleActivity extends AppCompatActivity implements
         int itemId = item.getItemId();
 
         if (itemId == R.id.action_finish_battle) {
-            reloadNaturalDefence();
+            resetNaturalDefence();
             resetShields();
-            getContentResolver().delete(NotATryContract.BattleJournalEntry.CONTENT_URI, null, null);
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_SYSTEM_MESSAGE, "Бой окончен, журнал очищен");
-            getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
-            mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
+            resetBattleJournal();
+            resetReactionCount();
             Toast.makeText(this, "Бой окончен, сброс параметров", Toast.LENGTH_LONG).show();
+        } else if (itemId == R.id.action_reset_reactions) {
+            resetReactionCount();
         }
 
         return super.onOptionsItemSelected(item);

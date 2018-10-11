@@ -51,6 +51,9 @@ public class BattleJournalAdapter extends RecyclerView.Adapter<BattleJournalAdap
             holder.attackMessageTextView.setVisibility(View.INVISIBLE);
             holder.attackMessageTextView.setLayoutParams(paramsAttackMessage);
         } else {
+            paramsAttackMessage.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            holder.attackMessageTextView.setVisibility(View.VISIBLE);
+            holder.attackMessageTextView.setLayoutParams(paramsAttackMessage);
             holder.attackMessageTextView.setText(attackMessage);
         }
 
@@ -59,6 +62,9 @@ public class BattleJournalAdapter extends RecyclerView.Adapter<BattleJournalAdap
             holder.resultMessageTextView.setVisibility(View.INVISIBLE);
             holder.resultMessageTextView.setLayoutParams(paramsResultMessage);
         } else {
+            paramsResultMessage.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            holder.resultMessageTextView.setVisibility(View.VISIBLE);
+            holder.resultMessageTextView.setLayoutParams(paramsResultMessage);
             holder.resultMessageTextView.setText(resultMessage);
         }
 
@@ -67,6 +73,9 @@ public class BattleJournalAdapter extends RecyclerView.Adapter<BattleJournalAdap
             holder.systemMessageTextView.setVisibility(View.INVISIBLE);
             holder.systemMessageTextView.setLayoutParams(paramsSystemMessage);
         } else {
+            paramsSystemMessage.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            holder.systemMessageTextView.setVisibility(View.VISIBLE);
+            holder.systemMessageTextView.setLayoutParams(paramsSystemMessage);
             holder.systemMessageTextView.setText(systemMessage);
         }
     }

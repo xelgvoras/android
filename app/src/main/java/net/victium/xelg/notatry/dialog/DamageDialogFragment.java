@@ -134,9 +134,10 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                         }
 
                         mInputDamage = Integer.parseInt(input);
+                        String stringInputDamage = String.valueOf(mInputDamage);
                         String selectedAttack = mAttackListSpinner.getSelectedItem().toString();
                         mResultSummary = checkBattle(selectedAttack);
-                        insertMessageToBattleJournal(selectedAttack);
+                        insertMessageToBattleJournal(selectedAttack, stringInputDamage);
                         mListener.onDialogPositiveClick(DamageDialogFragment.this);
                     }
                 });
@@ -490,13 +491,14 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 sortOrder);
     }
 
-    private void insertMessageToBattleJournal(String selectedAttack) {
+    private void insertMessageToBattleJournal(String selectedAttack, String inputDamage) {
 
-        String attackMessage = "Атака:\n" + mTypeDamageArg + " " + selectedAttack + " " + mInputDamage;
+        String attackMessage = "Атака:\n" + mTypeDamageArg + " " + selectedAttack + " " + inputDamage;
+        String resultMessage = "Результат:\n" + mResultSummary;
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_ATTACK_MESSAGE, attackMessage);
-        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_RESULT_MESSAGE, mResultSummary);
+        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_RESULT_MESSAGE, resultMessage);
 
         mActivity.getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
     }

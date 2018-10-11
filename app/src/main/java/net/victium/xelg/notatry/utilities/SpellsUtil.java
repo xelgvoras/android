@@ -1,13 +1,9 @@
 package net.victium.xelg.notatry.utilities;
 
-import android.content.Context;
 import android.util.ArrayMap;
-import android.widget.TableLayout;
-import android.widget.Toast;
 
 import net.victium.xelg.notatry.enums.SPV;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class SpellsUtil {

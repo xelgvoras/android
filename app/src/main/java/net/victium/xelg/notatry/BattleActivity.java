@@ -229,11 +229,19 @@ public class BattleActivity extends AppCompatActivity implements
         StringBuilder builder = new StringBuilder();
         builder.append("Скан щитов:\n");
 
+        Cursor cursor = getAllShields(null, null, null);
+        if (cursor.getCount() == 0) {
+            builder.append("Щиты отсутствуют");
+            insertMessageIntoBattleJournal(builder.toString());
+            return;
+        }
+
         String[] columns = new String[]{"MAX(" + NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + ") as maxRange"};
-        Cursor cursor = getAllShields(columns, null, null);
+        cursor = getAllShields(columns, null, null);
         cursor.moveToFirst();
         int columnMaxRange = cursor.getColumnIndex("maxRange");
         int maxRange = cursor.getInt(columnMaxRange);
+        cursor.close();
 
         for (int i = maxRange; i >= 0; i--) {
             boolean isStop = false;
@@ -271,6 +279,7 @@ public class BattleActivity extends AppCompatActivity implements
                 insertMessageIntoBattleJournal(builder.toString());
                 return;
             }
+            cursor.close();
         }
 
         insertMessageIntoBattleJournal(builder.toString());
@@ -375,6 +384,11 @@ public class BattleActivity extends AppCompatActivity implements
         if (itemId == R.id.action_finish_battle) {
             reloadNaturalDefence();
             resetShields();
+            getContentResolver().delete(NotATryContract.BattleJournalEntry.CONTENT_URI, null, null);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_SYSTEM_MESSAGE, "Бой окончен, журнал очищен");
+            getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
+            mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
             Toast.makeText(this, "Бой окончен, сброс параметров", Toast.LENGTH_LONG).show();
         }
 

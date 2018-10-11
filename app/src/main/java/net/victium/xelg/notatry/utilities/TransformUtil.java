@@ -24,9 +24,13 @@ public class TransformUtil {
         context.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
                 null, null);
 
-        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
-        String[] selectionArgs = new String[]{"персональный"};
-        int count = context.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
+        int count = 0;
+        Character character = new Character(context);
+        if (!character.getCharacterType().equals("вампир")) {
+            String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
+            String[] selectionArgs = new String[]{"персональный"};
+            count = context.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
+        }
 
         String transformMessage = "Выполнена трансформация";
         if (count > 0) {

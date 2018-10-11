@@ -290,12 +290,10 @@ public class MainActivity extends AppCompatActivity implements
             contentValues = new ContentValues();
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE,
                     mCharacter.getCharacterNaturalDefence());
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER,
-                    mCharacter.getCharacterReactionsNumber());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, 1);
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
                     mCharacter.getCharacterAmuletsLimit());
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM,
-                    "человек");
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, "человек");
 
             updateCharacterStatus(contentValues);
 
@@ -307,8 +305,7 @@ public class MainActivity extends AppCompatActivity implements
                     mCharacter.getCharacterPersonalShieldsLimit());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
                     mCharacter.getCharacterAmuletsLimit());
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER,
-                    mCharacter.getCharacterReactionsNumber());
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, 1);
 
             updateCharacterStatus(contentValues);
 

@@ -3,6 +3,7 @@ package net.victium.xelg.notatry.utilities;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.NonNull;
 
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
@@ -40,7 +41,7 @@ public class TransformUtil {
         return transformMessage;
     }
 
-    public static String getCurrentForm(Context context) {
+    public static String getCurrentForm(@NonNull Context context) {
 
         Cursor cursor = context.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                 null, null, null, null);

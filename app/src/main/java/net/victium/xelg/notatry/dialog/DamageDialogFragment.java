@@ -350,6 +350,10 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         SPV damageResult = SPV.DROP;
         Cursor shieldsCursor = getShields();
 
+        if (mUseReaction) {
+            Toast.makeText(mActivity, "Для физических воздействий реакции не обрабатываются", Toast.LENGTH_LONG).show();
+        }
+
         if (shieldsCursor.moveToFirst()) {
 
             while (true) {

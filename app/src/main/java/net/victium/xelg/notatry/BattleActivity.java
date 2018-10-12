@@ -55,6 +55,7 @@ public class BattleActivity extends AppCompatActivity implements
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
     private BattleJournalAdapter mBattleJournalAdapter;
+    private Menu mMenu;
 
     // COMPLETED(bug) В начале боя Вампиры автоматически трансформирутся
     @Override
@@ -191,6 +192,31 @@ public class BattleActivity extends AppCompatActivity implements
 
         return getContentResolver().query(NotATryContract.BattleJournalEntry.CONTENT_URI,
                 null, null, null, "_id DESC");
+    }
+
+    private int getReactionCount() {
+
+        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+        int returnReactionCount = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER));
+        cursor.close();
+
+        return returnReactionCount;
+    }
+
+    private void useReaction() {
+        int reactionCount = getReactionCount();
+
+        if (reactionCount == 0) {
+            insertMessageIntoBattleJournal("У вас закончились реакции");
+        } else {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, --reactionCount);
+            getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                    null, null);
+            insertMessageIntoBattleJournal("Ручное использование реакции, выполните необходимые действия");
+        }
     }
 
     private void removeShield(long id) {
@@ -391,12 +417,20 @@ public class BattleActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, reactionCount);
         getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
                 null, null);
+
+        MenuItem menuItem = mMenu.findItem(R.id.action_use_reaction);
+        menuItem.setTitle("использовать реакцию (" + getReactionCount() + ")");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.battle_menu, menu);
+
+        MenuItem item = menu.getItem(0);
+        item.setTitle("использовать реакцию (" + getReactionCount() + ")");
         return true;
     }
 
@@ -412,6 +446,10 @@ public class BattleActivity extends AppCompatActivity implements
             Toast.makeText(this, "Бой окончен, сброс параметров", Toast.LENGTH_LONG).show();
         } else if (itemId == R.id.action_reset_reactions) {
             resetReactionCount();
+        } else if (itemId == R.id.action_use_reaction) {
+            useReaction();
+            item.setTitle("использовать реакцию (" + getReactionCount() + ")");
+            mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
         }
 
         return super.onOptionsItemSelected(item);

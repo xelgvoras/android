@@ -6,6 +6,13 @@
         android:title="@string/action_finish_battle"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_use_reaction"
+        android:title="@string/action_use_reaction"
+        android:orderInCategory="1"
+        app:showAsAction="never" />
+
     <item
         android:id="@+id/action_reset_reactions"
         android:title="@string/action_reset_reactions"

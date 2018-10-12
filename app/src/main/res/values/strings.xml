@@ -34,6 +34,7 @@
     <string name="action_import_export">импорт/экспорт</string>
     <string name="action_finish_battle">закончить бой</string>
     <string name="action_reset_reactions">восстановить реакции</string>
+    <string name="action_use_reaction">использовать реакцию</string>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - -->
     <!-- Название столбцов в таблице щитов экрана боя  -->

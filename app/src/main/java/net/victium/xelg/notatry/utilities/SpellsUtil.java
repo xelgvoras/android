@@ -1,13 +1,9 @@
-package net.victium.xelg.notatry.data;
+package net.victium.xelg.notatry.utilities;
 
-import android.content.Context;
 import android.util.ArrayMap;
-import android.widget.TableLayout;
-import android.widget.Toast;
 
 import net.victium.xelg.notatry.enums.SPV;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class SpellsUtil {
@@ -24,6 +20,8 @@ public class SpellsUtil {
     private static final String TARGET_MASS = "массовое";
     private static final String TYPE_BATTLE = "боевое";
     private static final String TYPE_UNIVERSAL = "универсальное";
+    private static final String SPEED_FAST = "быстрое";
+    private static final String SPEED_SLOW = "медленное";
 
     private static final String VAMPIRE = "Вампир";
 
@@ -31,17 +29,23 @@ public class SpellsUtil {
 
     public static class Spell {
 
+        // TODO(19) Добавить минимальную стоимость заклинаний, отметить с фиксированной стоимостью
+
         private String mName;
         private String mTarget;
         private String mType;
         private String mElement;
+        private String mSpeed;
         private Map mEffect;
+        private boolean mCanDodge;
 
-        public Spell(String mName, String mTarget, Map mEffect) {
+        Spell(String mName, String mTarget, Map mEffect) {
             this.mName = mName;
             this.mTarget = mTarget;
             this.mType = TYPE_BATTLE;
             this.mEffect = mEffect;
+            this.mCanDodge = true;
+            this.mSpeed = SPEED_FAST;
         }
 
         public String getName() {
@@ -64,12 +68,28 @@ public class SpellsUtil {
             return mElement;
         }
 
-        public void setElement(String element) {
-            this.mElement = element;
-        }
-
         public Map getEffect() {
             return mEffect;
+        }
+
+        public boolean isCanDodge() {
+            return mCanDodge;
+        }
+
+        public String  getSpeed() {
+            return mSpeed;
+        }
+
+        void setElement() {
+            this.mElement = "огонь";
+        }
+
+        void setDodgeRestricted() {
+            this.mCanDodge = false;
+        }
+
+        void setSlowSpeed() {
+            this.mSpeed = SPEED_SLOW;
         }
 
         @Override
@@ -91,7 +111,7 @@ public class SpellsUtil {
             case "Файербол":
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
-                returnSpell.setElement("огонь");
+                returnSpell.setElement();
                 break;
             case "Ледяная глыба":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -103,18 +123,21 @@ public class SpellsUtil {
                 break;
             case "Столп огня (Подгорает)":
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
-                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
-                returnSpell.setElement("огонь");
+                returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
+                returnSpell.setElement();
+                returnSpell.setSlowSpeed();
                 break;
             case "Кольцо огня":
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
-                returnSpell.setElement("огонь");
+                returnSpell.setElement();
+                returnSpell.setSlowSpeed();
                 break;
             case "Стена огня":
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
-                returnSpell.setElement("огонь");
+                returnSpell.setElement();
+                returnSpell.setSlowSpeed();
                 break;
             case "Кольцо холода":
                 if (characterType.equals(VAMPIRE)) {
@@ -128,6 +151,7 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Обморожение, замедлен, " + LIGHT_DAMAGE);
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
+                returnSpell.setDodgeRestricted();
                 break;
             case "Близзард":
                 if (characterType.equals(VAMPIRE)) {
@@ -140,6 +164,7 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Обморожение, оглушен, многочисленные сильные порезы, " + HEAVY_DAMAGE);
                 }
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
+                returnSpell.setSlowSpeed();
                 break;
             case "Поцелуй ехидны":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -150,6 +175,8 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 }
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setDodgeRestricted();
+                returnSpell.setSlowSpeed();
                 break;
             case "Черный дождь":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -160,6 +187,8 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
+                returnSpell.setDodgeRestricted();
+                returnSpell.setSlowSpeed();
                 break;
             case "Белый меч":
                 if (characterType.equals(VAMPIRE)) {
@@ -189,18 +218,19 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Переохлаждение, удушье, декомпрессия, ударная волна, оглушен, " + MEDIUM_DAMAGE);
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
+                returnSpell.setDodgeRestricted();
+                returnSpell.setSlowSpeed();
                 break;
             case "Тайга":
                 effectArrayMap.put(SPV.DROP, "Если пошевелитесь: " + YOU_DIE);
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setDodgeRestricted();
                 break;
             case "Марево Трансильвании":
                 effectArrayMap.put(SPV.DROP, YOU_DIE + " особо неприглядным образом");
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
-                break;
-            case "Вифлеемский огонь":
-                effectArrayMap.put(SPV.DROP, "Кучка пепла, " + YOU_DIE);
-                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setDodgeRestricted();
+                returnSpell.setSlowSpeed();
                 break;
             case "Искрящаяся Стена":
                 if (characterType.equals(VAMPIRE)) {
@@ -218,6 +248,7 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Кучка пепла, " + YOU_DIE);
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
+                returnSpell.setDodgeRestricted();
                 break;
             case "Телекинез":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -290,6 +321,7 @@ public class SpellsUtil {
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);
+                returnSpell.setDodgeRestricted();
                 break;
             case "Фриз":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -312,6 +344,7 @@ public class SpellsUtil {
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);
+                returnSpell.setDodgeRestricted();
                 break;
             case "Масс пресс":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -322,14 +355,16 @@ public class SpellsUtil {
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);
+                returnSpell.setDodgeRestricted();
                 break;
             case "Экспроприация":
+                // COMPLETED(bug) эффект только если уровень атакующего выше ващего
                 if (characterType.equals(VAMPIRE) || BATTLE_FORM.equals(battleForm)) {
                     effectArrayMap.put(SPV.BLOCK, NO_EFFECT);
                     effectArrayMap.put(SPV.BURST, NO_EFFECT);
                     effectArrayMap.put(SPV.DROP, NO_EFFECT);
                 } else {
-                    effectArrayMap.put(SPV.DROP, "Заблокированы все способности иного, включая базовые");
+                    effectArrayMap.put(SPV.DROP, "Заблокированы все способности иного, включая базовые, если уровень атакующего выше вашего");
                 }
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);

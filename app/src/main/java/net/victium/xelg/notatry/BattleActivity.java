@@ -2,6 +2,7 @@ package net.victium.xelg.notatry;
 
 import android.content.ContentValues;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import net.victium.xelg.notatry.adapter.BattleJournalAdapter;
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.CharacterPreferences;
@@ -22,9 +26,10 @@ import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.dialog.AddShieldDialogFragment;
 import net.victium.xelg.notatry.dialog.DamageDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateCurrentPowerDialogFragment;
+import net.victium.xelg.notatry.dialog.UpdateNaturalDefenceDialogFragment;
 import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
-
-import java.util.ArrayList;
+import net.victium.xelg.notatry.utilities.ShieldUtil;
+import net.victium.xelg.notatry.utilities.TransformUtil;
 
 public class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
@@ -32,22 +37,27 @@ public class BattleActivity extends AppCompatActivity implements
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
         View.OnClickListener,
         ShieldListAdapter.ShieldListAdapterOnClickHandler,
-        UpdateShieldDialogFragment.UpdateShieldDialogListener {
+        UpdateShieldDialogFragment.UpdateShieldDialogListener,
+        UpdateNaturalDefenceDialogFragment.UpdateNaturalDefenceDialogListener {
 
     private TextView mFullNameTextView;
     private TextView mBattleFormTextView;
     private TextView mPersonalInfoTextView;
     private TextView mMagicPowerTextView;
-    private RecyclerView mActiveShieldsRecyclerView;
-    private RecyclerView mBattleJournalRecyclerView;
+    private TextView mNaturalDefenceTextView;
+    // TODO(16) Реализовать журнал боя, новое сообщение должно быть сверху
+    // Между сообщениями должен быть разделитель
+    // В сообщении должна быть информация о входящем воздействии
 
     /* Для тестов */
-    private TextView mTestJournal;
+//    private TextView mTestJournal;
 
-    private Menu mMenu;
     private Character mCharacter;
     private ShieldListAdapter mShieldListAdapter;
+    private BattleJournalAdapter mBattleJournalAdapter;
+    private Menu mMenu;
 
+    // COMPLETED(bug) В начале боя Вампиры автоматически трансформирутся
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,31 +67,31 @@ public class BattleActivity extends AppCompatActivity implements
         mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
-        mBattleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
+        mNaturalDefenceTextView = findViewById(R.id.tv_natural_defence);
 
         mMagicPowerTextView.setOnClickListener(this);
         mBattleFormTextView.setOnClickListener(this);
+        mNaturalDefenceTextView.setOnClickListener(this);
 
-        ArrayList<String> typeList = new ArrayList<>();
-        typeList.add(getString(R.string.pref_type_value_flipflop));
-        typeList.add(getString(R.string.pref_type_value_vampire));
-        typeList.add(getString(R.string.pref_type_value_werewolf));
-        typeList.add(getString(R.string.pref_type_value_werewolf_mag));
+        /* Для тестов */
+//        mTestJournal = findViewById(R.id.tv_test_journal);
+
+        RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
+        activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
+        activeShieldsRecyclerView.setAdapter(mShieldListAdapter);
+
+        RecyclerView battleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
+        battleJournalRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mBattleJournalAdapter = new BattleJournalAdapter(getAllBattleJournalMessage(), this);
+        battleJournalRecyclerView.setAdapter(mBattleJournalAdapter);
 
         mCharacter = new Character(this);
         String type = mCharacter.getCharacterType();
-        if (typeList.contains(type)) {
-            mBattleFormTextView.setVisibility(View.VISIBLE);
-            mBattleFormTextView.setText(getCurrentForm());
+        if (type.equals(getString(R.string.pref_type_value_vampire)) && TransformUtil.getCurrentForm(this).equals("человек")) {
+            insertMessageIntoBattleJournal(TransformUtil.makeTransform(this));
+            mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         }
-
-        /* Для тестов */
-        mTestJournal = findViewById(R.id.tv_test_journal);
-
-        mActiveShieldsRecyclerView = findViewById(R.id.rv_active_shields);
-        mActiveShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
-        mActiveShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
         setupScreen();
 
@@ -97,7 +107,7 @@ public class BattleActivity extends AppCompatActivity implements
                 removeShield(id);
                 mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
-        }).attachToRecyclerView(mActiveShieldsRecyclerView);
+        }).attachToRecyclerView(activeShieldsRecyclerView);
     }
 
     @Override
@@ -115,7 +125,55 @@ public class BattleActivity extends AppCompatActivity implements
 
         mFullNameTextView.setText(CharacterPreferences.getCharacterNameAndAge(mCharacter));
         mPersonalInfoTextView.setText(CharacterPreferences.getPersonalInfo(mCharacter));
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, this));
+
+        setupNaturalDefence(getCharacterStatus());
+
+        if (mCharacter.isCharacterVop()) {
+            setVopsInfoVisible();
+        } else {
+            setVopsInfoInvisible();
+        }
+    }
+
+    private void setVopsInfoVisible() {
+        String stringBattleForm = TransformUtil.getCurrentForm(this);
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mBattleFormTextView.setVisibility(View.VISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+        mBattleFormTextView.setText(stringBattleForm);
+
+        Cursor cursor = getCharacterStatus();
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        cursor.close();
+
+        params = (LinearLayout.LayoutParams) mNaturalDefenceTextView.getLayoutParams();
+        params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        mNaturalDefenceTextView.setVisibility(View.VISIBLE);
+        mNaturalDefenceTextView.setLayoutParams(params);
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+    }
+
+    private void setVopsInfoInvisible() {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBattleFormTextView.getLayoutParams();
+        params.height = 0;
+        mBattleFormTextView.setVisibility(View.INVISIBLE);
+        mBattleFormTextView.setLayoutParams(params);
+
+        params = (LinearLayout.LayoutParams) mNaturalDefenceTextView.getLayoutParams();
+        params.height = 0;
+        mNaturalDefenceTextView.setVisibility(View.INVISIBLE);
+        mNaturalDefenceTextView.setLayoutParams(params);
+    }
+
+    private void setupNaturalDefence(@NonNull Cursor cursor) {
+        cursor.moveToFirst();
+        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
+        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
+        cursor.close();
     }
 
     private Cursor getCharacterStatus() {
@@ -130,12 +188,50 @@ public class BattleActivity extends AppCompatActivity implements
                 columns, selection, selectionArgs, NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC");
     }
 
+    private Cursor getAllBattleJournalMessage() {
+
+        return getContentResolver().query(NotATryContract.BattleJournalEntry.CONTENT_URI,
+                null, null, null, "_id DESC");
+    }
+
+    private int getReactionCount() {
+
+        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+        int returnReactionCount = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER));
+        cursor.close();
+
+        return returnReactionCount;
+    }
+
+    private void useReaction() {
+        int reactionCount = getReactionCount();
+
+        if (reactionCount == 0) {
+            insertMessageIntoBattleJournal("У вас закончились реакции");
+        } else {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, --reactionCount);
+            getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                    null, null);
+            insertMessageIntoBattleJournal("Ручное использование реакции, выполните необходимые действия");
+        }
+    }
+
     private void removeShield(long id) {
 
         String stringId = String.valueOf(id);
         Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(stringId).build();
 
         getContentResolver().delete(uri, null, null);
+    }
+
+    private void insertMessageIntoBattleJournal(String message) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_SYSTEM_MESSAGE, message);
+        getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
+        mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
     }
 
     public void onClickAddShield(View view) {
@@ -147,7 +243,7 @@ public class BattleActivity extends AppCompatActivity implements
     public void onClickCheckDamage(View view) {
 
         Bundle args = new Bundle();
-        String battleForm = getCurrentForm();
+        String battleForm = TransformUtil.getCurrentForm(this);
         args.putString("battleForm", battleForm);
 
         DialogFragment dialogFragment = new DamageDialogFragment();
@@ -157,12 +253,21 @@ public class BattleActivity extends AppCompatActivity implements
 
     public void onClickScanShields(View view) {
         StringBuilder builder = new StringBuilder();
+        builder.append("Скан щитов:\n");
+
+        Cursor cursor = getAllShields(null, null, null);
+        if (cursor.getCount() == 0) {
+            builder.append("Щиты отсутствуют");
+            insertMessageIntoBattleJournal(builder.toString());
+            return;
+        }
 
         String[] columns = new String[]{"MAX(" + NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + ") as maxRange"};
-        Cursor cursor = getAllShields(columns, null, null);
+        cursor = getAllShields(columns, null, null);
         cursor.moveToFirst();
         int columnMaxRange = cursor.getColumnIndex("maxRange");
         int maxRange = cursor.getInt(columnMaxRange);
+        cursor.close();
 
         for (int i = maxRange; i >= 0; i--) {
             boolean isStop = false;
@@ -183,7 +288,7 @@ public class BattleActivity extends AppCompatActivity implements
                 shieldCost = cursor.getInt(columnCost);
 
                 if (shieldName.equals(getString(R.string.shields_cloack_of_darkness))) {
-                    mTestJournal.setText("Зондирование ничего не показывает");
+                    insertMessageIntoBattleJournal("Скан щитов:\nЗондирование ничего не показывает");
                     return;
                 }
 
@@ -197,14 +302,16 @@ public class BattleActivity extends AppCompatActivity implements
             }
 
             if (isStop) {
-                mTestJournal.setText(builder.toString());
+                insertMessageIntoBattleJournal(builder.toString());
                 return;
             }
+            cursor.close();
         }
 
-        mTestJournal.setText(builder.toString());
+        insertMessageIntoBattleJournal(builder.toString());
     }
 
+    @NonNull
     private String getShieldLevel(int shieldCost) {
 
         if (shieldCost < 4) {
@@ -228,37 +335,124 @@ public class BattleActivity extends AppCompatActivity implements
         }
     }
 
-    private String getCurrentForm() {
-        Cursor cursor = getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null, null, null, null);
+    private void resetNaturalDefence() {
+        Cursor cursor = getCharacterStatus();
         cursor.moveToFirst();
-        String returnForm = cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM));
+        int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
         cursor.close();
 
-        return returnForm;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, currentPower);
+        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                null, null);
+
+        setupNaturalDefence(getCharacterStatus());
     }
 
-    private int transform() {
-        String battleForm = getCurrentForm();
+    private void resetShields() {
 
-        if (battleForm.equals("человек")) {
-            battleForm = "боевая форма";
+        int powerLimit = mCharacter.getCharacterPowerLimit();
+
+        Cursor cursor = getAllShields(null, null, null);
+        int columnId = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry._ID);
+        int columnName = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_NAME);
+        int columnCost = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_COST);
+        int columnTarget = cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET);
+
+        if (cursor.moveToFirst()) {
+            while (true) {
+                String shieldId = cursor.getString(columnId);
+                Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(shieldId).build();
+
+                String shieldTarget = cursor.getString(columnTarget);
+                if (!shieldTarget.equals("персональный")) {
+                    getContentResolver().delete(uri, null, null);
+                } else {
+                    String shieldName = cursor.getString(columnName);
+                    int shieldCost = cursor.getInt(columnCost);
+                    ShieldUtil.Shield shield = ShieldUtil.getShield(this, shieldName);
+
+                    if (powerLimit < shield.getMinCost() || shieldCost < shield.getMinCost()) {
+                        getContentResolver().delete(uri, null, null);
+                    } else if (shieldCost > powerLimit) {
+                        int newMagicDefence = shield.getMagicDefenceMultiplier() * powerLimit;
+                        int newPhysicDefence = shield.getPhysicDefenceMultiplier() * powerLimit;
+
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, powerLimit);
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, newMagicDefence);
+                        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, newPhysicDefence);
+
+                        getContentResolver().update(uri, contentValues, null, null);
+                    }
+                }
+
+                if (!cursor.moveToNext()) {
+                    break;
+                }
+            }
+        }
+
+        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+    }
+
+    private void resetBattleJournal() {
+        getContentResolver().delete(NotATryContract.BattleJournalEntry.CONTENT_URI, null, null);
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.BattleJournalEntry.COLUMN_SYSTEM_MESSAGE, "Бой окончен, журнал очищен");
+        getContentResolver().insert(NotATryContract.BattleJournalEntry.CONTENT_URI, contentValues);
+        mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
+    }
+
+    private void resetReactionCount() {
+        int reactionCount;
+
+        if (TransformUtil.getCurrentForm(this).equals("человек")) {
+            reactionCount = 1;
         } else {
-            battleForm = "человек";
+            reactionCount = mCharacter.getCharacterReactionsNumber();
         }
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, reactionCount);
         getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
                 null, null);
-        mBattleFormTextView.setText(getCurrentForm());
 
-        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
-        String[] selectionArgs = new String[]{"персональный"};
-        int count = getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI, selection, selectionArgs);
-        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+        MenuItem menuItem = mMenu.findItem(R.id.action_use_reaction);
+        menuItem.setTitle("использовать реакцию (" + getReactionCount() + ")");
+    }
 
-        return count;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.battle_menu, menu);
+
+        MenuItem item = menu.getItem(0);
+        item.setTitle("использовать реакцию (" + getReactionCount() + ")");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_finish_battle) {
+            resetNaturalDefence();
+            resetShields();
+            resetBattleJournal();
+            resetReactionCount();
+            Toast.makeText(this, "Бой окончен, сброс параметров", Toast.LENGTH_LONG).show();
+        } else if (itemId == R.id.action_reset_reactions) {
+            resetReactionCount();
+        } else if (itemId == R.id.action_use_reaction) {
+            useReaction();
+            item.setTitle("использовать реакцию (" + getReactionCount() + ")");
+            mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -268,11 +462,13 @@ public class BattleActivity extends AppCompatActivity implements
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         } else if (dialogFragment instanceof DamageDialogFragment) {
             DamageDialogFragment damageDialogFragment = (DamageDialogFragment) dialogFragment;
-            mTestJournal.setText(damageDialogFragment.mResultSummary);
             if (damageDialogFragment.mShouldBeTransformed) {
-                transform();
+                insertMessageIntoBattleJournal(TransformUtil.makeTransform(this));
+                mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             }
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+            mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
         }
     }
 
@@ -287,21 +483,21 @@ public class BattleActivity extends AppCompatActivity implements
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
             } else if (textViewId == R.id.tv_character_battle_form) {
-                int count = transform();
-
-                String transformMessage = "Выполнена трансформация";
-                if (count > 0) {
-                    transformMessage = transformMessage + ", все персональные щиты уничтожены";
-                }
-
-                mTestJournal.setText(transformMessage);
+                insertMessageIntoBattleJournal(TransformUtil.makeTransform(this));
+                mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
+                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+            } else if (textViewId == R.id.tv_natural_defence) {
+                DialogFragment dialogFragment = new UpdateNaturalDefenceDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "UpdateNaturalDefenceDialogFragment");
             }
         }
     }
 
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
-        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, getCharacterStatus()));
+
+        mMagicPowerTextView.setText(CharacterPreferences.getCharacterMagicPower(mCharacter, this));
+        setupNaturalDefence(getCharacterStatus());
     }
 
     @Override

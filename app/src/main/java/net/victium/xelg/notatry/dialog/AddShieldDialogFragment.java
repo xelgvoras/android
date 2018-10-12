@@ -23,7 +23,7 @@ import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.ShieldsActivity;
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
 import net.victium.xelg.notatry.data.NotATryContract;
-import net.victium.xelg.notatry.data.ShieldUtil;
+import net.victium.xelg.notatry.utilities.ShieldUtil;
 
 import java.util.ArrayList;
 

@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 
-import net.victium.xelg.notatry.data.ShieldUtil;
+import net.victium.xelg.notatry.utilities.ShieldUtil;
 
 import java.util.ArrayList;
 import java.util.List;

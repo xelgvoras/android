@@ -2,6 +2,7 @@ package net.victium.xelg.notatry.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
@@ -21,6 +22,7 @@ public class Character {
     private int characterReactionsNumber;
     private int characterNaturalDefence;
     private boolean characterSide;
+    private boolean characterVop;
     private Context mContext;
 
     private ArrayList<String> listOfSpecialTypes = new ArrayList<>();
@@ -59,6 +61,8 @@ public class Character {
         listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_werewolf));
         listOfSpecialTypes.add(mContext.getString(R.string.pref_type_value_werewolf_mag));
 
+        characterVop = listOfSpecialTypes.contains(characterType);
+
         setupDuskLayerLimit();
         setupPersonalShieldsLimit();
         setupAmuletsLimit();
@@ -91,10 +95,8 @@ public class Character {
             shieldsLimit = 2;
         } else if (characterLevel >= 2) {
             shieldsLimit = 3;
-        } else if (characterLevel == 1){
-            shieldsLimit = 4;
         } else {
-            shieldsLimit = 5;
+            shieldsLimit = 4;
         }
 
         characterPersonalShieldsLimit = shieldsLimit;
@@ -104,12 +106,19 @@ public class Character {
 
         int amuletsLimit;
 
+        // COMPLETED(bug) У вампиров и просто оборотней - 0 автоамулетов
+
         if (characterLevel >= 3) {
             amuletsLimit = 1;
         } else if (characterLevel >= 1) {
             amuletsLimit = 2;
         } else {
             amuletsLimit = 3;
+        }
+
+        if (characterType.equals(mContext.getString(R.string.pref_type_value_vampire))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_werewolf))) {
+            amuletsLimit = 0;
         }
 
         characterAmuletsLimit = amuletsLimit;
@@ -119,7 +128,7 @@ public class Character {
 
         int reactionsNumber = 1;
 
-        if (listOfSpecialTypes.contains(characterType)) {
+        if (characterVop) {
 
             if (characterLevel >= 5) {
                 reactionsNumber = 2;
@@ -139,8 +148,17 @@ public class Character {
 
         int naturalDefence = 0;
 
-        if (listOfSpecialTypes.contains(characterType)) {
-            naturalDefence = characterPowerLimit;
+        if (characterVop) {
+            Cursor characterStatusCursor = mContext.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                    null, null, null, null);
+            if (characterStatusCursor.moveToFirst()) {
+                naturalDefence = characterStatusCursor.getInt(
+                        characterStatusCursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER)
+                );
+            } else {
+                naturalDefence = characterPowerLimit;
+            }
+            characterStatusCursor.close();
         }
 
         characterNaturalDefence = naturalDefence;
@@ -168,12 +186,18 @@ public class Character {
         String typeKey = mContext.getString(R.string.pref_type_key);
         String typeDefault = mContext.getString(R.string.pref_type_value_mag);
         this.characterType = sharedPreferences.getString(typeKey, typeDefault);
+        characterVop = listOfSpecialTypes.contains(characterType);
         setupReactionsNumber();
         setupNaturalDefence();
+        setupAmuletsLimit();
     }
 
     public void setCharacterType(String characterType) {
         this.characterType = characterType;
+        characterVop = listOfSpecialTypes.contains(characterType);
+        setupReactionsNumber();
+        setupNaturalDefence();
+        setupAmuletsLimit();
     }
 
     public int getCharacterAge() {
@@ -289,5 +313,9 @@ public class Character {
     public void setCharacterSide(String characterSide) {
         String sideDefault = mContext.getString(R.string.pref_side_light_value);
         this.characterSide = characterSide.equals(sideDefault);
+    }
+
+    public boolean isCharacterVop() {
+        return characterVop;
     }
 }

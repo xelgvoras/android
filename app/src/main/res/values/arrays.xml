@@ -105,7 +105,7 @@
         <item>@string/spells_haze_transylvania</item>
         <item>@string/spells_sparkling_wall</item>
         <item>@string/spells_lash_of_shaab</item>
-        <item>@string/spells_bethlehem_fire</item>
+        <!-- COMPLETED(bug) Вифлеемского огня больше нет -->
         <item>@string/spells_telekinesis</item>
         <item>@string/spells_press</item>
         <item>@string/spells_shock</item>

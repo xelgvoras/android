@@ -26,6 +26,7 @@ public class NotATryContract {
         public static final String COLUMN_SHIELDS_LIMIT = "shieldsLimit";
         public static final String COLUMN_AMULETS_LIMIT = "amuletsLimit";
         public static final String COLUMN_NATURAL_DEFENCE = "naturalDefence";
+        public static final String COLUMN_NATURAL_MENTAL_DEFENCE = "naturalMentalDefence";
         public static final String COLUMN_REACTIONS_NUMBER = "reactionsNumber";
         public static final String COLUMN_BATTLE_FORM = "battleForm";
     }

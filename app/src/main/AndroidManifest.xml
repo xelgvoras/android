@@ -35,13 +35,21 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity
+            android:name=".TravelActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".ImportExportActivity"/>
+        <activity android:name=".ImportExportActivity" />
 
         <provider
-            android:authorities="net.victium.xelg.notatry"
             android:name=".data.NotATryContentProvider"
-            android:exported="false"/>
+            android:authorities="net.victium.xelg.notatry"
+            android:exported="false" />
+
     </application>
 
 </manifest>

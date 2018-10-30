@@ -64,22 +64,29 @@ public class CharacterPreferences {
         if (null == mentalShields) mentalShields = "0";
         cursor.close();
 
+        cursor = context.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+
         String naturalDefence = "";
+        String currentNaturalMentalDefence = cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE));
+
         if (character.isCharacterVop()) {
-            cursor = context.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                    null, null, null, null);
-            cursor.moveToFirst();
             naturalDefence = cursor.getString(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
             naturalDefence = String.format("\n\t\t\t Естественная защита: %s", naturalDefence);
-            cursor.close();
         }
+
+        cursor.close();
+
+        String naturalMentalDefence = String.valueOf(character.getCharacterNaturalMentalDefence());
 
         return String.format("Щиты \n" +
                         "\t\t\t Магическая защита: %s \n" +
                         "\t\t\t Физическая защита: %s \n" +
                         "\t\t\t Ментальная защита: %s" +
-                        "%s",
-                magicDefence, physicDefence, mentalShields, naturalDefence);
+                        "%s \n" +
+                        "\t\t\t Врожденных ментальных щитов: %s(%s)",
+                magicDefence, physicDefence, mentalShields, naturalDefence, currentNaturalMentalDefence, naturalMentalDefence);
     }
 
     public static String getCharacterDetails(@NonNull Character character, @NonNull Context context) {
@@ -87,6 +94,7 @@ public class CharacterPreferences {
         String duskLimit = String.valueOf(character.getCharacterDuskLayerLimit());
         String shieldsLimit = String.valueOf(character.getCharacterPersonalShieldsLimit());
         String amuletsLimit = String.valueOf(character.getCharacterAmuletsLimit());
+        String amuletsInSeriesLimit = String.valueOf(character.getCharacterAmuletsInSeriesLimit());
         String reactionsNumber = String.valueOf(character.getCharacterReactionsNumber());
 
         StringBuilder builder = new StringBuilder();
@@ -117,9 +125,9 @@ public class CharacterPreferences {
         return String.format("Максимальный слой сумрака: %s \n" +
                         duskSummary +
                         "Максимальное количество персональных щитов: %s \n" +
-                        "Максимальное количество авто-амулетов: %s \n" +
+                        "Максимальное количество авто-амулетов: %s(%s) \n" +
                         "Количество реакций за бой: %s",
-                duskLimit, shieldsLimit, amuletsLimit, reactionsNumber);
+                duskLimit, shieldsLimit, amuletsLimit, amuletsInSeriesLimit, reactionsNumber);
     }
 
     private static String ageMatcher(int age) {

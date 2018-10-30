@@ -79,6 +79,13 @@
                 android:text="@string/button_start_activity_battle"
                 android:padding="16dp"/>
 
+            <Button
+                android:id="@+id/b_travel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_start_activity_travel"
+                android:padding="16dp"/>
+
         </LinearLayout>
 
     </LinearLayout>

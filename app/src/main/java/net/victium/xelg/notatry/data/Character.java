@@ -19,8 +19,10 @@ public class Character {
     private int characterDuskLayerLimit;
     private int characterPersonalShieldsLimit;
     private int characterAmuletsLimit;
+    private int characterAmuletsInSeriesLimit;
     private int characterReactionsNumber;
     private int characterNaturalDefence;
+    private int characterNaturalMentalDefence;
     private boolean characterSide;
     private boolean characterVop;
     private Context mContext;
@@ -66,8 +68,10 @@ public class Character {
         setupDuskLayerLimit();
         setupPersonalShieldsLimit();
         setupAmuletsLimit();
+        setupAmuletsInSeriesLimit();
         setupReactionsNumber();
         setupNaturalDefence();
+        setupNaturalMentalDefence();
     }
 
     private void setupDuskLayerLimit() {
@@ -102,26 +106,75 @@ public class Character {
         characterPersonalShieldsLimit = shieldsLimit;
     }
 
+    private void setupNaturalMentalDefence() {
+
+        int naturalMentalDefence;
+
+        if (characterLevel >= 6) {
+            naturalMentalDefence = 0;
+        } else if (characterLevel >= 3) {
+            naturalMentalDefence = 1;
+        } else if (characterLevel >= 1) {
+            naturalMentalDefence = 2;
+        } else {
+            naturalMentalDefence = 3;
+        }
+
+        characterNaturalMentalDefence = naturalMentalDefence;
+    }
+
     private void setupAmuletsLimit() {
 
         int amuletsLimit;
 
         // COMPLETED(bug) У вампиров и просто оборотней - 0 автоамулетов
 
-        if (characterLevel >= 3) {
+        if (characterLevel >= 5) {
             amuletsLimit = 1;
-        } else if (characterLevel >= 1) {
+        } else if (characterLevel >= 3) {
             amuletsLimit = 2;
-        } else {
+        } else if (characterLevel >= 1) {
             amuletsLimit = 3;
+        } else {
+            amuletsLimit = 4;
         }
 
         if (characterType.equals(mContext.getString(R.string.pref_type_value_vampire))
                 || characterType.equals(mContext.getString(R.string.pref_type_value_werewolf))) {
             amuletsLimit = 0;
+        } else if (characterType.equals(mContext.getString(R.string.pref_type_value_witch))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_witcher))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_charmer))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_sorcerer))) {
+            amuletsLimit++;
         }
 
         characterAmuletsLimit = amuletsLimit;
+    }
+
+    private void setupAmuletsInSeriesLimit() {
+
+        int amuletsInSeries;
+
+        if (characterLevel >= 3) {
+            amuletsInSeries = 1;
+        } else if (characterLevel >= 1) {
+            amuletsInSeries = 2;
+        } else {
+            amuletsInSeries = 3;
+        }
+
+        if (characterType.equals(mContext.getString(R.string.pref_type_value_vampire))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_werewolf))) {
+            amuletsInSeries = 0;
+        } else if (characterType.equals(mContext.getString(R.string.pref_type_value_witch))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_witcher))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_charmer))
+                || characterType.equals(mContext.getString(R.string.pref_type_value_sorcerer))) {
+            amuletsInSeries++;
+        }
+
+        characterAmuletsInSeriesLimit = amuletsInSeries;
     }
 
     private void setupReactionsNumber() {
@@ -190,6 +243,8 @@ public class Character {
         setupReactionsNumber();
         setupNaturalDefence();
         setupAmuletsLimit();
+        setupAmuletsInSeriesLimit();
+        setupNaturalMentalDefence();
     }
 
     public void setCharacterType(String characterType) {
@@ -224,7 +279,9 @@ public class Character {
         this.characterLevel = Integer.parseInt(sharedPreferences.getString(levelKey, levelDefault));
         setupPersonalShieldsLimit();
         setupAmuletsLimit();
+        setupAmuletsInSeriesLimit();
         setupReactionsNumber();
+        setupNaturalMentalDefence();
     }
 
     public void setCharacterLevel(int characterLevel) {
@@ -274,6 +331,14 @@ public class Character {
         this.characterAmuletsLimit = characterAmuletsLimit;
     }
 
+    public int getCharacterAmuletsInSeriesLimit() {
+        return characterAmuletsInSeriesLimit;
+    }
+
+    public void setCharacterAmuletsInSeriesLimit(int characterAmuletsInSeriesLimit) {
+        this.characterAmuletsInSeriesLimit = characterAmuletsInSeriesLimit;
+    }
+
     public int getCharacterReactionsNumber() {
         return characterReactionsNumber;
     }
@@ -288,6 +353,14 @@ public class Character {
 
     public void setCharacterNaturalDefence(int characterNaturalDefence) {
         this.characterNaturalDefence = characterNaturalDefence;
+    }
+
+    public int getCharacterNaturalMentalDefence() {
+        return characterNaturalMentalDefence;
+    }
+
+    public void setCharacterNaturalMentalDefence(int characterNaturalMentalDefence) {
+        this.characterNaturalMentalDefence = characterNaturalMentalDefence;
     }
 
     public boolean isCharacterSide() {

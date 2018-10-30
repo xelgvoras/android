@@ -19,12 +19,13 @@
     <string name="hint_attack_power">сила воздействия</string>
 
     <!-- Названия кнопок -->
-    <string name="button_check_damage">Воздействие</string>
-    <string name="button_scan_shields">Скан щитов</string>
-    <string name="button_export_character">Экспортировать персонажа</string>
-    <string name="button_import_character">Импортировать персонажа</string>
-    <string name="button_start_activity_shields">Подготовка</string>
-    <string name="button_start_activity_battle">Начать бой</string>
+    <string name="button_check_damage">воздействие</string>
+    <string name="button_scan_shields">скан щитов</string>
+    <string name="button_export_character">экспортировать персонажа</string>
+    <string name="button_import_character">импортировать персонажа</string>
+    <string name="button_start_activity_shields">подготовка</string>
+    <string name="button_start_activity_battle">бой</string>
+    <string name="button_start_activity_travel">идти</string>
     <string name="button_magic_defence">маг</string>
     <string name="button_physic_defence">физ</string>
     <string name="button_mental_defence">мент</string>

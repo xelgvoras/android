@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     RecyclerView mDuskLayersRecyclerView;
     Button mShieldsButton;
     Button mBattleButton;
+    Button mTravelButton;
 
     private Character mCharacter;
 
@@ -55,11 +56,13 @@ public class MainActivity extends AppCompatActivity implements
         mDuskLayersRecyclerView = findViewById(R.id.rv_dusk_layers);
         mShieldsButton = findViewById(R.id.b_shields);
         mBattleButton = findViewById(R.id.b_battle);
+        mTravelButton = findViewById(R.id.b_travel);
 
         mDuskLayersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mShieldsButton.setOnClickListener(this);
         mBattleButton.setOnClickListener(this);
+        mTravelButton.setOnClickListener(this);
 
         mCharacter = new Character(this);
 
@@ -117,6 +120,13 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
+        int currentNaturalMentalDefence = character.getCharacterNaturalMentalDefence();
+        String characterType = character.getCharacterType();
+
+        if (characterType.equals(getString(R.string.pref_type_value_werewolf))) {
+            currentNaturalMentalDefence = 0;
+        }
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER, character.getCharacterPowerLimit());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT, character.getCharacterPowerLimit());
@@ -126,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT, character.getCharacterPersonalShieldsLimit());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT, character.getCharacterAmuletsLimit());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, character.getCharacterNaturalDefence());
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, currentNaturalMentalDefence);
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, character.getCharacterReactionsNumber());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, "человек");
 
@@ -267,6 +278,9 @@ public class MainActivity extends AppCompatActivity implements
             } else if (buttonId == R.id.b_battle) {
                 Intent intent = new Intent(this, BattleActivity.class);
                 startActivity(intent);
+            } else if (buttonId == R.id.b_travel) {
+                Intent intent = new Intent(this, TravelActivity.class);
+                startActivity(intent);
             }
         }
     }
@@ -286,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements
             mCharacter.setCharacterSide(sharedPreferences);
         } else if (key.equals(getString(R.string.pref_type_key))) {
             mCharacter.setCharacterType(sharedPreferences);
+            String newType = sharedPreferences.getString(getString(R.string.pref_type_key), getString(R.string.pref_type_value_mag));
 
             contentValues = new ContentValues();
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE,
@@ -294,6 +309,12 @@ public class MainActivity extends AppCompatActivity implements
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
                     mCharacter.getCharacterAmuletsLimit());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, "человек");
+
+            if (newType.equals(getString(R.string.pref_type_value_werewolf))) {
+                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, 0);
+            } else {
+                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, mCharacter.getCharacterNaturalMentalDefence());
+            }
 
             updateCharacterStatus(contentValues);
 
@@ -306,6 +327,13 @@ public class MainActivity extends AppCompatActivity implements
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
                     mCharacter.getCharacterAmuletsLimit());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, 1);
+
+            if (mCharacter.getCharacterType().equals(getString(R.string.pref_type_value_werewolf))
+                    && TransformUtil.getCurrentForm(this).equals("человек")) {
+                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, 0);
+            } else {
+                contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, mCharacter.getCharacterNaturalMentalDefence());
+            }
 
             updateCharacterStatus(contentValues);
 

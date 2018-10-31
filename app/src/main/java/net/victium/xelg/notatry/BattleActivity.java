@@ -469,6 +469,8 @@ public class BattleActivity extends AppCompatActivity implements
             }
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
             mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
+            MenuItem item = mMenu.getItem(0);
+            item.setTitle("использовать реакцию (" + getReactionCount() + ")");
         }
     }
 

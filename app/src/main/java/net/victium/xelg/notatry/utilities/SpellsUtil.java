@@ -20,6 +20,7 @@ public class SpellsUtil {
     private static final String TARGET_MASS = "массовое";
     private static final String TYPE_BATTLE = "боевое";
     private static final String TYPE_UNIVERSAL = "универсальное";
+    private static final String TYPE_MENTAL = "ментальное";
     private static final String SPEED_FAST = "быстрое";
     private static final String SPEED_SLOW = "медленное";
 
@@ -368,6 +369,62 @@ public class SpellsUtil {
                 }
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);
+                break;
+            case "Сократ":
+                effectArrayMap.put(SPV.SPECIAL, "Вы должны правдиво ответить на 1 вопрос");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Морфей":
+                effectArrayMap.put(SPV.SPECIAL, "Медленно засыпаете в течении 5 секунд");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Игла страха":
+                effectArrayMap.put(SPV.SPECIAL, "Вызывает панику и ужас, пытаетесь убежать из боя");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Длинный язык":
+                effectArrayMap.put(SPV.SPECIAL, "Начинаете разбалтывать все сокровенное по подсказанной теме");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Внушение":
+                effectArrayMap.put(SPV.SPECIAL, "Вам внушили какую-то мысль, идею, желание что-то сделать. Воспринимаете как свое собственное");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Отвод глаз":
+                effectArrayMap.put(SPV.SPECIAL, "Игнорирует кастававшего или указанное им действие");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Ступор":
+                effectArrayMap.put(SPV.SPECIAL, "Впадаете в ступор, после выхода из него - ничего не помните, включая 5 ходов перед заклинанием");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Опиум":
+                effectArrayMap.put(SPV.SPECIAL, "Мгновенно засыпаете");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Танатос":
+                effectArrayMap.put(SPV.SPECIAL, "Лишаетесь воли к жизни, ложитесь и начинаете добровольно помирать, через 10 ходов - остановка сердца");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Доминанта":
+                effectArrayMap.put(SPV.SPECIAL, "Впадаете в ступор и подчиняетесь воле скастававшего мага, выполняете простые команды, но апатично, затем снова в ступор." +
+                        " Не можете никому сказать, кто наложил на вас Доминанту");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
+                break;
+            case "Деймос":
+                effectArrayMap.put(SPV.SPECIAL, "Сильнейшая головная боль, невозможно мыслить и на чем-то сосредоточиться");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_MENTAL);
                 break;
             default:
                 return null;

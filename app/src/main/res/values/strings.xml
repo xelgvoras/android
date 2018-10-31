@@ -298,6 +298,18 @@
     <string name="spells_ring_of_shaab">Кольцо Шааба</string>
     <string name="spells_mass_press">Масс пресс</string>
     <string name="spells_expropriation">Экспроприация</string>
+    
+    <string name="spells_socrates">Сократ</string>
+    <string name="spells_morpheus">Морфей</string>
+    <string name="spells_needle_of_fear">Игла страха</string>
+    <string name="spells_long_tongue">Длинный язык</string>
+    <string name="spells_suggestion">Внушение</string>
+    <string name="spells_eye_removal">Отвод глаз</string>
+    <string name="spells_stupor">Ступор</string>
+    <string name="spells_opium">Опиум</string>
+    <string name="spells_thanatos">Танатос</string>
+    <string name="spells_dominate">Доминанта</string>
+    <string name="spells_deimos">Деймос</string>
 
     <!-- - - - - - - - - - - - - - - -->
     <!-- Значения для массива ударов -->

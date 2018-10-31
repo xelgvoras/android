@@ -85,8 +85,8 @@
         <item>@string/shields_crystal_shield</item>
     </array>
     
-    <!-- Массив для заклинания -->
-    <array name="spells_array">
+    <!-- Массив для боевых заклинаний -->
+    <array name="battle_spells_array">
         <item>@string/spells_triple_blade</item>
         <item>@string/spells_fireball</item>
         <item>@string/spells_ice_block</item>
@@ -123,5 +123,19 @@
         <item>@string/attacks_wound</item>
         <!--<item>@string/attacks_scuffle</item>
         <item>@string/attacks_stun</item>-->
+    </array>
+    <!-- Массив для ментальных заклинаний -->
+    <array name="mental_spells_array">
+        <item>@string/spells_socrates</item>
+        <item>@string/spells_morpheus</item>
+        <item>@string/spells_needle_of_fear</item>
+        <item>@string/spells_long_tongue</item>
+        <item>@string/spells_suggestion</item>
+        <item>@string/spells_eye_removal</item>
+        <item>@string/spells_stupor</item>
+        <item>@string/spells_opium</item>
+        <item>@string/spells_thanatos</item>
+        <item>@string/spells_dominate</item>
+        <item>@string/spells_deimos</item>
     </array>
 </resources>

@@ -114,6 +114,7 @@
         <item>@string/spells_gray_prayer</item>
         <item>@string/spells_freeze</item>
         <item>@string/spells_ring_of_shaab</item>
+        <item>@string/spells_triple_key</item>
         <item>@string/spells_mass_press</item>
         <item>@string/spells_expropriation</item>
     </array>

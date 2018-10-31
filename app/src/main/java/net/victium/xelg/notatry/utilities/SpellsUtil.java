@@ -347,6 +347,13 @@ public class SpellsUtil {
                 returnSpell.setType(TYPE_UNIVERSAL);
                 returnSpell.setDodgeRestricted();
                 break;
+            case "Тройной ключ":
+                effectArrayMap.put(SPV.SPECIAL, "Разрушено ментальных щитов: ");
+                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
+                returnSpell.setType(TYPE_UNIVERSAL);
+                returnSpell.setDodgeRestricted();
+                returnSpell.setSlowSpeed();
+                break;
             case "Масс пресс":
                 if (BATTLE_FORM.equals(battleForm)) {
                     effectArrayMap.put(SPV.BURST, "Замедлен");

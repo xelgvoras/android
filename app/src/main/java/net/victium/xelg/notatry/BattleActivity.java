@@ -349,6 +349,21 @@ public class BattleActivity extends AppCompatActivity implements
         setupNaturalDefence(getCharacterStatus());
     }
 
+    private void resetNaturalMentalDefence() {
+        int currentNaturalMentalDefence;
+        if (mCharacter.getCharacterType().equals(getString(R.string.pref_type_value_werewolf))
+                && TransformUtil.getCurrentForm(this).equals("человек")) {
+            currentNaturalMentalDefence = 0;
+        } else {
+            currentNaturalMentalDefence = mCharacter.getCharacterNaturalMentalDefence();
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, currentNaturalMentalDefence);
+        getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
+                null, null);
+    }
+
     private void resetShields() {
 
         int powerLimit = mCharacter.getCharacterPowerLimit();
@@ -443,6 +458,7 @@ public class BattleActivity extends AppCompatActivity implements
             resetShields();
             resetBattleJournal();
             resetReactionCount();
+            resetNaturalMentalDefence();
             Toast.makeText(this, "Бой окончен, сброс параметров", Toast.LENGTH_LONG).show();
         } else if (itemId == R.id.action_reset_reactions) {
             resetReactionCount();

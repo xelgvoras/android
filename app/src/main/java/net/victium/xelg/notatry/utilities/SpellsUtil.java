@@ -106,7 +106,11 @@ public class SpellsUtil {
 
         switch (spellName) {
             case "Тройное лезвие":
-                effectArrayMap.put(SPV.DROP, "Сильное кровотечение, " + MEDIUM_DAMAGE);
+                if (characterType.equals(VAMPIRE)) {
+                    effectArrayMap.put(SPV.DROP, MEDIUM_DAMAGE);
+                } else {
+                    effectArrayMap.put(SPV.DROP, "Сильное кровотечение, " + MEDIUM_DAMAGE);
+                }
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 break;
             case "Файербол":
@@ -115,7 +119,11 @@ public class SpellsUtil {
                 returnSpell.setElement();
                 break;
             case "Ледяная глыба":
-                if (BATTLE_FORM.equals(battleForm)) {
+                if (characterType.equals(VAMPIRE)) {
+                    effectArrayMap.put(SPV.BLOCK, NO_EFFECT);
+                    effectArrayMap.put(SPV.BURST, NO_EFFECT);
+                    effectArrayMap.put(SPV.DROP, NO_EFFECT);
+                } else if (BATTLE_FORM.equals(battleForm)) {
                     effectArrayMap.put(SPV.DROP, "Обморожение, замедлен, " + LIGHT_DAMAGE);
                 } else {
                     effectArrayMap.put(SPV.DROP, "Обморожение, оглушен, замедлен, " + LIGHT_DAMAGE);
@@ -126,19 +134,16 @@ public class SpellsUtil {
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
                 returnSpell.setElement();
-                returnSpell.setSlowSpeed();
                 break;
             case "Кольцо огня":
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
                 returnSpell.setElement();
-                returnSpell.setSlowSpeed();
                 break;
             case "Стена огня":
                 effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
                 returnSpell.setElement();
-                returnSpell.setSlowSpeed();
                 break;
             case "Кольцо холода":
                 if (characterType.equals(VAMPIRE)) {
@@ -165,7 +170,6 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.DROP, "Обморожение, оглушен, многочисленные сильные порезы, " + HEAVY_DAMAGE);
                 }
                 returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
-                returnSpell.setSlowSpeed();
                 break;
             case "Поцелуй ехидны":
                 if (BATTLE_FORM.equals(battleForm)) {
@@ -175,8 +179,7 @@ public class SpellsUtil {
                 } else {
                     effectArrayMap.put(SPV.DROP, "Ожоги, оглушен, " + MEDIUM_DAMAGE);
                 }
-                returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
-                returnSpell.setDodgeRestricted();
+                returnSpell = new Spell(spellName, TARGET_AREA, effectArrayMap);
                 returnSpell.setSlowSpeed();
                 break;
             case "Черный дождь":
@@ -302,7 +305,7 @@ public class SpellsUtil {
                 if (characterType.equals(VAMPIRE)) {
                     effectArrayMap.put(SPV.BLOCK, "Замедлен");
                     effectArrayMap.put(SPV.BURST, "Оглушен");
-                    effectArrayMap.put(SPV.DROP, "Кучка пепла, " + YOU_DIE);
+                    effectArrayMap.put(SPV.DROP, "Кома");
                 } else {
                     effectArrayMap.put(SPV.BLOCK, NO_EFFECT);
                     effectArrayMap.put(SPV.BURST, NO_EFFECT);
@@ -339,9 +342,10 @@ public class SpellsUtil {
                     effectArrayMap.put(SPV.BURST, "Отправлен в полет");
                     effectArrayMap.put(SPV.DROP, "Отправлен в полет");
                 } else if (BATTLE_FORM.equals(battleForm)) {
-                    effectArrayMap.put(SPV.BLOCK, "Отправлен в полет");
-                    effectArrayMap.put(SPV.BURST, "Отправлен в полет, " + MEDIUM_DAMAGE);
-                    effectArrayMap.put(SPV.DROP, "Отправлен в полет, оглушен, переломы, " + MEDIUM_DAMAGE);
+                    effectArrayMap.put(SPV.BURST, "Отправлен в полет");
+                    effectArrayMap.put(SPV.DROP, "Отправлен в полет, переломы, " + MEDIUM_DAMAGE);
+                } else {
+                    effectArrayMap.put(SPV.DROP, "Отправлен в полет");
                 }
                 returnSpell = new Spell(spellName, TARGET_MASS, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);
@@ -351,7 +355,6 @@ public class SpellsUtil {
                 effectArrayMap.put(SPV.SPECIAL, "Разрушено ментальных щитов: ");
                 returnSpell = new Spell(spellName, TARGET_PERSONAL, effectArrayMap);
                 returnSpell.setType(TYPE_UNIVERSAL);
-                returnSpell.setDodgeRestricted();
                 returnSpell.setSlowSpeed();
                 break;
             case "Масс пресс":

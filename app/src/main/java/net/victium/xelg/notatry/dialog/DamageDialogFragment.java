@@ -276,7 +276,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 }
 
                 if (spellName.equals(spellTripleKey)) {
-                    return checkTripleKey(spell);
+                    return builder.append(checkTripleKey(spell)).toString();
                 }
 
                 if (spellName.equals(spellFetters) || spellName.equals(spellExpropriation)) {
@@ -590,7 +590,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         if (mBattleForm.equals("боевая форма")) {
             mSuccessDodge = true;
             return "Вы успешно увернулись от атаки";
-        } else if (spell.getTarget().equals("область") && spell.getSpeed().equals("медленное")) {
+        } else if (spell.getTarget().equals("область")) {
             mSuccessDodge = true;
             return "Вы успешно увернилсь от атаки";
         }

@@ -17,6 +17,23 @@
 
     <!-- Подсказка для поля ввода силы входящего воздействия -->
     <string name="hint_attack_power">сила воздействия</string>
+    
+    <!-- Для перемещений общее -->
+    <string name="travel_coordinates">Координаты перемещения (0.0 - город)</string>
+    <string name="travel_start_coords">начальные координаты</string>
+    <string name="travel_end_coords">координаты цели</string>
+    <string name="travel_basic_coords">0.0</string>
+    <string name="travel_dusk_layer">Слой сумрака</string>
+    <string name="travel_way_to_travel">Способ передвижения</string>
+    <string name="travel_subject_time">субьективное время пути</string>
+    <string name="travel_object_time">объективное время пути</string>
+
+    <!-- Для окна перемещения -->
+    <string name="travel_move_title">Экран для расчета времени перемещения</string>
+
+    <!-- Для окна подмоги -->
+    <string name="travel_help_title">Экран для расчета времени прибытия поддержки</string>
+    <string name="travel_help_dusk_layer">На каком слое сумрака находится цель</string>
 
     <!-- Названия кнопок -->
     <string name="button_check_damage">воздействие</string>
@@ -29,6 +46,7 @@
     <string name="button_magic_defence">маг</string>
     <string name="button_physic_defence">физ</string>
     <string name="button_mental_defence">мент</string>
+    <string name="button_calculate_travel_time">рассчитать время пути</string>
 
     <!-- Для пунктов меню -->
     <string name="action_settings">паспорт игрока</string>

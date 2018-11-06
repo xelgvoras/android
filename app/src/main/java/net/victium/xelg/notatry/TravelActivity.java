@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,8 +31,10 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
     static final int MEDIUM_ACCELERATION = 4;
     static final int HIGH_ACCELERATION = 8;
 
-    EditText mStartCoordsEditText;
-    EditText mEndCoordsEditText;
+    NumberPicker mStartCoordsX;
+    NumberPicker mStartCoordsY;
+    NumberPicker mEndCoordsX;
+    NumberPicker mEndCoordsY;
     TextView mTimeSubject;
     TextView mTimeObject;
     Spinner mCharacterDuskLayerSpinner;
@@ -48,13 +51,37 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_travel);
 
-        mStartCoordsEditText = findViewById(R.id.et_travel_start_coords);
-        mEndCoordsEditText = findViewById(R.id.et_travel_end_coords);
+        mStartCoordsX = findViewById(R.id.np_start_coords_x);
+        mStartCoordsY = findViewById(R.id.np_start_coords_y);
+        mEndCoordsX = findViewById(R.id.np_end_coords_x);
+        mEndCoordsY = findViewById(R.id.np_end_coords_y);
         mTimeSubject = findViewById(R.id.tv_subject_time);
         mTimeObject = findViewById(R.id.tv_object_time);
         mCharacterDuskLayerSpinner = findViewById(R.id.sp_dusk_layer_list);
         mTargetDuskLayerSpinner = findViewById(R.id.sp_target_dusk_layer_list);
         mWayToTravelSpinner = findViewById(R.id.sp_way_to_travel_list);
+
+        String[] displayedValues = new String[81];
+        for (int i = 0; i < displayedValues.length; i++) {
+            displayedValues[i] = String.valueOf(i - 40);
+        }
+
+        mStartCoordsX.setDisplayedValues(displayedValues);
+        mStartCoordsX.setMinValue(0);
+        mStartCoordsX.setMaxValue(80);
+        mStartCoordsX.setValue(40);
+        mStartCoordsY.setDisplayedValues(displayedValues);
+        mStartCoordsY.setMinValue(0);
+        mStartCoordsY.setMaxValue(80);
+        mStartCoordsY.setValue(40);
+        mEndCoordsX.setDisplayedValues(displayedValues);
+        mEndCoordsX.setMinValue(0);
+        mEndCoordsX.setMaxValue(80);
+        mEndCoordsX.setValue(40);
+        mEndCoordsY.setDisplayedValues(displayedValues);
+        mEndCoordsY.setMinValue(0);
+        mEndCoordsY.setMaxValue(80);
+        mEndCoordsY.setValue(40);
 
         mCharacter = new Character(this);
 
@@ -138,21 +165,11 @@ public class TravelActivity extends AppCompatActivity implements AdapterView.OnI
         double distance;
         int module = mCurrentAccelerationMode.getModule();
 
-        String[] startCoordsString = mStartCoordsEditText.getText().toString().split("[.]");
-        if (startCoordsString.length != 2) {
-            Toast.makeText(this, "неверно указаны координаты", Toast.LENGTH_LONG).show();
-            return;
-        }
-        double X0 = Double.parseDouble(startCoordsString[0]);
-        double Y0 = Double.parseDouble(startCoordsString[1]);
+        double X0 = mStartCoordsX.getValue() - 40;
+        double Y0 = mStartCoordsY.getValue() - 40;
 
-        String[] endCoordsString = mEndCoordsEditText.getText().toString().split("[.]");
-        if (endCoordsString.length != 2) {
-            Toast.makeText(this, "неверно указаны координаты", Toast.LENGTH_LONG).show();
-            return;
-        }
-        double X1 = Double.parseDouble(endCoordsString[0]);
-        double Y1 = Double.parseDouble(endCoordsString[1]);
+        double X1 = mEndCoordsX.getValue() - 40;
+        double Y1 = mEndCoordsY.getValue() - 40;
 
         distance = DISTANCE_CITY + Math.sqrt(Math.pow(X1-X0, 2d) + Math.pow(Y1-Y0, 2d));
 

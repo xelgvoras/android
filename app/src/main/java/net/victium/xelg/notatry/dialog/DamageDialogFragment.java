@@ -2,6 +2,7 @@ package net.victium.xelg.notatry.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -117,7 +118,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE;
         mAttackTypeTextView.setText("Заклинание");
         mAdapterSpinner = ArrayAdapter.createFromResource(mActivity,
-                R.array.spells_array, android.R.layout.simple_spinner_item);
+                R.array.battle_spells_array, android.R.layout.simple_spinner_item);
         mAdapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mAttackListSpinner.setAdapter(mAdapterSpinner);
         mAttackListSpinner.setOnItemSelectedListener(this);
@@ -186,7 +187,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 mResultSummary = checkPhysicAttack(selectedAttack);
                 break;
             case 3:
-                mResultSummary = checkMentalAttack(mInputDamage);
+                mResultSummary = checkMentalAttack(selectedAttack);
                 break;
             default:
                 break;
@@ -206,7 +207,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 damageResult = checkPhysicAttack(selectedAttack);
                 break;
             case 3:
-                damageResult = checkMentalAttack(mInputDamage);
+                damageResult = checkMentalAttack(selectedAttack);
                 break;
             default:
                 return "Ошибка";
@@ -228,6 +229,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         final String spellSparklingWall = getString(R.string.spells_sparkling_wall);
         final String spellVacuumBlow = mActivity.getString(R.string.spells_vacuum_blow);
         final String spellFetters = mActivity.getString(R.string.spells_fetters);
+        final String spellTripleKey = mActivity.getString(R.string.spells_triple_key);
         final String spellExpropriation = mActivity.getString(R.string.spells_expropriation);
 
         final String shieldRainbowSphere = getString(R.string.shields_rainbow_sphere);
@@ -271,6 +273,10 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 // COMPLETED(bug) Плащ тьмы должен укрывать также от физических атак
                 if (shieldName.equals(mActivity.getString(R.string.shields_cloack_of_darkness)) && spell.getTarget().equals("напр")) {
                     return "Заклинание промахнулось";
+                }
+
+                if (spellName.equals(spellTripleKey)) {
+                    return builder.append(checkTripleKey(spell)).toString();
                 }
 
                 if (spellName.equals(spellFetters) || spellName.equals(spellExpropriation)) {
@@ -331,6 +337,10 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
             }
         }
         shieldsCursor.close();
+
+        if (spellName.equals(spellTripleKey)) {
+            return checkTripleKey(spell);
+        }
 
         if (damageResult.equals(SPV.DROP)) {
             if (mBattleForm.equals("боевая форма")) {
@@ -405,42 +415,70 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
     }
 
     @NonNull
-    private String checkMentalAttack(int damage) {
+    private String checkMentalAttack(String spellName) {
         StringBuilder builder = new StringBuilder();
+        SpellsUtil.Spell spell = SpellsUtil.getSpell(spellName, mBattleForm, mCharacterType);
+        int mentalDefence = 0;
+
+        if (mUseReaction) {
+            builder.append(dropGroupShield()).append("\n").append(checkReaction(spell)).append("\n\n");
+            updateReactionCount();
+        }
+
+        if (mSuccessDodge) {
+            return builder.toString();
+        }
+
+        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon()
+                .appendPath(mActivity.getString(R.string.shields_cloack_of_darkness))
+                .build();
+
+        Cursor cursor = mActivity.getContentResolver()
+                .query(uri, null, null, null, null);
+
+        if (cursor.getCount() == 1) {
+            return "Заклинание промахнулось";
+        }
 
         String[] projection = new String[]{
                 "SUM(" + NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE + ") as " +
                         NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM
         };
 
-        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+        Cursor shieldCursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
                 projection, null, null, null);
         int columnMentalDefenceId =
-                cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM);
+                shieldCursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE_SUM);
+        Cursor characterStatusCursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        characterStatusCursor.moveToFirst();
 
-        if (cursor.moveToFirst()) {
-            int mentalDefence = cursor.getInt(columnMentalDefenceId);
-
-            if (damage >= mentalDefence) {
-                String selection =
-                        NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
-                String[] selectionArgs = new String[]{"мент"};
-                int deletedShieldsCount = mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                        selection, selectionArgs);
-
-                if (deletedShieldsCount > 0) {
-                    builder.append("Ментальные щиты развеяны, ");
-                } else {
-                    builder.append("Ментальное ");
-                }
-            } else {
-                return "Ментальная атака заблокирована";
-            }
+        if (shieldCursor.moveToFirst()) {
+            mentalDefence = shieldCursor.getInt(columnMentalDefenceId);
         }
 
-        cursor.close();
+        mentalDefence = mentalDefence + characterStatusCursor.getInt(characterStatusCursor
+                .getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE));
 
-        return builder.append("заклинание прошло").toString();
+        if (mInputDamage >= mentalDefence) {
+            String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
+            String[] selectionArgs = new String[]{"мент"};
+            int deletedShieldsCount = mActivity.getContentResolver().delete(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                    selection, selectionArgs);
+
+            if (deletedShieldsCount > 0) {
+                builder.append("Ментальные щиты развеяны, заклинание прошло\n");
+            } else {
+                builder.append("Заклинание прошло\n");
+            }
+        } else {
+            return "Ментальное заклинание заблокировано";
+        }
+
+        shieldCursor.close();
+        characterStatusCursor.close();
+
+        return builder.append(spell.getEffect().get(SPV.SPECIAL)).toString();
     }
 
     @NonNull
@@ -552,12 +590,74 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         if (mBattleForm.equals("боевая форма")) {
             mSuccessDodge = true;
             return "Вы успешно увернулись от атаки";
-        } else if (spell.getTarget().equals("область") && spell.getSpeed().equals("медленное")) {
+        } else if (spell.getTarget().equals("область")) {
             mSuccessDodge = true;
             return "Вы успешно увернилсь от атаки";
         }
 
         return "Вам не удалось увернуться от атаки";
+    }
+
+    private String checkTripleKey(SpellsUtil.Spell spell) {
+        int currentSpellPower = mInputDamage;
+        int countOfDeletedShields = 0;
+        int naturalMentalDefence = getNaturalMentalDefence();
+
+        Cursor cursor = getShields();
+
+        if (cursor.moveToFirst()) {
+
+            while (true) {
+                String shieldType = cursor.getString(cursor.getColumnIndex(NotATryContract.ActiveShieldsEntry.COLUMN_TYPE));
+
+                if (shieldType.equals("маг")) {
+                    currentSpellPower = currentSpellPower/2;
+                } else if (shieldType.equals("унив")) {
+                    currentSpellPower = currentSpellPower/4;
+                }
+
+                if (!cursor.moveToNext()) {
+                    break;
+                }
+            }
+        }
+        cursor.close();
+
+        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TYPE + "=?";
+        String[] selectionArgs = new String[]{"мент"};
+        cursor = mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
+                null, selection, selectionArgs, null);
+
+        while (true) {
+            if (currentSpellPower >= 8) {
+                if (cursor.moveToFirst()) {
+                    String shieldId = cursor.getString(cursor.getColumnIndex("_id"));
+                    Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon()
+                            .appendPath(shieldId)
+                            .build();
+                    mActivity.getContentResolver().delete(uri, null, null);
+                    countOfDeletedShields++;
+                    currentSpellPower = currentSpellPower/8;
+                } else if (naturalMentalDefence > 0) {
+                    naturalMentalDefence--;
+                    countOfDeletedShields++;
+                    currentSpellPower = currentSpellPower/8;
+                } else {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, naturalMentalDefence);
+        mActivity.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                contentValues,
+                null,
+                null);
+
+        return spell.getEffect().get(SPV.SPECIAL).toString() + countOfDeletedShields;
     }
 
     private Cursor getShields() {
@@ -592,6 +692,16 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
         cursor.close();
 
         return returnReactionCount;
+    }
+
+    private int getNaturalMentalDefence() {
+        Cursor cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
+                null, null, null, null);
+        cursor.moveToFirst();
+        int returnNaturalMentalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE));
+        cursor.close();
+
+        return returnNaturalMentalDefence;
     }
 
     private void updateReactionCount() {
@@ -634,7 +744,7 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE;
                 mAttackTypeTextView.setText("Заклинание");
                 mAdapterSpinner = ArrayAdapter.createFromResource(mActivity,
-                        R.array.spells_array, android.R.layout.simple_spinner_item);
+                        R.array.battle_spells_array, android.R.layout.simple_spinner_item);
                 mAdapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mAttackListSpinner.setAdapter(mAdapterSpinner);
                 break;
@@ -652,9 +762,9 @@ public class DamageDialogFragment extends DialogFragment implements View.OnClick
                 mTypeDamage = 3;
                 mTypeDamageArg = "мент";
                 mColumnDefenceKey = NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE;
-                mAttackTypeTextView.setText("Ментальное заклинание (в разработке)");
+                mAttackTypeTextView.setText("Ментальное заклинание");
                 mAdapterSpinner = ArrayAdapter.createFromResource(mActivity,
-                        R.array.attacks_array, android.R.layout.simple_spinner_item);
+                        R.array.mental_spells_array, android.R.layout.simple_spinner_item);
                 mAdapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 mAttackListSpinner.setAdapter(mAdapterSpinner);
                 break;

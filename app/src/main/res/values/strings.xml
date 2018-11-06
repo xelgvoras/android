@@ -17,17 +17,36 @@
 
     <!-- Подсказка для поля ввода силы входящего воздействия -->
     <string name="hint_attack_power">сила воздействия</string>
+    
+    <!-- Для перемещений общее -->
+    <string name="travel_coordinates">Координаты перемещения (0.0 - город)</string>
+    <string name="travel_start_coords">начальные координаты</string>
+    <string name="travel_end_coords">координаты цели</string>
+    <string name="travel_basic_coords">0.0</string>
+    <string name="travel_dusk_layer">Слой сумрака</string>
+    <string name="travel_way_to_travel">Способ передвижения</string>
+    <string name="travel_subject_time">субьективное время пути</string>
+    <string name="travel_object_time">объективное время пути</string>
+
+    <!-- Для окна перемещения -->
+    <string name="travel_move_title">Экран для расчета времени перемещения</string>
+
+    <!-- Для окна подмоги -->
+    <string name="travel_help_title">Экран для расчета времени прибытия поддержки</string>
+    <string name="travel_help_dusk_layer">На каком слое сумрака находится цель</string>
 
     <!-- Названия кнопок -->
-    <string name="button_check_damage">Воздействие</string>
-    <string name="button_scan_shields">Скан щитов</string>
-    <string name="button_export_character">Экспортировать персонажа</string>
-    <string name="button_import_character">Импортировать персонажа</string>
-    <string name="button_start_activity_shields">Подготовка</string>
-    <string name="button_start_activity_battle">Начать бой</string>
+    <string name="button_check_damage">воздействие</string>
+    <string name="button_scan_shields">скан щитов</string>
+    <string name="button_export_character">экспортировать персонажа</string>
+    <string name="button_import_character">импортировать персонажа</string>
+    <string name="button_start_activity_shields">подготовка</string>
+    <string name="button_start_activity_battle">бой</string>
+    <string name="button_start_activity_travel">идти</string>
     <string name="button_magic_defence">маг</string>
     <string name="button_physic_defence">физ</string>
     <string name="button_mental_defence">мент</string>
+    <string name="button_calculate_travel_time">рассчитать время пути</string>
 
     <!-- Для пунктов меню -->
     <string name="action_settings">паспорт игрока</string>
@@ -295,8 +314,21 @@
     <string name="spells_gray_prayer_mass">Серый молебен (массовое)</string>
     <string name="spells_freeze">Фриз</string>
     <string name="spells_ring_of_shaab">Кольцо Шааба</string>
+    <string name="spells_triple_key">Тройной ключ</string>
     <string name="spells_mass_press">Масс пресс</string>
     <string name="spells_expropriation">Экспроприация</string>
+    
+    <string name="spells_socrates">Сократ</string>
+    <string name="spells_morpheus">Морфей</string>
+    <string name="spells_needle_of_fear">Игла страха</string>
+    <string name="spells_long_tongue">Длинный язык</string>
+    <string name="spells_suggestion">Внушение</string>
+    <string name="spells_eye_removal">Отвод глаз</string>
+    <string name="spells_stupor">Ступор</string>
+    <string name="spells_opium">Опиум</string>
+    <string name="spells_thanatos">Танатос</string>
+    <string name="spells_dominate">Доминанта</string>
+    <string name="spells_deimos">Деймос</string>
 
     <!-- - - - - - - - - - - - - - - -->
     <!-- Значения для массива ударов -->

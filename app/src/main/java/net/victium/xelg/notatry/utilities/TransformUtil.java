@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.Character;
 import net.victium.xelg.notatry.data.NotATryContract;
 
@@ -13,20 +14,25 @@ public class TransformUtil {
 
     public static String makeTransform(Context context) {
         String battleForm = getCurrentForm(context);
+        Character character = new Character(context);
+        int currentNaturalMentalDefence = character.getCharacterNaturalMentalDefence();
 
         if (battleForm.equals("человек")) {
             battleForm = "боевая форма";
         } else {
             battleForm = "человек";
+            if (character.getCharacterType().equals(context.getString(R.string.pref_type_value_werewolf))) {
+                currentNaturalMentalDefence = 0;
+            }
         }
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, battleForm);
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, currentNaturalMentalDefence);
         context.getContentResolver().update(NotATryContract.CharacterStatusEntry.CONTENT_URI, contentValues,
                 null, null);
 
         int count = 0;
-        Character character = new Character(context);
         if (!character.getCharacterType().equals("вампир")) {
             String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
             String[] selectionArgs = new String[]{"персональный"};

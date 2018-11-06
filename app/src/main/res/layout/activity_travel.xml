@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:gravity="center"
+            android:text="@string/travel_move_title"
+            style="@style/Base.TextAppearance.AppCompat.Medium"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/travel_coordinates"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="@string/travel_start_coords"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <NumberPicker
+                        android:id="@+id/np_start_coords_x"
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:text=":"/>
+                    <NumberPicker
+                        android:id="@+id/np_start_coords_y"
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:text="@string/travel_end_coords"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <NumberPicker
+                        android:id="@+id/np_end_coords_x"
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingLeft="4dp"
+                        android:paddingRight="4dp"
+                        android:text=":"/>
+                    <NumberPicker
+                        android:id="@+id/np_end_coords_y"
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/travel_dusk_layer"/>
+
+        <Spinner
+            android:id="@+id/sp_dusk_layer_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/travel_help_dusk_layer"/>
+
+        <Spinner
+            android:id="@+id/sp_target_dusk_layer_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/travel_way_to_travel"/>
+
+        <Spinner
+            android:id="@+id/sp_way_to_travel_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:text="@string/travel_subject_time"/>
+
+                <TextView
+                    android:id="@+id/tv_subject_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:text="@string/travel_object_time"/>
+
+                <TextView
+                    android:id="@+id/tv_object_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:text="@string/button_calculate_travel_time"
+            android:onClick="onClickCalculateTime"/>
+
+    </LinearLayout>
+</ScrollView>

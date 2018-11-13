@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -27,7 +27,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 CharacterStatusEntry.COLUMN_DEPTH_LIMIT + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_CURRENT_SHIELDS + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_SHIELDS_LIMIT + " INTEGER NOT NULL," +
-                CharacterStatusEntry.COLUMN_AMULETS_LIMIT + " INTEGER NOT NULL," +
+                CharacterStatusEntry.COLUMN_CURRENT_AMULETS + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_NATURAL_DEFENCE + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE + " INTEGER NOT NULL," +
                 CharacterStatusEntry.COLUMN_REACTIONS_NUMBER + " INTEGER NOT NULL," +
@@ -62,6 +62,17 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 BattleJournalEntry.COLUMN_SYSTEM_MESSAGE + " TEXT);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_BATTLE_JOURNAL_TABLE);
+
+        final String SQL_CREATE_ACTIVE_AMULETS_TABLE = "CREATE TABLE " + ActiveAmuletsEntry.TABLE_NAME + " (" +
+                ActiveAmuletsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ActiveAmuletsEntry.COLUMN_AMULET_NAME + " TEXT NOT NULL," +
+                ActiveAmuletsEntry.COLUMN_AMULET_TYPE + " INTEGER NOT NULL," +
+                ActiveAmuletsEntry.COLUMN_AMULET_TRIGGER + " INTEGER NOT NULL," +
+                ActiveAmuletsEntry.COLUMN_SPELL_NAME + " TEXT NOT NULL," +
+                ActiveAmuletsEntry.COLUMN_SPELL_COST + " INTEGER NOT NULL," +
+                ActiveAmuletsEntry.COLUMN_SERIES_NUMBER + " INTEGER NOT NULL);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_AMULETS_TABLE);
     }
 
     @Override
@@ -71,6 +82,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DuskLayersSummaryEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveShieldsEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + BattleJournalEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveAmuletsEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

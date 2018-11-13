@@ -22,6 +22,8 @@ public class NotATryContentProvider extends ContentProvider {
     public static final int ACTIVE_SHIELDS_WITH_NAME = 302;
     public static final int BATTLE_JOURNAL = 400;
     public static final int BATTLE_JOURNAL_WITH_ID = 401;
+    public static final int ACTIVE_AMULETS = 500;
+    public static final int ACTIVE_AMULETS_WITH_ID = 501;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -55,6 +57,12 @@ public class NotATryContentProvider extends ContentProvider {
         uriMatcher.addURI(NotATryContract.CONTENT_AUTHORITY,
                 NotATryContract.BATTLE_JOURNAL_PATH + "/#",
                 BATTLE_JOURNAL_WITH_ID);
+        uriMatcher.addURI(NotATryContract.CONTENT_AUTHORITY,
+                NotATryContract.ACTIVE_AMULETS_PATH,
+                ACTIVE_AMULETS);
+        uriMatcher.addURI(NotATryContract.CONTENT_AUTHORITY,
+                NotATryContract.ACTIVE_AMULETS_PATH + "/#",
+                ACTIVE_AMULETS_WITH_ID);
 
         return uriMatcher;
     }
@@ -157,6 +165,28 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
+            case ACTIVE_AMULETS:
+                retCursor = db.query(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+            case ACTIVE_AMULETS_WITH_ID:
+                String amuletId = uri.getPathSegments().get(1);
+                mSelection = NotATryContract.ActiveAmuletsEntry._ID + "=?";
+                mSelectionArgs = new String[]{amuletId};
+
+                retCursor = db.query(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+                        null,
+                        mSelection,
+                        mSelectionArgs,
+                        null,
+                        null,
+                        null);
+                break;
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -207,8 +237,14 @@ public class NotATryContentProvider extends ContentProvider {
                         values);
                 returnUri = NotATryContract.BattleJournalEntry.CONTENT_URI;
                 break;
+            case ACTIVE_AMULETS:
+                id = db.insert(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+                        null,
+                        values);
+                returnUri = NotATryContract.ActiveAmuletsEntry.CONTENT_URI;
+                break;
                 default:
-                    throw new UnsupportedOperationException("Unkonown uri: " + uri);
+                    throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
         if (id > 0) {
@@ -266,6 +302,20 @@ public class NotATryContentProvider extends ContentProvider {
                         mSelection,
                         mSelectionArgs);
                 break;
+            case ACTIVE_AMULETS:
+                deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+                break;
+            case ACTIVE_AMULETS_WITH_ID:
+                String amuletId = uri.getPathSegments().get(1);
+                mSelection = "_id=?";
+                mSelectionArgs = new String[]{amuletId};
+
+                deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+                        mSelection,
+                        mSelectionArgs);
+                break;
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -285,6 +335,8 @@ public class NotATryContentProvider extends ContentProvider {
 
         int match = sUriMatcher.match(uri);
         int updatedRows;
+        String mSelection;
+        String[] mSelectionArgs;
 
         switch (match) {
             case CHARACTER_STATUS:
@@ -294,11 +346,27 @@ public class NotATryContentProvider extends ContentProvider {
                         selectionArgs);
                 break;
             case ACTIVE_SHIELDS_WITH_ID:
-                String id = uri.getPathSegments().get(1);
-                String mSelection = "_id=?";
-                String[] mSelectionArgs = new String[]{id};
+                String shieldId = uri.getPathSegments().get(1);
+                mSelection = "_id=?";
+                mSelectionArgs = new String[]{shieldId};
 
                 updatedRows = db.update(NotATryContract.ActiveShieldsEntry.TABLE_NAME,
+                        values,
+                        mSelection,
+                        mSelectionArgs);
+                break;
+            case ACTIVE_AMULETS:
+                updatedRows = db.update(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+                break;
+            case ACTIVE_AMULETS_WITH_ID:
+                String amuletId = uri.getPathSegments().get(1);
+                mSelection = "_id=?";
+                mSelectionArgs = new String[]{amuletId};
+
+                updatedRows = db.update(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         values,
                         mSelection,
                         mSelectionArgs);

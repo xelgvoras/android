@@ -11,6 +11,7 @@ public class NotATryContract {
     public static final String DUSK_LAYERS_PATH = "duskLayers";
     public static final String ACTIVE_SHIELDS_PATH = "activeShields";
     public static final String BATTLE_JOURNAL_PATH = "battleJournal";
+    public static final String ACTIVE_AMULETS_PATH = "activeAmulets";
 
     public static final class CharacterStatusEntry implements BaseColumns {
 
@@ -24,7 +25,7 @@ public class NotATryContract {
         public static final String COLUMN_DEPTH_LIMIT = "depthLimit";
         public static final String COLUMN_CURRENT_SHIELDS = "currentShields";
         public static final String COLUMN_SHIELDS_LIMIT = "shieldsLimit";
-        public static final String COLUMN_AMULETS_LIMIT = "amuletsLimit";
+        public static final String COLUMN_CURRENT_AMULETS = "currentAmulets";
         public static final String COLUMN_NATURAL_DEFENCE = "naturalDefence";
         public static final String COLUMN_NATURAL_MENTAL_DEFENCE = "naturalMentalDefence";
         public static final String COLUMN_REACTIONS_NUMBER = "reactionsNumber";
@@ -71,5 +72,19 @@ public class NotATryContract {
         public static final String COLUMN_ATTACK_MESSAGE = "attackMessage";
         public static final String COLUMN_RESULT_MESSAGE = "resultMessage";
         public static final String COLUMN_SYSTEM_MESSAGE = "systemMessage";
+    }
+
+    public static final class ActiveAmuletsEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(ACTIVE_AMULETS_PATH).build();
+
+        public static final String TABLE_NAME = "activeAmulets";
+        public static final String COLUMN_AMULET_NAME = "amuletName";
+        public static final String COLUMN_AMULET_TYPE = "amuletType";
+        public static final String COLUMN_AMULET_TRIGGER = "amuletTrigger";
+        public static final String COLUMN_SPELL_NAME = "spellName";
+        public static final String COLUMN_SPELL_COST = "spellCost";
+        public static final String COLUMN_SERIES_NUMBER = "seriesNumber";
     }
 }

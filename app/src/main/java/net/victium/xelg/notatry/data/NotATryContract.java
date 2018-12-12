@@ -11,6 +11,8 @@ public class NotATryContract {
     public static final String DUSK_LAYERS_PATH = "duskLayers";
     public static final String ACTIVE_SHIELDS_PATH = "activeShields";
     public static final String BATTLE_JOURNAL_PATH = "battleJournal";
+    public static final String ACTIVE_AMULETS_PATH = "activeAmulets";
+    public static final String SPELLS_IN_AMULET_PATH = "spellsInAmulet";
 
     public static final class CharacterStatusEntry implements BaseColumns {
 
@@ -71,5 +73,26 @@ public class NotATryContract {
         public static final String COLUMN_ATTACK_MESSAGE = "attackMessage";
         public static final String COLUMN_RESULT_MESSAGE = "resultMessage";
         public static final String COLUMN_SYSTEM_MESSAGE = "systemMessage";
+    }
+
+    public static final class ActiveAmuletsEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(ACTIVE_AMULETS_PATH).build();
+
+        public static final String TABLE_NAME = "activeAmulets";
+        public static final String COLUMN_TYPE = "type";
+        public static final String COLUMN_SPELLS_COUNT = "spellsCount";
+    }
+
+    public static final class SpellsInAmuletEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(SPELLS_IN_AMULET_PATH).build();
+
+        public static final String TABLE_NAME = "spellsInAmulet";
+        public static final String COLUMN_AMULET_ID = "amuletId";
+        public static final String COLUMN_SPELL_NAME = "spellName";
+        public static final String COLUMN_COST = "cost";
     }
 }

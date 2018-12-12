@@ -10,7 +10,7 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "notatry.db";
 
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     public NotATryDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -62,6 +62,21 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
                 BattleJournalEntry.COLUMN_SYSTEM_MESSAGE + " TEXT);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_BATTLE_JOURNAL_TABLE);
+
+        final String SQL_CREATE_ACTIVE_AMULETS_TABLE = "CREATE TABLE " + ActiveAmuletsEntry.TABLE_NAME + " (" +
+                ActiveAmuletsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ActiveAmuletsEntry.COLUMN_TYPE + " TEXT NOT NULL UNIQUE," +
+                ActiveAmuletsEntry.COLUMN_SPELLS_COUNT + " INTEGER);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_AMULETS_TABLE);
+
+        final String SQL_CREATE_SPELLS_IN_AMULET_TABLE = "CREATE TABLE " + SpellsInAmuletEntry.TABLE_NAME + " (" +
+                SpellsInAmuletEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                SpellsInAmuletEntry.COLUMN_AMULET_ID + " INTEGER NOT NULL," +
+                SpellsInAmuletEntry.COLUMN_SPELL_NAME + " TEXT NOT NULL," +
+                SpellsInAmuletEntry.COLUMN_COST + " INTEGER NOT NULL);";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_SPELLS_IN_AMULET_TABLE);
     }
 
     @Override
@@ -71,6 +86,8 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DuskLayersSummaryEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveShieldsEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + BattleJournalEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveAmuletsEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SpellsInAmuletEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

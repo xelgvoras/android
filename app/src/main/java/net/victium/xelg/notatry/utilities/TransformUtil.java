@@ -3,7 +3,8 @@ package net.victium.xelg.notatry.utilities;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.Character;

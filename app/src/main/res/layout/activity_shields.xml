@@ -104,7 +104,7 @@
                 android:text="@string/table_column_range" />
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_active_shields"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -152,7 +152,7 @@
         <!-- В рамках xml уже не актуально, редактирование резерва реализовано через диалоговые окна -->
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_shield"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

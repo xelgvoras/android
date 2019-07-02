@@ -4,7 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.NotATryContract;

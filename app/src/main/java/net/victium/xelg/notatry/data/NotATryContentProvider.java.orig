@@ -27,9 +27,12 @@ public class NotATryContentProvider extends ContentProvider {
     public static final int BATTLE_JOURNAL_WITH_ID = 401;
     public static final int ACTIVE_AMULETS = 500;
     public static final int ACTIVE_AMULETS_WITH_ID = 501;
+<<<<<<< HEAD
     public static final int SPELLS_IN_AMULET = 600;
     public static final int SPELLS_IN_AMULET_WITH_ID = 601;
     public static final int SPELLS_IN_AMULET_WITH_AMULET_ID = 602;
+=======
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -69,6 +72,7 @@ public class NotATryContentProvider extends ContentProvider {
         uriMatcher.addURI(NotATryContract.CONTENT_AUTHORITY,
                 NotATryContract.ACTIVE_AMULETS_PATH + "/#",
                 ACTIVE_AMULETS_WITH_ID);
+<<<<<<< HEAD
         uriMatcher.addURI(NotATryContract.CONTENT_AUTHORITY,
                 NotATryContract.SPELLS_IN_AMULET_PATH,
                 SPELLS_IN_AMULET);
@@ -78,6 +82,8 @@ public class NotATryContentProvider extends ContentProvider {
         uriMatcher.addURI(NotATryContract.CONTENT_AUTHORITY,
                 NotATryContract.SPELLS_IN_AMULET_PATH + "/*/#",
                 SPELLS_IN_AMULET_WITH_AMULET_ID);
+=======
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
 
         return uriMatcher;
     }
@@ -202,6 +208,7 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
+<<<<<<< HEAD
             case SPELLS_IN_AMULET:
                 retCursor = db.query(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         projection,
@@ -237,6 +244,8 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+=======
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -293,12 +302,15 @@ public class NotATryContentProvider extends ContentProvider {
                         values);
                 returnUri = NotATryContract.ActiveAmuletsEntry.CONTENT_URI;
                 break;
+<<<<<<< HEAD
             case SPELLS_IN_AMULET:
                 id = db.insert(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         null,
                         values);
                 returnUri = NotATryContract.SpellsInAmuletEntry.CONTENT_URI;
                 break;
+=======
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -359,26 +371,36 @@ public class NotATryContentProvider extends ContentProvider {
                         mSelectionArgs);
                 break;
             case ACTIVE_AMULETS:
+<<<<<<< HEAD
+                db.delete(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
+                        null,
+                        null);
+=======
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
                 deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
             case ACTIVE_AMULETS_WITH_ID:
                 String amuletId = uri.getPathSegments().get(1);
-                mSelection = "_id=?";
+<<<<<<< HEAD
+                mSelection = NotATryContract.ActiveAmuletsEntry._ID + "=?";
                 mSelectionArgs = new String[]{amuletId};
 
-                deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
-                        mSelection,
-                        mSelectionArgs);
-                break;
+                Uri spellsUri = NotATryContract.SpellsInAmuletEntry.CONTENT_URI.buildUpon()
                         .appendPath("amulet").appendPath(amuletId).build();
                 delete(spellsUri, null, null);
 
+=======
+                mSelection = "_id=?";
+                mSelectionArgs = new String[]{amuletId};
+
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
                 deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         mSelection,
                         mSelectionArgs);
                 break;
+<<<<<<< HEAD
             case SPELLS_IN_AMULET:
                 deletedRows = db.delete(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         selection,
@@ -402,6 +424,8 @@ public class NotATryContentProvider extends ContentProvider {
                         mSelection,
                         mSelectionArgs);
                 break;
+=======
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -432,15 +456,29 @@ public class NotATryContentProvider extends ContentProvider {
                         selectionArgs);
                 break;
             case ACTIVE_SHIELDS_WITH_ID:
+<<<<<<< HEAD
+                String id = uri.getPathSegments().get(1);
+                String mSelection = NotATryContract.ActiveShieldsEntry._ID + "=?";
+                String[] mSelectionArgs = new String[]{id};
+=======
                 String shieldId = uri.getPathSegments().get(1);
                 mSelection = "_id=?";
                 mSelectionArgs = new String[]{shieldId};
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
 
                 updatedRows = db.update(NotATryContract.ActiveShieldsEntry.TABLE_NAME,
                         values,
                         mSelection,
                         mSelectionArgs);
                 break;
+<<<<<<< HEAD
+            case SPELLS_IN_AMULET_WITH_ID:
+                String spellId = uri.getPathSegments().get(1);
+                mSelection = NotATryContract.SpellsInAmuletEntry._ID + "=?";
+                mSelectionArgs = new String[]{spellId};
+
+                updatedRows = db.update(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
+=======
             case ACTIVE_AMULETS:
                 updatedRows = db.update(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         values,
@@ -453,6 +491,7 @@ public class NotATryContentProvider extends ContentProvider {
                 mSelectionArgs = new String[]{amuletId};
 
                 updatedRows = db.update(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
+>>>>>>> 00b7c74d55004058ee559c530dc2ef1f36579494
                         values,
                         mSelection,
                         mSelectionArgs);

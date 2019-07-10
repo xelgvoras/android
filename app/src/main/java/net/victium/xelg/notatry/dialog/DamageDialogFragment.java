@@ -2,16 +2,12 @@ package net.victium.xelg.notatry.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +18,10 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.data.Character;

@@ -6,10 +6,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +15,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.data.CharacterPreferences;
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_DEPTH_LIMIT, character.getCharacterDuskLayerLimit());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_SHIELDS, 0);
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT, character.getCharacterPersonalShieldsLimit());
-        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT, character.getCharacterAmuletsLimit());
+        contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_AMULETS, 0);
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE, character.getCharacterNaturalDefence());
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_MENTAL_DEFENCE, currentNaturalMentalDefence);
         contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, character.getCharacterReactionsNumber());
@@ -306,8 +307,6 @@ public class MainActivity extends AppCompatActivity implements
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE,
                     mCharacter.getCharacterNaturalDefence());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, 1);
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
-                    mCharacter.getCharacterAmuletsLimit());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_BATTLE_FORM, "человек");
 
             if (newType.equals(getString(R.string.pref_type_value_werewolf))) {
@@ -324,8 +323,6 @@ public class MainActivity extends AppCompatActivity implements
             contentValues = new ContentValues();
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT,
                     mCharacter.getCharacterPersonalShieldsLimit());
-            contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_AMULETS_LIMIT,
-                    mCharacter.getCharacterAmuletsLimit());
             contentValues.put(NotATryContract.CharacterStatusEntry.COLUMN_REACTIONS_NUMBER, 1);
 
             if (mCharacter.getCharacterType().equals(getString(R.string.pref_type_value_werewolf))

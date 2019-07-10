@@ -2,7 +2,8 @@ package net.victium.xelg.notatry.data;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 public class CharacterPreferences {
 

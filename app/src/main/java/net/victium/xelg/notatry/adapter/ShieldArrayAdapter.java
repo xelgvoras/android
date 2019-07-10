@@ -1,25 +1,25 @@
 package net.victium.xelg.notatry.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 
-import net.victium.xelg.notatry.utilities.ShieldUtil;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
+import net.victium.xelg.notatry.database.ShieldEntry;
+
 import java.util.List;
 
-public class ShieldArrayAdapter extends ArrayAdapter<ShieldUtil.Shield> {
+public class ShieldArrayAdapter extends ArrayAdapter<ShieldEntry> {
 
     private Context mContext;
-    private List<ShieldUtil.Shield> shieldList;
+    private List shieldList;
 
-    public ShieldArrayAdapter(@NonNull Context context, ArrayList<ShieldUtil.Shield> list) {
+    public ShieldArrayAdapter(@NonNull Context context, List<ShieldEntry> list) {
         super(context, 0, list);
         mContext = context;
         shieldList = list;
@@ -35,7 +35,7 @@ public class ShieldArrayAdapter extends ArrayAdapter<ShieldUtil.Shield> {
             listItem = LayoutInflater.from(mContext).inflate(android.R.layout.simple_spinner_dropdown_item, parent, false);
         }
 
-        ShieldUtil.Shield currentShield = shieldList.get(position);
+        ShieldEntry currentShield = (ShieldEntry) shieldList.get(position);
 
         CheckedTextView checkedTextView = listItem.findViewById(android.R.id.text1);
         checkedTextView.setText(currentShield.toString());

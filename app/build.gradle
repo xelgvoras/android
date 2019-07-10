@@ -19,6 +19,7 @@ android {
     buildToolsVersion '28.0.3'
     productFlavors {
     }
+    dataBinding.enabled = true
 }
 
 dependencies {

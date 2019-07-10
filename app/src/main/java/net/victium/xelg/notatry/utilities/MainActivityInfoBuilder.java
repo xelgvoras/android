@@ -1,0 +1,107 @@
+package net.victium.xelg.notatry.utilities;
+
+import android.content.Context;
+import android.preference.PreferenceManager;
+
+import androidx.annotation.NonNull;
+
+import net.victium.xelg.notatry.MainActivityInfo;
+import net.victium.xelg.notatry.database.AppDatabase;
+
+public class MainActivityInfoBuilder {
+
+    public static MainActivityInfo createMainActivityInfo(Context context) {
+
+        MainActivityInfo info = new MainActivityInfo();
+        AppDatabase database = AppDatabase.getInstance(context);
+
+        String name = PreferenceUtilities.getCharacterName(context);
+        int age = PreferenceUtilities.getCharacterAge(context);
+        info.fullName = String.format("%s, %s %s", name, age, ageMatcher(age));
+
+        String side = sideMatcher(PreferenceUtilities.getCharacterSide(context));
+        String type = PreferenceUtilities.getCharacterType(context);
+        int level = PreferenceUtilities.getCharacterLevel(context);
+        info.personalInfo = String.format("%s, %s, %s уровень", side, type, level);
+
+        int currentMagicPower = PreferenceUtilities.getCurrentMagicPower(context);
+        int magicPowerLimit = PreferenceUtilities.getMagicPowerLimit(context);
+        info.magicPower = String.format("Резерв силы: %s/%s", currentMagicPower, magicPowerLimit);
+
+        int magicDefence = database.shieldDao().getMagicDefence().getValue();
+        int physicDefence = database.shieldDao().getPhysicDefence().getValue();
+        int mentalDefence = database.shieldDao().getMentalDefence().getValue();
+        int naturalDefence = PreferenceUtilities.getNaturalDefence(context);
+        String naturalDefenceString = "";
+        if (PreferenceUtilities.isCharacterVop(context)) {
+            naturalDefenceString = String.format("\n\t\t\t Естественная защита: %s", naturalDefence);
+        }
+        int currentNaturalMentalDefence = PreferenceUtilities.getCurrentNaturalMentalDefence(context);
+        int naturalMentalDefence = PreferenceUtilities.getNaturalMentalDefence(context);
+        info.defence = String.format("Щиты \n" +
+                "\t\t\t Магическая защита: %s \n" +
+                "\t\t\t Физическая защита: %s \n" +
+                "\t\t\t Ментальная защита: %s" +
+                "%s \n" +
+                "\t\t\t Врожденных ментальных щитов: %s(%s)",
+                magicDefence, physicDefence, mentalDefence, naturalDefenceString,
+                currentNaturalMentalDefence, naturalMentalDefence);
+        return null;
+    }
+
+    @NonNull
+    private static String ageMatcher(int age) {
+
+        String stringForAge;
+
+        switch (age) {
+            case 11:
+                stringForAge = "лет";
+                break;
+            case 12:
+                stringForAge = "лет";
+                break;
+            case 13:
+                stringForAge = "лет";
+                break;
+            case 14:
+                stringForAge = "лет";
+                break;
+            default:
+                int ageMod = age % 10;
+                switch (ageMod) {
+                    case 1:
+                        stringForAge = "год";
+                        break;
+                    case 2:
+                        stringForAge = "года";
+                        break;
+                    case 3:
+                        stringForAge = "года";
+                        break;
+                    case 4:
+                        stringForAge = "года";
+                        break;
+                    default:
+                        stringForAge = "лет";
+                        break;
+                }
+                break;
+        }
+
+        return stringForAge;
+    }
+
+    @NonNull
+    private static String sideMatcher(String side) {
+
+        switch (side) {
+            case "свет":
+                return "Светлый иной";
+            case "тьма":
+                return "Темный иной";
+                default:
+                    throw new IllegalArgumentException("Unknown side: " + side);
+        }
+    }
+}

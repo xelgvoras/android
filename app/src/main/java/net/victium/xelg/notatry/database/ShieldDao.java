@@ -27,4 +27,13 @@ public interface ShieldDao {
 
     @Query("SELECT COUNT(*) FROM shields WHERE personal_shield = :type")
     LiveData<Integer> getShieldsCount(boolean type);
+
+    @Query("SELECT SUM(power * magic_defence_multiplier) FROM shields")
+    LiveData<Integer> getMagicDefence();
+
+    @Query("SELECT SUM(power * physic_defence_multiplier) FROM shields")
+    LiveData<Integer> getPhysicDefence();
+
+    @Query("SELECT COUNT(*) FROM shields WHERE mental_defence = 1")
+    LiveData<Integer> getMentalDefence();
 }

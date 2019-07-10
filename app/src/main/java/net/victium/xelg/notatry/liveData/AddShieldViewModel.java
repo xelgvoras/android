@@ -1,4 +1,4 @@
-package net.victium.xelg.notatry.LiveData;
+package net.victium.xelg.notatry.liveData;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;

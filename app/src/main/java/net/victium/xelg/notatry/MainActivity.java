@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.data.CharacterPreferences;
 import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.data.Character;
+import net.victium.xelg.notatry.databinding.ActivityMainBinding;
 import net.victium.xelg.notatry.utilities.TransformUtil;
 
 public class MainActivity extends AppCompatActivity implements
@@ -42,11 +44,15 @@ public class MainActivity extends AppCompatActivity implements
     Button mTravelButton;
 
     private Character mCharacter;
+    ActivityMainBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
 
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);

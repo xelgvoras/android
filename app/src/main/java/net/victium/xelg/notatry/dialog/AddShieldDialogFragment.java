@@ -2,7 +2,6 @@ package net.victium.xelg.notatry.dialog;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -21,7 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import net.victium.xelg.notatry.BattleActivity;
-import net.victium.xelg.notatry.LiveData.AddShieldViewModel;
+import net.victium.xelg.notatry.liveData.AddShieldViewModel;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.ShieldsActivity;
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
@@ -30,9 +29,6 @@ import net.victium.xelg.notatry.database.AppDatabase;
 import net.victium.xelg.notatry.database.ShieldEntry;
 import net.victium.xelg.notatry.database.ShieldEntryBuilder;
 import net.victium.xelg.notatry.utilities.PreferenceUtilities;
-import net.victium.xelg.notatry.utilities.ShieldUtil;
-
-import java.util.ArrayList;
 
 public class AddShieldDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
 

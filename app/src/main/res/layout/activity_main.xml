@@ -1,93 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- COMPLETED(18) Добавить отображение текущей боевой формы -->
-
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:padding="8dp">
 
-        <TextView
-            android:id="@+id/tv_character_full_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Title" />
-
-        <TextView
-            android:id="@+id/tv_character_personal_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/tv_character_battle_form"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            style="@style/Base.TextAppearance.AppCompat.Small"
-            android:visibility="invisible" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="?android:attr/listDivider" />
-
-        <TextView
-            android:id="@+id/tv_character_magic_power"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/tv_character_defence"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/tv_character_details"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Medium" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_dusk_layers"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+        <!-- COMPLETED(18) Добавить отображение текущей боевой формы -->
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/b_shields"
+            <TextView
+                android:id="@+id/tv_character_full_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/button_start_activity_shields"
-                android:padding="16dp"/>
+                style="@style/Base.TextAppearance.AppCompat.Title" />
 
-            <Button
-                android:id="@+id/b_battle"
+            <TextView
+                android:id="@+id/tv_character_personal_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/button_start_activity_battle"
-                android:padding="16dp"/>
+                style="@style/Base.TextAppearance.AppCompat.Medium" />
 
-            <Button
-                android:id="@+id/b_travel"
+            <TextView
+                android:id="@+id/tv_character_battle_form"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                style="@style/Base.TextAppearance.AppCompat.Small"
+                android:visibility="invisible" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/tv_character_magic_power"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/button_start_activity_travel"
-                android:padding="16dp"/>
+                style="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/tv_character_defence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/tv_character_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Base.TextAppearance.AppCompat.Medium" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_dusk_layers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/b_shields"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_start_activity_shields"
+                    android:padding="16dp"/>
+
+                <Button
+                    android:id="@+id/b_battle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_start_activity_battle"
+                    android:padding="16dp"/>
+
+                <Button
+                    android:id="@+id/b_travel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_start_activity_travel"
+                    android:padding="16dp"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
+</layout>

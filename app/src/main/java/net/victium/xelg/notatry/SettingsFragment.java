@@ -9,6 +9,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
+import net.victium.xelg.notatry.utilities.PreferenceUtilities;
+
 public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceChangeListener {
@@ -87,6 +89,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         String ageKey = getString(R.string.pref_age_key);
         String powerKey = getString(R.string.pref_power_key);
+        String levelKey = getString(R.string.pref_level_key);
         String prefKey = preference.getKey();
 
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
@@ -151,6 +154,20 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 errorMessage.show();
                 return false;
             }
+        } else if (prefKey.equals(levelKey)) {
+            int newLevel = (int) newValue;
+            int shieldLimit;
+            if (newLevel >= 6) {
+                shieldLimit = 1;
+            } else if (newLevel >= 4) {
+                shieldLimit = 2;
+            } else if (newLevel >= 2) {
+                shieldLimit = 3;
+            } else {
+                shieldLimit = 4;
+            }
+
+            PreferenceUtilities.setPersonalShieldLimit(getActivity(), shieldLimit);
         }
 
         return true;

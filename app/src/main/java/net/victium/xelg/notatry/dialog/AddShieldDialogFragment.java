@@ -21,10 +21,15 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import net.victium.xelg.notatry.BattleActivity;
+import net.victium.xelg.notatry.LiveData.AddShieldViewModel;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.ShieldsActivity;
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
 import net.victium.xelg.notatry.data.NotATryContract;
+import net.victium.xelg.notatry.database.AppDatabase;
+import net.victium.xelg.notatry.database.ShieldEntry;
+import net.victium.xelg.notatry.database.ShieldEntryBuilder;
+import net.victium.xelg.notatry.utilities.PreferenceUtilities;
 import net.victium.xelg.notatry.utilities.ShieldUtil;
 
 import java.util.ArrayList;
@@ -36,6 +41,10 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
 
     private int mShieldPowerLimit;
     private Activity mActivity;
+
+    private AppDatabase mDb;
+
+    private AddShieldViewModel mViewModel;
 
     public interface AddShieldDialogListener {
         void onDialogPositiveClick(DialogFragment dialogFragment);
@@ -60,6 +69,9 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         mActivity = getActivity();
+        mDb = AppDatabase.getInstance(mActivity);
+
+        mViewModel = new AddShieldViewModel(mDb);
 
         if (mActivity instanceof ShieldsActivity) {
             setupShieldPowerLimit(1);
@@ -74,8 +86,8 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         mShieldCost = view.findViewById(R.id.et_shield_cost);
         mShieldList = view.findViewById(R.id.sp_shields_list);
 
-        ArrayList<ShieldUtil.Shield> shieldArrayList = ShieldUtil.getShieldList(mActivity);
-        final ShieldArrayAdapter shieldArrayAdapter = new ShieldArrayAdapter(mActivity, shieldArrayList);
+        final ShieldArrayAdapter shieldArrayAdapter = new ShieldArrayAdapter(mActivity,
+                ShieldEntryBuilder.getShieldList(mActivity));
         shieldArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mShieldList.setAdapter(shieldArrayAdapter);
         mShieldList.setOnItemSelectedListener(this);
@@ -121,19 +133,34 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
 
         String errorMessage;
 
-        Cursor cursor;
-        String[] selectionPersonal = new String[]{"персональный"};
-        String[] selectionGroup = new String[]{"групповой"};
+        int personalShieldsCount ;
+        try {
+            personalShieldsCount = mViewModel.getShieldCount(true).getValue();
+        } catch (NullPointerException e) {
+            personalShieldsCount = 0;
+        }
+        int groupShieldsCount;
+        try {
+            groupShieldsCount = mViewModel.getShieldCount(false).getValue();
+        } catch (NullPointerException e) {
+            groupShieldsCount = 0;
+        }
 
-        int personalShieldsCount = getShieldCount(selectionPersonal);
-        int groupShieldsCount = getShieldCount(selectionGroup);
+        int personalShieldsLimit = PreferenceUtilities.getPersonalShieldLimit(mActivity);
 
-        cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null, null, null, null);
-        cursor.moveToFirst();
+        ShieldEntry currentShield = (ShieldEntry) mShieldList.getSelectedItem();
+        int minCost = currentShield.getMinCost();
+        int maxCost = currentShield.getMaxCost();
 
-        int personalShieldsLimit = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_SHIELDS_LIMIT));
-        cursor.close();
+        if (currentShield.isPersonalShield() && personalShieldsCount >= personalShieldsLimit) {
+            errorMessage = "Достигнут лимит персональных щитов";
+            Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
+            return;
+        } else if (!currentShield.isPersonalShield() && groupShieldsCount >= 1) {
+            errorMessage = "Достигнут лимит групповых щитов";
+            Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
+            return;
+        }
 
         String input = mShieldCost.getText().toString();
         int inputInt;
@@ -151,8 +178,12 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
                 if (inputInt <= 0) {
                     Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
                     return;
-                } else if (inputInt > mShieldPowerLimit && mShieldPowerLimit != 0) {
-                    errorMessage = "Вы не можете создать щит больше вашего резерва";
+                } else if (inputInt < minCost) {
+                    errorMessage = "Недостаточно у.е. для создания щита";
+                    Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
+                    return;
+                } else if (inputInt > maxCost) {
+                    errorMessage = "Превышен лимит для создания щита";
                     Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -162,62 +193,13 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
             }
         }
 
-        ShieldUtil.Shield currentShield = (ShieldUtil.Shield) mShieldList.getSelectedItem();
-
-        String name = currentShield.getName();
-        String type = currentShield.getType();
-        int minCost = currentShield.getMinCost();
-        int magicDefence = currentShield.getMagicDefenceMultiplier() * inputInt;
-        int physicDefence = currentShield.getPhysicDefenceMultiplier() * inputInt;
-        int mentalDefence = 0;
-        if (currentShield.hasMentalDefence()) mentalDefence = 1;
-        String target = "персональный";
-        if (!currentShield.isPersonalShield()) target = "групповой";
-        int range = currentShield.getRange();
-
-        if (inputInt < minCost) {
-            errorMessage = "Недостаточно магической силы для поддержания щита";
-            Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (target.equals("персональный")) {
-            if (personalShieldsCount >= personalShieldsLimit) {
-                errorMessage = "Достигнут лимит персональных щитов";
-                Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
-                return;
-            }
-        } else {
-            if (groupShieldsCount >= 1) {
-                errorMessage = "Достигнут лимит групповых щитов";
-                Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_NAME, name);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TYPE, type);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_COST, inputInt);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MAGIC_DEFENCE, magicDefence);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_PHYSIC_DEFENCE, physicDefence);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_MENTAL_DEFENCE, mentalDefence);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_TARGET, target);
-        contentValues.put(NotATryContract.ActiveShieldsEntry.COLUMN_RANGE, range);
+        currentShield.setPower(inputInt);
 
         try {
-            mActivity.getContentResolver().insert(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                    contentValues);
-        } catch (SQLException exception) {
+            mDb.shieldDao().insertShield(currentShield);
+        } catch (SQLException e) {
             errorMessage = "Нельзя повесить два одинаковых щита";
             Toast.makeText(mActivity, errorMessage, Toast.LENGTH_LONG).show();
         }
-    }
-
-    private int getShieldCount(String[] selectionArgs){
-        String selection = NotATryContract.ActiveShieldsEntry.COLUMN_TARGET + "=?";
-
-        return mActivity.getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                null, selection, selectionArgs, null).getCount();
     }
 }

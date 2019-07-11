@@ -180,7 +180,7 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         null);
                 break;
-            case ACTIVE_AMULETS:
+            /*case ACTIVE_AMULETS:
                 retCursor = db.query(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -201,8 +201,8 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         null,
                         null);
-                break;
-            case SPELLS_IN_AMULET:
+                break;*/
+            /*case SPELLS_IN_AMULET:
                 retCursor = db.query(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         projection,
                         selection,
@@ -236,7 +236,7 @@ public class NotATryContentProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
-                break;
+                break;*/
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -287,18 +287,18 @@ public class NotATryContentProvider extends ContentProvider {
                         values);
                 returnUri = NotATryContract.BattleJournalEntry.CONTENT_URI;
                 break;
-            case ACTIVE_AMULETS:
+            /*case ACTIVE_AMULETS:
                 id = db.insert(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         null,
                         values);
                 returnUri = NotATryContract.ActiveAmuletsEntry.CONTENT_URI;
-                break;
-            case SPELLS_IN_AMULET:
+                break;*/
+            /*case SPELLS_IN_AMULET:
                 id = db.insert(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         null,
                         values);
                 returnUri = NotATryContract.SpellsInAmuletEntry.CONTENT_URI;
-                break;
+                break;*/
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -358,7 +358,7 @@ public class NotATryContentProvider extends ContentProvider {
                         mSelection,
                         mSelectionArgs);
                 break;
-            case ACTIVE_AMULETS:
+            /*case ACTIVE_AMULETS:
                 deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
@@ -371,20 +371,20 @@ public class NotATryContentProvider extends ContentProvider {
                 deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         mSelection,
                         mSelectionArgs);
-                break;
-                        .appendPath("amulet").appendPath(amuletId).build();
+                break;*/
+                        /*.appendPath("amulet").appendPath(amuletId).build();
                 delete(spellsUri, null, null);
 
                 deletedRows = db.delete(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         mSelection,
                         mSelectionArgs);
-                break;
-            case SPELLS_IN_AMULET:
+                break;*/
+            /*case SPELLS_IN_AMULET:
                 deletedRows = db.delete(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         selection,
                         selectionArgs);
-                break;
-            case SPELLS_IN_AMULET_WITH_ID:
+                break;*/
+            /*case SPELLS_IN_AMULET_WITH_ID:
                 String spellId = uri.getPathSegments().get(1);
                 mSelection = NotATryContract.SpellsInAmuletEntry._ID + "=?";
                 mSelectionArgs = new String[]{spellId};
@@ -401,7 +401,7 @@ public class NotATryContentProvider extends ContentProvider {
                 deletedRows = db.delete(NotATryContract.SpellsInAmuletEntry.TABLE_NAME,
                         mSelection,
                         mSelectionArgs);
-                break;
+                break;*/
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -441,7 +441,7 @@ public class NotATryContentProvider extends ContentProvider {
                         mSelection,
                         mSelectionArgs);
                 break;
-            case ACTIVE_AMULETS:
+            /*case ACTIVE_AMULETS:
                 updatedRows = db.update(NotATryContract.ActiveAmuletsEntry.TABLE_NAME,
                         values,
                         selection,
@@ -456,7 +456,7 @@ public class NotATryContentProvider extends ContentProvider {
                         values,
                         mSelection,
                         mSelectionArgs);
-                break;
+                break;*/
                 default:
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
         }

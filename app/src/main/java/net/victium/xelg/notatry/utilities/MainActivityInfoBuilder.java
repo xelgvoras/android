@@ -28,9 +28,12 @@ public class MainActivityInfoBuilder {
         int magicPowerLimit = PreferenceUtilities.getMagicPowerLimit(context);
         info.magicPower = String.format("Резерв силы: %s/%s", currentMagicPower, magicPowerLimit);
 
-        int magicDefence = database.shieldDao().getMagicDefence().getValue();
+        /*int magicDefence = database.shieldDao().getMagicDefence().getValue();
         int physicDefence = database.shieldDao().getPhysicDefence().getValue();
-        int mentalDefence = database.shieldDao().getMentalDefence().getValue();
+        int mentalDefence = database.shieldDao().getMentalDefence().getValue();*/
+        int magicDefence = 10;
+        int physicDefence = 15;
+        int mentalDefence = 5;
         int naturalDefence = PreferenceUtilities.getNaturalDefence(context);
         String naturalDefenceString = "";
         if (PreferenceUtilities.isCharacterVop(context)) {
@@ -46,7 +49,19 @@ public class MainActivityInfoBuilder {
                 "\t\t\t Врожденных ментальных щитов: %s(%s)",
                 magicDefence, physicDefence, mentalDefence, naturalDefenceString,
                 currentNaturalMentalDefence, naturalMentalDefence);
-        return null;
+
+        int duskLimit = PreferenceUtilities.getDuskLimit(context);
+        int personalShieldLimit = PreferenceUtilities.getPersonalShieldLimit(context);
+        int amuletLimit = PreferenceUtilities.getAmuletLimit(context);
+        int amuletInSeries = PreferenceUtilities.getAmuletInSeries(context);
+        int reactionsNumber = PreferenceUtilities.getReactionsNumber(context);
+        info.characterDetail = String.format("Максимальный слой сумрака: %s \n" +
+                "Максимальное количество персональных щитов: %s \n" +
+                "Максимальное количество авто-амулетов: %s(%s) \n" +
+                "Количество реакций за бой: %s",
+                duskLimit, personalShieldLimit, amuletLimit, amuletInSeries, reactionsNumber);
+
+        return info;
     }
 
     @NonNull

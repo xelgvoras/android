@@ -1,5 +1,6 @@
 package net.victium.xelg.notatry;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -14,6 +15,15 @@ import net.victium.xelg.notatry.utilities.PreferenceUtilities;
 public class SettingsFragment extends PreferenceFragmentCompat implements
         SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceChangeListener {
+
+    private String mVampire;
+    private String mWerewolf;
+    private String mWitch;
+    private String mWitcher;
+    private String mCharmer;
+    private String mSorcerer;
+
+    private Context mContext;
 
     private void setPreferenceSummary(Preference preference, Object value) {
         String stringValue = String.valueOf(value);
@@ -33,6 +43,14 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.pref_general);
+
+        mContext = getContext();
+        mVampire = mContext.getString(R.string.pref_type_value_vampire);
+        mWerewolf = mContext.getString(R.string.pref_type_value_werewolf);
+        mWitch = mContext.getString(R.string.pref_type_value_witch);
+        mWitcher = mContext.getString(R.string.pref_type_value_witcher);
+        mCharmer = mContext.getString(R.string.pref_type_value_charmer);
+        mSorcerer = mContext.getString(R.string.pref_type_value_sorcerer);
 
         SharedPreferences sharedPreferences = getPreferenceScreen().getSharedPreferences();
         PreferenceScreen preferenceScreen = getPreferenceScreen();
@@ -74,6 +92,24 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 
         if (null != preference) {
             setPreferenceSummary(preference, sharedPreferences.getString(key, ""));
+        }
+
+        if (key.equals(getString(R.string.pref_level_key))) {
+            setupPersonalShieldLimit(mContext);
+            setupAmuletLimit(mContext);
+            setupAmuletInSeries(mContext);
+            setupReactionNumber(mContext);
+            setupNaturalMentalDefence(mContext);
+        } else if (key.equals(getString(R.string.pref_type_key))) {
+            setupReactionNumber(mContext);
+            setupNaturalDefence(mContext);
+            setupAmuletLimit(mContext);
+            setupAmuletInSeries(mContext);
+        } else if (key.equals(getString(R.string.pref_power_key))) {
+            int power = Integer.parseInt(sharedPreferences.getString(key, ""));
+            PreferenceUtilities.setCurrentMagicPower(mContext, power);
+            setupNaturalDefence(mContext);
+            setupDuskLimit(mContext);
         }
     }
 
@@ -154,22 +190,140 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
                 errorMessage.show();
                 return false;
             }
-        } else if (prefKey.equals(levelKey)) {
-            int newLevel = (int) newValue;
-            int shieldLimit;
-            if (newLevel >= 6) {
-                shieldLimit = 1;
-            } else if (newLevel >= 4) {
-                shieldLimit = 2;
-            } else if (newLevel >= 2) {
-                shieldLimit = 3;
-            } else {
-                shieldLimit = 4;
-            }
-
-            PreferenceUtilities.setPersonalShieldLimit(getActivity(), shieldLimit);
         }
 
         return true;
+    }
+
+    private void setupPersonalShieldLimit(Context context) {
+
+        int level = PreferenceUtilities.getCharacterLevel(context);
+        int limit;
+
+        if (level >= 6) {
+            limit = 1;
+        } else if (level >= 4) {
+            limit = 2;
+        } else if (level >= 2) {
+            limit = 3;
+        } else {
+            limit = 4;
+        }
+
+        PreferenceUtilities.setPersonalShieldLimit(context, limit);
+    }
+
+    private void setupAmuletLimit(Context context) {
+
+        int level = PreferenceUtilities.getCharacterLevel(context);
+        String type = PreferenceUtilities.getCharacterType(context);
+        int limit;
+
+        if (level >= 5) {
+            limit = 1;
+        } else if (level >= 3) {
+            limit = 2;
+        } else if (level >= 1) {
+            limit = 3;
+        } else {
+            limit = 4;
+        }
+
+        if (type.equals(mVampire) || type.equals(mWerewolf)) {
+            limit = 0;
+        } else if (type.equals(mWitch) || type.equals(mWitcher) || type.equals(mCharmer) || type.equals(mSorcerer)) {
+            limit++;
+        }
+
+        PreferenceUtilities.setAmuletLimit(context, limit);
+    }
+
+    private void setupAmuletInSeries(Context context) {
+        int level = PreferenceUtilities.getCharacterLevel(context);
+        String type = PreferenceUtilities.getCharacterType(context);
+        int limit;
+
+        if (level >= 3) {
+            limit = 1;
+        } else if (level >= 1) {
+            limit = 2;
+        } else {
+            limit = 3;
+        }
+
+        if (type.equals(mVampire) || type.equals(mWerewolf)) {
+            limit = 0;
+        } else if (type.equals(mWitch) || type.equals(mWitcher) || type.equals(mCharmer) || type.equals(mSorcerer)) {
+            limit++;
+        }
+
+        PreferenceUtilities.setAmuletInSeries(context, limit);
+    }
+
+    private void setupReactionNumber(Context context) {
+
+        int level = PreferenceUtilities.getCharacterLevel(context);
+        int limit = 1;
+
+        if (PreferenceUtilities.isCharacterVop(context)) {
+
+            if (level >= 5) {
+                limit = 2;
+            } else if (level >= 3) {
+                limit = 3;
+            } else if (level >= 1) {
+                limit = 4;
+            } else {
+                limit = 5;
+            }
+        }
+
+        PreferenceUtilities.setReactionsNumber(context, limit);
+    }
+
+    private void setupNaturalMentalDefence(Context context) {
+
+        int level = PreferenceUtilities.getCharacterLevel(context);
+        int defence;
+
+        if (level >= 6) {
+            defence = 0;
+        } else if (level >= 3) {
+            defence = 1;
+        } else if (level >= 1) {
+            defence = 2;
+        } else {
+            defence = 3;
+        }
+
+        PreferenceUtilities.setNaturalMentalDefence(context, defence);
+        PreferenceUtilities.setCurrentNaturalMentalDefence(context, defence);
+    }
+
+    private void setupNaturalDefence(Context context) {
+
+        int defence = 0;
+
+        if (PreferenceUtilities.isCharacterVop(context)) {
+            defence = PreferenceUtilities.getCurrentMagicPower(context);
+        }
+
+        PreferenceUtilities.setNaturalDefence(context, defence);
+    }
+
+    private void setupDuskLimit(Context context) {
+
+        int limit = 1;
+        int power = PreferenceUtilities.getMagicPowerLimit(context);
+
+        if (power > 512) {
+            limit = 6;
+        } else if (power > 128) {
+            limit = 3;
+        } else if (power > 32) {
+            limit = 2;
+        }
+
+        PreferenceUtilities.setDuskLimit(context, limit);
     }
 }

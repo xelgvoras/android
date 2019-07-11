@@ -8,6 +8,7 @@ import androidx.preference.PreferenceManager;
 import net.victium.xelg.notatry.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class PreferenceUtilities {
 
@@ -16,12 +17,22 @@ public final class PreferenceUtilities {
     public static final String KEY_NATURAL_DEFENCE = "natural-defence";
     public static final String KEY_NATURAL_MENTAL_DEFENCE = "natural-mental-defence";
     public static final String KEY_CURRENT_NATURAL_MENTAL_DEFENCE = "current-natural-mental-defence";
+    public static final String KEY_DUSK_LIMIT = "dusk-limit";
+    public static final String KEY_AMULET_LIMIT = "amulet-limit";
+    public static final String KEY_AMULET_IN_SERIES = "amulet-in-series";
+    public static final String KEY_REACTIONS_NUMBER = "reactions-number";
+    public static final String KEY_BATTLE_FORM = "battle-form";
 
     private static final int DEFAULT_SHIELD_LIMIT = 1;
     private static final int DEFAULT_CURRENT_MAGIC_POWER = 8;
     private static final int DEFAULT_NATURAL_DEFENCE = 0;
     private static final int DEFAULT_NATURAL_MENTAL_DEFENCE = 1;
     private static final int DEFAULT_CURRENT_NATURAL_MENTAL_DEFENCE = 1;
+    private static final int DEFAULT_DUSK_LIMIT = 1;
+    private static final int DEFAULT_AMULET_LIMIT = 1;
+    private static final int DEFAULT_AMULET_IN_SERIES = 1;
+    private static final int DEFAULT_REACTIONS_NUMBER = 1;
+    private static final String DEFAULT_BATTLE_FORM = "человек";
 
     public static int getPersonalShieldLimit(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -43,6 +54,16 @@ public final class PreferenceUtilities {
                 context.getString(R.string.pref_full_name_key),
                 context.getString(R.string.pref_full_name_default)
         );
+    }
+
+    synchronized public static void setCharacterName(Context context, String s) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(
+                context.getString(R.string.pref_full_name_key),
+                s
+        );
+        editor.apply();
     }
 
     public static int getCharacterAge(Context context) {
@@ -87,10 +108,10 @@ public final class PreferenceUtilities {
         return prefs.getInt(KEY_CURRENT_MAGIC_POWER, DEFAULT_CURRENT_MAGIC_POWER);
     }
 
-    synchronized public static void setCurrentMagicPower(Context context, int magicPower) {
+    synchronized public static void setCurrentMagicPower(Context context, int power) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(KEY_CURRENT_MAGIC_POWER, magicPower);
+        editor.putInt(KEY_CURRENT_MAGIC_POWER, power);
         editor.apply();
     }
 
@@ -155,6 +176,71 @@ public final class PreferenceUtilities {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(KEY_CURRENT_NATURAL_MENTAL_DEFENCE, defence);
+        editor.apply();
+    }
+
+    public static int getDuskLimit(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_DUSK_LIMIT, DEFAULT_DUSK_LIMIT);
+    }
+
+    synchronized public static void setDuskLimit(Context context, int limit) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_DUSK_LIMIT, limit);
+        editor.apply();
+    }
+
+    public static int getAmuletLimit(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_AMULET_LIMIT, DEFAULT_AMULET_LIMIT);
+    }
+
+    synchronized public static void setAmuletLimit(Context context, int limit) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_AMULET_LIMIT, limit);
+        editor.apply();
+    }
+
+    public static int getAmuletInSeries(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_AMULET_IN_SERIES, DEFAULT_AMULET_IN_SERIES);
+    }
+
+    synchronized public static void setAmuletInSeries(Context context, int limit) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_AMULET_IN_SERIES, limit);
+        editor.apply();
+    }
+
+    public static int getReactionsNumber(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_REACTIONS_NUMBER, DEFAULT_REACTIONS_NUMBER);
+    }
+
+    synchronized public static void setReactionsNumber(Context context, int limit) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_REACTIONS_NUMBER, limit);
+        editor.apply();
+    }
+
+    public static String getBattleForm(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getString(KEY_BATTLE_FORM, DEFAULT_BATTLE_FORM);
+    }
+
+    synchronized public static void setBattleForm(Context context, String s) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_BATTLE_FORM, s);
         editor.apply();
     }
 }

@@ -63,20 +63,20 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(SQL_CREATE_BATTLE_JOURNAL_TABLE);
 
-        final String SQL_CREATE_ACTIVE_AMULETS_TABLE = "CREATE TABLE " + ActiveAmuletsEntry.TABLE_NAME + " (" +
+        /*final String SQL_CREATE_ACTIVE_AMULETS_TABLE = "CREATE TABLE " + ActiveAmuletsEntry.TABLE_NAME + " (" +
                 ActiveAmuletsEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 ActiveAmuletsEntry.COLUMN_AMULET_NAME + " TEXT NOT NULL," +
                 ActiveAmuletsEntry.COLUMN_AMULET_TYPE + " INTEGER NOT NULL," +
                 ActiveAmuletsEntry.COLUMN_AMULET_TRIGGER + " INTEGER NOT NULL," +
                 ActiveAmuletsEntry.COLUMN_SPELL_NAME + " TEXT NOT NULL," +
                 ActiveAmuletsEntry.COLUMN_SPELL_COST + " INTEGER NOT NULL," +
-                ActiveAmuletsEntry.COLUMN_SERIES_NUMBER + " INTEGER NOT NULL);";
+                ActiveAmuletsEntry.COLUMN_SERIES_NUMBER + " INTEGER NOT NULL);";*/
 
-        sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_AMULETS_TABLE);
-                SpellsInAmuletEntry.COLUMN_SPELL_NAME + " TEXT NOT NULL," +
-                SpellsInAmuletEntry.COLUMN_COST + " INTEGER NOT NULL);";
-
-        sqLiteDatabase.execSQL(SQL_CREATE_SPELLS_IN_AMULET_TABLE);
+//        sqLiteDatabase.execSQL(SQL_CREATE_ACTIVE_AMULETS_TABLE);
+//                SpellsInAmuletEntry.COLUMN_SPELL_NAME + " TEXT NOT NULL," +
+//                SpellsInAmuletEntry.COLUMN_COST + " INTEGER NOT NULL);";
+//
+//        sqLiteDatabase.execSQL(SQL_CREATE_SPELLS_IN_AMULET_TABLE);
     }
 
     @Override
@@ -86,8 +86,8 @@ public class NotATryDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DuskLayersSummaryEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveShieldsEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + BattleJournalEntry.TABLE_NAME);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveAmuletsEntry.TABLE_NAME);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SpellsInAmuletEntry.TABLE_NAME);
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ActiveAmuletsEntry.TABLE_NAME);
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SpellsInAmuletEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

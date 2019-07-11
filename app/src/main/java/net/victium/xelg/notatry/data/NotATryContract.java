@@ -75,7 +75,7 @@ public class NotATryContract {
         public static final String COLUMN_SYSTEM_MESSAGE = "systemMessage";
     }
 
-    public static final class ActiveAmuletsEntry implements BaseColumns {
+    /*public static final class ActiveAmuletsEntry implements BaseColumns {
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(ACTIVE_AMULETS_PATH).build();
@@ -94,5 +94,5 @@ public class NotATryContract {
         public static final String COLUMN_AMULET_ID = "amuletId";
         public static final String COLUMN_SPELL_NAME = "spellName";
         public static final String COLUMN_COST = "cost";
-    }
+    }*/
 }

@@ -61,7 +61,7 @@ public class ShieldEntry {
 
         String target = personalShield ? "перс." : "груп.";
 
-        return String.format("%s (%s - %s, у.е.: %s-%s", name, target, type, minCost, maxCost);
+        return String.format("%s (%s - %s, у.е.: %s-%s)", name, target, type, minCost, maxCost);
     }
 
     public int getId() {

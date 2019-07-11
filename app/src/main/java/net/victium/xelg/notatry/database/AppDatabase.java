@@ -8,7 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-@Database(entities = {ShieldEntry.class}, version = 1, exportSchema = false)
+@Database(entities = {ShieldEntry.class,DuskLayerEntry.class}, version = 2, exportSchema = false)
 @TypeConverters(ShieldTypeConverter.class)
 public abstract class AppDatabase extends RoomDatabase {
 

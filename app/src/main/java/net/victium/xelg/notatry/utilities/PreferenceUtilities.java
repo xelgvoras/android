@@ -14,6 +14,9 @@ public final class PreferenceUtilities {
 
     public static final String KEY_PERSONAL_SHIELD_LIMIT = "personal-shield-limit";
     public static final String KEY_CURRENT_MAGIC_POWER = "current-magic-power";
+    public static final String KEY_MAGIC_DEFENCE = "magic-defence";
+    public static final String KEY_PHYSIC_DEFENCE = "physic-defence";
+    public static final String KEY_MENTAL_DEFENCE = "mental-defence";
     public static final String KEY_NATURAL_DEFENCE = "natural-defence";
     public static final String KEY_NATURAL_MENTAL_DEFENCE = "natural-mental-defence";
     public static final String KEY_CURRENT_NATURAL_MENTAL_DEFENCE = "current-natural-mental-defence";
@@ -25,6 +28,9 @@ public final class PreferenceUtilities {
 
     private static final int DEFAULT_SHIELD_LIMIT = 1;
     private static final int DEFAULT_CURRENT_MAGIC_POWER = 8;
+    private static final int DEFAULT_MAGIC_DEFENCE = 0;
+    private static final int DEFAULT_PHYSIC_DEFENCE = 0;
+    private static final int DEFAULT_MENTAL_DEFENCE = 0;
     private static final int DEFAULT_NATURAL_DEFENCE = 0;
     private static final int DEFAULT_NATURAL_MENTAL_DEFENCE = 1;
     private static final int DEFAULT_CURRENT_NATURAL_MENTAL_DEFENCE = 1;
@@ -122,6 +128,45 @@ public final class PreferenceUtilities {
                 context.getString(R.string.pref_power_key),
                 context.getString(R.string.pref_power_default)
         ));
+    }
+
+    public static int getMagicDefence(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_MAGIC_DEFENCE, DEFAULT_MAGIC_DEFENCE);
+    }
+
+    synchronized public static void setMagicDefence(Context context, int defence) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_MAGIC_DEFENCE, defence);
+        editor.apply();
+    }
+
+    public static int getPhysicDefence(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_PHYSIC_DEFENCE, DEFAULT_PHYSIC_DEFENCE);
+    }
+
+    synchronized public static void setPhysicDefence(Context context, int defence) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_PHYSIC_DEFENCE, defence);
+        editor.apply();
+    }
+
+    public static int getMentalDefence(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        return prefs.getInt(KEY_MENTAL_DEFENCE, DEFAULT_MENTAL_DEFENCE);
+    }
+
+    synchronized public static void setMentalDefence(Context context, int defence) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_MENTAL_DEFENCE, defence);
+        editor.apply();
     }
 
     public static int getNaturalDefence(Context context) {

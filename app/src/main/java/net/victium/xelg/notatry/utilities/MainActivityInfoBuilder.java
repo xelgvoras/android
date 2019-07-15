@@ -29,12 +29,9 @@ public class MainActivityInfoBuilder {
         int magicPowerLimit = PreferenceUtilities.getMagicPowerLimit(context);
         info.magicPower = String.format("Резерв силы: %s/%s", currentMagicPower, magicPowerLimit);
 
-        /*int magicDefence = database.shieldDao().getMagicDefence().getValue();
-        int physicDefence = database.shieldDao().getPhysicDefence().getValue();
-        int mentalDefence = database.shieldDao().getMentalDefence().getValue();*/
-        int magicDefence = 10;
-        int physicDefence = 15;
-        int mentalDefence = 5;
+        /*int magicDefence = PreferenceUtilities.getMagicDefence(context);
+        int physicDefence = PreferenceUtilities.getPhysicDefence(context);
+        int mentalDefence = PreferenceUtilities.getMentalDefence(context);
         int naturalDefence = PreferenceUtilities.getNaturalDefence(context);
         String naturalDefenceString = "";
         if (PreferenceUtilities.isCharacterVop(context)) {
@@ -49,7 +46,8 @@ public class MainActivityInfoBuilder {
                 "%s \n" +
                 "\t\t\t Врожденных ментальных щитов: %s(%s)",
                 magicDefence, physicDefence, mentalDefence, naturalDefenceString,
-                currentNaturalMentalDefence, naturalMentalDefence);
+                currentNaturalMentalDefence, naturalMentalDefence);*/
+        setupDefence(context, info);
 
         int duskLimit = PreferenceUtilities.getDuskLimit(context);
         int personalShieldLimit = PreferenceUtilities.getPersonalShieldLimit(context);
@@ -79,6 +77,27 @@ public class MainActivityInfoBuilder {
                 duskLimit, personalShieldLimit, amuletLimit, amuletInSeries, reactionsNumber);
 
         return info;
+    }
+
+    public static void setupDefence(Context context, MainActivityInfo info) {
+        int magicDefence = PreferenceUtilities.getMagicDefence(context);
+        int physicDefence = PreferenceUtilities.getPhysicDefence(context);
+        int mentalDefence = PreferenceUtilities.getMentalDefence(context);
+        int naturalDefence = PreferenceUtilities.getNaturalDefence(context);
+        String naturalDefenceString = "";
+        if (PreferenceUtilities.isCharacterVop(context)) {
+            naturalDefenceString = String.format("\n\t\t\t Естественная защита: %s", naturalDefence);
+        }
+        int currentNaturalMentalDefence = PreferenceUtilities.getCurrentNaturalMentalDefence(context);
+        int naturalMentalDefence = PreferenceUtilities.getNaturalMentalDefence(context);
+        info.defence = String.format("Щиты \n" +
+                        "\t\t\t Магическая защита: %s \n" +
+                        "\t\t\t Физическая защита: %s \n" +
+                        "\t\t\t Ментальная защита: %s" +
+                        "%s \n" +
+                        "\t\t\t Врожденных ментальных щитов: %s(%s)",
+                magicDefence, physicDefence, mentalDefence, naturalDefenceString,
+                currentNaturalMentalDefence, naturalMentalDefence);
     }
 
     @NonNull

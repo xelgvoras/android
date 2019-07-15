@@ -13,17 +13,22 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
 import net.victium.xelg.notatry.databinding.ActivityMainBinding;
 import net.victium.xelg.notatry.utilities.MainActivityInfoBuilder;
 import net.victium.xelg.notatry.utilities.PreferenceUtilities;
+import net.victium.xelg.notatry.viewModel.DefenceViewModel;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     ActivityMainBinding mBinding;
+    MainActivityInfo mInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,12 +36,15 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        MainActivityInfo info = MainActivityInfoBuilder.createMainActivityInfo(this);
-        displayMainInfo(info);
+        mInfo = MainActivityInfoBuilder.createMainActivityInfo(this);
+        displayMainInfo(mInfo);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        mBinding.rvDuskLayers.setAdapter(new DuskLayersAdapter(this));
+
+        mBinding.bShields.setOnClickListener(this);
+        mBinding.bBattle.setOnClickListener(this);
+        mBinding.bTravel.setOnClickListener(this);
     }
 
     private void displayMainInfo(MainActivityInfo info) {
@@ -146,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        MainActivityInfo info = MainActivityInfoBuilder.createMainActivityInfo(this);
-        displayMainInfo(info);
+        mInfo = MainActivityInfoBuilder.createMainActivityInfo(this);
+        displayMainInfo(mInfo);
     }
 }

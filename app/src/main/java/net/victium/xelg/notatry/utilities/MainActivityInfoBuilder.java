@@ -4,6 +4,7 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
+import androidx.collection.ArrayMap;
 
 import net.victium.xelg.notatry.MainActivityInfo;
 import net.victium.xelg.notatry.database.AppDatabase;
@@ -55,7 +56,23 @@ public class MainActivityInfoBuilder {
         int amuletLimit = PreferenceUtilities.getAmuletLimit(context);
         int amuletInSeries = PreferenceUtilities.getAmuletInSeries(context);
         int reactionsNumber = PreferenceUtilities.getReactionsNumber(context);
+        ArrayMap<String, Integer> duskSummary = PreferenceUtilities.getDuskSummary(context);
+
+        StringBuilder builder = new StringBuilder();
+        int limit;
+        String limitString;
+        for (int i = 1; i<7; i++) {
+            limit = duskSummary.get("layout-"+i);
+            if (limit > 99) {
+                limitString = "бесконечно";
+            } else {
+                limitString = String.valueOf(limit);
+            }
+            builder.append("\t\t\t Ходов на ").append(i).append(" слое: ").append(limitString).append("\n");
+        }
+
         info.characterDetail = String.format("Максимальный слой сумрака: %s \n" +
+                builder.toString() +
                 "Максимальное количество персональных щитов: %s \n" +
                 "Максимальное количество авто-амулетов: %s(%s) \n" +
                 "Количество реакций за бой: %s",

@@ -3,12 +3,12 @@ package net.victium.xelg.notatry.utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.collection.ArrayMap;
 import androidx.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public final class PreferenceUtilities {
 
@@ -241,6 +241,32 @@ public final class PreferenceUtilities {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_BATTLE_FORM, s);
+        editor.apply();
+    }
+
+    public static ArrayMap<String, Integer> getDuskSummary(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        ArrayMap<String, Integer> duskSummary = new ArrayMap<>();
+
+        for (int i=1; i<7; i++) {
+            String key = "layout-" + i;
+            int rounds = prefs.getInt(key, 0);
+            duskSummary.put(key, rounds);
+        }
+
+        return duskSummary;
+    }
+
+    synchronized public static void setDuskSummary(Context context, ArrayMap<String, Integer> summary) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        for (int i=0; i<summary.size(); i++) {
+            String key = summary.keyAt(i);
+            int value = summary.valueAt(i);
+            editor.putInt(key,value);
+        }
         editor.apply();
     }
 }

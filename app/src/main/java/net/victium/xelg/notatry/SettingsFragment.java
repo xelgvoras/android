@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.collection.ArrayMap;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -110,6 +111,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
             PreferenceUtilities.setCurrentMagicPower(mContext, power);
             setupNaturalDefence(mContext);
             setupDuskLimit(mContext);
+            setupDuskSummary(mContext);
         }
     }
 
@@ -317,7 +319,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         int power = PreferenceUtilities.getMagicPowerLimit(context);
 
         if (power > 512) {
-            limit = 6;
+            limit = 4;
         } else if (power > 128) {
             limit = 3;
         } else if (power > 32) {
@@ -325,5 +327,41 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
         }
 
         PreferenceUtilities.setDuskLimit(context, limit);
+    }
+
+    private void setupDuskSummary(Context context) {
+
+        int power = PreferenceUtilities.getMagicPowerLimit(context);
+        int roundsLow;
+        try {
+            roundsLow = (int) Math.ceil((10 * power) / (32 - power));
+            if (roundsLow < 0) roundsLow = 100;
+        } catch (ArithmeticException e) {
+            roundsLow = 100;
+        }
+        int roundsMedium;
+        try {
+            roundsMedium = (int) Math.ceil((10 * power) / (128 - power));
+            if (roundsMedium < 0) roundsMedium = 100;
+        } catch (ArithmeticException e) {
+            roundsMedium = 100;
+        }
+        int roundsHeight;
+        try {
+            roundsHeight = (int) Math.ceil((10 * power) / (512 - power));
+            if (roundsHeight < 0) roundsHeight = 100;
+        } catch (ArithmeticException e) {
+            roundsHeight = 100;
+        }
+
+        ArrayMap<String, Integer> duskSummary = new ArrayMap<>();
+        duskSummary.put("layout-1", roundsLow);
+        duskSummary.put("layout-2", roundsMedium);
+        duskSummary.put("layout-3", roundsHeight);
+        duskSummary.put("layout-4", roundsHeight);
+        duskSummary.put("layout-5", roundsMedium);
+        duskSummary.put("layout-6", roundsLow);
+
+        PreferenceUtilities.setDuskSummary(context, duskSummary);
     }
 }

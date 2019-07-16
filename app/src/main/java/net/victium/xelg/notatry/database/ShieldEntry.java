@@ -159,4 +159,16 @@ public class ShieldEntry {
     public void setRange(int range) {
         this.range = range;
     }
+
+    public int getMagicDefence() {
+        return magicDefenceMultiplier * power;
+    }
+
+    public int getPhysicDefence() {
+        return physicDefenceMultiplier * power;
+    }
+
+    public int getMentalDefence() {
+        return hasMentalDefence ? 1 : 0;
+    }
 }

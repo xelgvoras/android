@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,10 +19,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
+import net.victium.xelg.notatry.database.ShieldEntry;
 import net.victium.xelg.notatry.databinding.ActivityMainBinding;
 import net.victium.xelg.notatry.utilities.MainActivityInfoBuilder;
 import net.victium.xelg.notatry.utilities.PreferenceUtilities;
 import net.victium.xelg.notatry.viewModel.DefenceViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements
         mBinding.bShields.setOnClickListener(this);
         mBinding.bBattle.setOnClickListener(this);
         mBinding.bTravel.setOnClickListener(this);
+
+        setupDefenceViewModel();
     }
 
     private void displayMainInfo(MainActivityInfo info) {
@@ -76,6 +82,18 @@ public class MainActivity extends AppCompatActivity implements
         params.height = 0;
         mBinding.tvCharacterBattleForm.setVisibility(View.INVISIBLE);
         mBinding.tvCharacterBattleForm.setLayoutParams(params);
+    }
+
+    private void setupDefenceViewModel() {
+        DefenceViewModel viewModel = ViewModelProviders.of(this).get(DefenceViewModel.class);
+        viewModel.getDefence().observe(this, new Observer<List<ShieldEntry>>() {
+            @Override
+            public void onChanged(List<ShieldEntry> shieldEntries) {
+                PreferenceUtilities.setDefence(getApplicationContext(), shieldEntries);
+                MainActivityInfoBuilder.setupDefence(getApplicationContext(), mInfo);
+                displayMainInfo(mInfo);
+            }
+        });
     }
 
     @Override

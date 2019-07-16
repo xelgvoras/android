@@ -7,8 +7,10 @@ import androidx.collection.ArrayMap;
 import androidx.preference.PreferenceManager;
 
 import net.victium.xelg.notatry.R;
+import net.victium.xelg.notatry.database.ShieldEntry;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class PreferenceUtilities {
 
@@ -154,6 +156,27 @@ public final class PreferenceUtilities {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(KEY_PHYSIC_DEFENCE, defence);
         editor.apply();
+    }
+
+    synchronized public static void setDefence(Context context, List<ShieldEntry> shields) {
+        int magicDefence = 0;
+        int physicDefence = 0;
+        int mentalDefence = 0;
+
+        if (null != shields || shields.size() != 0) {
+            ArrayList<ShieldEntry> arrayList = new ArrayList<>(shields);
+            ShieldEntry shieldEntry;
+            for (int i = 0; i < arrayList.size(); i++) {
+                shieldEntry = arrayList.get(i);
+                magicDefence = magicDefence + shieldEntry.getMagicDefence();
+                physicDefence = physicDefence + shieldEntry.getPhysicDefence();
+                mentalDefence = mentalDefence + shieldEntry.getMentalDefence();
+            }
+        }
+
+        setMagicDefence(context, magicDefence);
+        setPhysicDefence(context, physicDefence);
+        setMentalDefence(context, mentalDefence);
     }
 
     public static int getMentalDefence(Context context) {

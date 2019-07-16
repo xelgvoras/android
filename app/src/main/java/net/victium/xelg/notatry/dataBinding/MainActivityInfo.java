@@ -1,4 +1,4 @@
-package net.victium.xelg.notatry;
+package net.victium.xelg.notatry.dataBinding;
 
 public class MainActivityInfo {
 

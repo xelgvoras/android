@@ -1,165 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <FrameLayout
+
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:paddingLeft="1dp"
-            android:paddingRight="1dp"
-            android:background="#000">
+            android:orientation="vertical">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_marginBottom="2dp"
-                android:layout_weight="10"
-                android:background="#fff"
-                android:gravity="center"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:text="@string/table_column_name" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_marginBottom="2dp"
-                android:layout_weight="3"
-                android:background="#fff"
-                android:gravity="center"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:text="@string/table_column_cost" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_marginBottom="2dp"
-                android:layout_weight="3"
-                android:background="#fff"
-                android:gravity="center"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:text="@string/table_column_magic_defence" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_marginBottom="2dp"
-                android:layout_weight="3"
-                android:background="#fff"
-                android:gravity="center"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:text="@string/table_column_physic_defence" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_marginBottom="2dp"
-                android:layout_weight="3"
-                android:background="#fff"
-                android:gravity="center"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:text="@string/table_column_mental_defence" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_marginBottom="2dp"
-                android:layout_weight="3"
-                android:background="#fff"
-                android:gravity="center"
-                style="@style/Base.TextAppearance.AppCompat.Small"
-                android:text="@string/table_column_range" />
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_active_shields"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_current_power"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:padding="8dp"
-                style="@style/Base.TextAppearance.AppCompat.Title" />
+                android:orientation="horizontal"
+                android:paddingTop="1dp"
+                android:paddingBottom="1dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="#000">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_weight="10"
+                    android:background="#fff"
+                    android:gravity="center"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:text="@string/table_column_name" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_weight="3"
+                    android:background="#fff"
+                    android:gravity="center"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:text="@string/table_column_cost" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_weight="3"
+                    android:background="#fff"
+                    android:gravity="center"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:text="@string/table_column_magic_defence" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_weight="3"
+                    android:background="#fff"
+                    android:gravity="center"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:text="@string/table_column_physic_defence" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginEnd="1dp"
+                    android:layout_weight="3"
+                    android:background="#fff"
+                    android:gravity="center"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:text="@string/table_column_mental_defence" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_weight="3"
+                    android:background="#fff"
+                    android:gravity="center"
+                    style="@style/Base.TextAppearance.AppCompat.Small"
+                    android:text="@string/table_column_range" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_active_shields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_current_power"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:padding="8dp"
+                    style="@style/Base.TextAppearance.AppCompat.Title"
+                    tools:text="Резерв силы: 8/8"/>
+
+                <TextView
+                    android:id="@+id/tv_battle_form"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    style="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/materialBlue"
+                    android:gravity="center_vertical|end"
+                    android:visibility="invisible"
+                    tools:text="человек"/>
+
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/tv_character_battle_form"
+                android:id="@+id/tv_natural_defence"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                style="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textColor="@color/materialBlue"
-                android:gravity="center_vertical|end"
-                android:visibility="invisible" />
+                android:padding="8dp"
+                android:visibility="invisible"
+                style="@style/Base.TextAppearance.AppCompat.Title"
+                tools:text="Естественная защита: 8"/>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
+
+            <!-- COMPLETED(10) Отображать только цифровую клавиатуру -->
+            <!-- В рамках xml уже не актуально, редактирование резерва реализовано через диалоговые окна -->
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_natural_defence"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:padding="8dp"
-            android:visibility="invisible"
-            style="@style/Base.TextAppearance.AppCompat.Title" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_add_shield"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:tint="@android:color/white"
+            android:onClick="onClickAddShield"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <!-- COMPLETED(10) Отображать только цифровую клавиатуру -->
-        <!-- В рамках xml уже не актуально, редактирование резерва реализовано через диалоговые окна -->
-    </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_shield"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        app:srcCompat="@android:drawable/ic_input_add"
-        android:tint="@android:color/white"
-        android:onClick="onClickAddShield"/>
-
-</FrameLayout>
+    </FrameLayout>
+</layout>

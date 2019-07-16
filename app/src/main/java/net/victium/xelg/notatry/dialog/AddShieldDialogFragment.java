@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,23 +20,29 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import net.victium.xelg.notatry.BattleActivity;
-import net.victium.xelg.notatry.liveData.AddShieldViewModel;
+import net.victium.xelg.notatry.viewModel.AddShieldViewModel;
 import net.victium.xelg.notatry.R;
-import net.victium.xelg.notatry.ShieldsActivity;
 import net.victium.xelg.notatry.adapter.ShieldArrayAdapter;
-import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.database.AppDatabase;
 import net.victium.xelg.notatry.database.ShieldEntry;
 import net.victium.xelg.notatry.database.ShieldEntryBuilder;
 import net.victium.xelg.notatry.utilities.PreferenceUtilities;
+import net.victium.xelg.notatry.viewModel.AddShieldViewModelFactory;
 
 public class AddShieldDialogFragment extends DialogFragment implements AdapterView.OnItemSelectedListener {
+
+    public static final String EXTRA_SHIELD_ID = "extraShieldId";
+    public static final String INSTANCE_SHIELD_ID = "instanceShieldId";
+
+    private static final int DEFAULT_SHIELD_ID = -1;
 
     private EditText mShieldCost;
     private Spinner mShieldList;
 
-    private int mShieldPowerLimit;
+    private int mShieldId = DEFAULT_SHIELD_ID;
+    private String positiveButtonText = "Повесить щит";
+
+    /*private int mShieldPowerLimit;*/
     private Activity mActivity;
 
     private AppDatabase mDb;
@@ -67,13 +74,37 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         mActivity = getActivity();
         mDb = AppDatabase.getInstance(mActivity);
 
-        mViewModel = new AddShieldViewModel(mDb);
+        if (savedInstanceState != null && savedInstanceState.containsKey(INSTANCE_SHIELD_ID)) {
+            mShieldId = savedInstanceState.getInt(INSTANCE_SHIELD_ID, DEFAULT_SHIELD_ID);
+        }
 
-        if (mActivity instanceof ShieldsActivity) {
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey(EXTRA_SHIELD_ID)) {
+            positiveButtonText = "Усилить щит";
+            if (mShieldId == DEFAULT_SHIELD_ID) {
+
+                mShieldId = bundle.getInt(EXTRA_SHIELD_ID);
+
+                AddShieldViewModelFactory factory = new AddShieldViewModelFactory(mDb, mShieldId);
+
+                final AddShieldViewModel viewModel
+                        = ViewModelProviders.of(this, factory).get(AddShieldViewModel.class);
+
+                viewModel.getShield().observe(this, new Observer<ShieldEntry>() {
+                    @Override
+                    public void onChanged(ShieldEntry shieldEntry) {
+                        viewModel.getShield().removeObserver(this);
+                        populateUI(shieldEntry);
+                    }
+                });
+            }
+        }
+
+        /*if (mActivity instanceof ShieldsActivity) {
             setupShieldPowerLimit(1);
         } else if (mActivity instanceof BattleActivity) {
             setupShieldPowerLimit(0);
-        }
+        }*/
 
         AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
 
@@ -91,7 +122,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         builder.setTitle("Повесить щит")
                 .setMessage("Укажите щит и его силу")
                 .setView(view)
-                .setPositiveButton("Повесить щит", new DialogInterface.OnClickListener() {
+                .setPositiveButton(positiveButtonText, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         addShield();
@@ -102,7 +133,15 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         return builder.create();
     }
 
-    private void setupShieldPowerLimit(int module) {
+    private void populateUI(ShieldEntry shieldEntry) {
+        if (shieldEntry == null) {
+            return;
+        }
+
+        mShieldCost.setText(shieldEntry.getPower());
+    }
+
+    /*private void setupShieldPowerLimit(int module) {
 
         Cursor cursor = mActivity.getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
                 null, null, null, null);
@@ -113,7 +152,7 @@ public class AddShieldDialogFragment extends DialogFragment implements AdapterVi
         mShieldPowerLimit = powerLimit * module;
 
         cursor.close();
-    }
+    }*/
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

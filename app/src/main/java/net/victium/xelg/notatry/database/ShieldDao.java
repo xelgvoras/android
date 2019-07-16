@@ -22,8 +22,14 @@ public interface ShieldDao {
     @Delete
     void deleteShield(ShieldEntry shieldEntry);
 
+    @Delete
+    void deleteAllShields();
+
     @Query("SELECT * FROM shields ORDER BY range DESC")
     LiveData<List<ShieldEntry>> loadAllShields();
+
+    @Query("SELECT * FROM shields WHERE id = :id")
+    LiveData<ShieldEntry> loadShieldById(int id);
 
     @Query("SELECT COUNT(*) FROM shields WHERE personal_shield = :type")
     LiveData<Integer> getShieldsCount(boolean type);

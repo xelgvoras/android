@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,15 +14,14 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
-import net.victium.xelg.notatry.adapter.DuskLayersAdapter;
+import net.victium.xelg.notatry.dataBinding.MainActivityInfo;
 import net.victium.xelg.notatry.database.ShieldEntry;
 import net.victium.xelg.notatry.databinding.ActivityMainBinding;
-import net.victium.xelg.notatry.utilities.MainActivityInfoBuilder;
+import net.victium.xelg.notatry.dataBinding.MainActivityInfoBuilder;
 import net.victium.xelg.notatry.utilities.PreferenceUtilities;
-import net.victium.xelg.notatry.viewModel.DefenceViewModel;
+import net.victium.xelg.notatry.viewModel.ShieldViewModel;
 
 import java.util.List;
 
@@ -70,23 +68,23 @@ public class MainActivity extends AppCompatActivity implements
     private void setVopsInfoVisible() {
         String stringBattleForm = "текущая форма: " + PreferenceUtilities.getBattleForm(this);
 
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBinding.tvCharacterBattleForm.getLayoutParams();
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBinding.tvBattleForm.getLayoutParams();
         params.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        mBinding.tvCharacterBattleForm.setVisibility(View.VISIBLE);
-        mBinding.tvCharacterBattleForm.setLayoutParams(params);
-        mBinding.tvCharacterBattleForm.setText(stringBattleForm);
+        mBinding.tvBattleForm.setVisibility(View.VISIBLE);
+        mBinding.tvBattleForm.setLayoutParams(params);
+        mBinding.tvBattleForm.setText(stringBattleForm);
     }
 
     private void setVopsInfoInvisible() {
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBinding.tvCharacterBattleForm.getLayoutParams();
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBinding.tvBattleForm.getLayoutParams();
         params.height = 0;
-        mBinding.tvCharacterBattleForm.setVisibility(View.INVISIBLE);
-        mBinding.tvCharacterBattleForm.setLayoutParams(params);
+        mBinding.tvBattleForm.setVisibility(View.INVISIBLE);
+        mBinding.tvBattleForm.setLayoutParams(params);
     }
 
     private void setupDefenceViewModel() {
-        DefenceViewModel viewModel = ViewModelProviders.of(this).get(DefenceViewModel.class);
-        viewModel.getDefence().observe(this, new Observer<List<ShieldEntry>>() {
+        ShieldViewModel viewModel = ViewModelProviders.of(this).get(ShieldViewModel.class);
+        viewModel.getShields().observe(this, new Observer<List<ShieldEntry>>() {
             @Override
             public void onChanged(List<ShieldEntry> shieldEntries) {
                 PreferenceUtilities.setDefence(getApplicationContext(), shieldEntries);

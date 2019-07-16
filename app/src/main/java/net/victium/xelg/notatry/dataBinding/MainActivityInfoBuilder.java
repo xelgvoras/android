@@ -1,13 +1,13 @@
-package net.victium.xelg.notatry.utilities;
+package net.victium.xelg.notatry.dataBinding;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
 
 import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 
-import net.victium.xelg.notatry.MainActivityInfo;
+import net.victium.xelg.notatry.dataBinding.MainActivityInfo;
 import net.victium.xelg.notatry.database.AppDatabase;
+import net.victium.xelg.notatry.utilities.PreferenceUtilities;
 
 public class MainActivityInfoBuilder {
 

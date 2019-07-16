@@ -11,20 +11,20 @@ import net.victium.xelg.notatry.database.ShieldEntry;
 
 import java.util.List;
 
-public class DefenceViewModel extends AndroidViewModel {
+public class ShieldViewModel extends AndroidViewModel {
 
-    private static final String TAG = DefenceViewModel.class.getSimpleName();
+    private static final String TAG = ShieldViewModel.class.getSimpleName();
 
-    private LiveData<List<ShieldEntry>> mDefence;
+    private LiveData<List<ShieldEntry>> mShieldEntries;
 
-    public DefenceViewModel(Application application) {
+    public ShieldViewModel(Application application) {
         super(application);
         AppDatabase database = AppDatabase.getInstance(this.getApplication());
-        Log.d(TAG, "Retrieving the defence from the DataBase");
-        mDefence = database.shieldDao().loadAllShields();
+        Log.d(TAG, "Retrieving the shields from the Database");
+        mShieldEntries = database.shieldDao().loadAllShields();
     }
 
-    public LiveData<List<ShieldEntry>> getDefence() {
-        return mDefence;
+    public LiveData<List<ShieldEntry>> getShields() {
+        return mShieldEntries;
     }
 }

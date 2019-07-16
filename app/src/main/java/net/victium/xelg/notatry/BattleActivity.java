@@ -38,7 +38,7 @@ public class BattleActivity extends AppCompatActivity implements
         DamageDialogFragment.DamageDialogListener,
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
         View.OnClickListener,
-        ShieldListAdapter.ShieldListAdapterOnClickHandler,
+        ShieldListAdapter.ItemClickListener,
         UpdateShieldDialogFragment.UpdateShieldDialogListener,
         UpdateNaturalDefenceDialogFragment.UpdateNaturalDefenceDialogListener {
 
@@ -66,7 +66,7 @@ public class BattleActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_battle);
 
         mFullNameTextView = findViewById(R.id.tv_character_full_name);
-        mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
+        mBattleFormTextView = findViewById(R.id.tv_battle_form);
         mPersonalInfoTextView = findViewById(R.id.tv_character_personal_info);
         mMagicPowerTextView = findViewById(R.id.tv_current_power);
         mNaturalDefenceTextView = findViewById(R.id.tv_natural_defence);
@@ -502,7 +502,7 @@ public class BattleActivity extends AppCompatActivity implements
             if (textViewId == R.id.tv_current_power) {
                 DialogFragment dialogFragment = new UpdateCurrentPowerDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateCurrentPowerDialogFragment");
-            } else if (textViewId == R.id.tv_character_battle_form) {
+            } else if (textViewId == R.id.tv_battle_form) {
                 insertMessageIntoBattleJournal(TransformUtil.makeTransform(this));
                 mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
                 mShieldListAdapter.swapCursor(getAllShields(null, null, null));

@@ -232,7 +232,7 @@
                 style="@style/Base.TextAppearance.AppCompat.Title" />
 
             <TextView
-                android:id="@+id/tv_character_battle_form"
+                android:id="@+id/tv_battle_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Base.TextAppearance.AppCompat.Medium"

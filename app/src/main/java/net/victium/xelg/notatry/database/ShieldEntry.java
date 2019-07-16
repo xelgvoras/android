@@ -1,5 +1,10 @@
 package net.victium.xelg.notatry.database;
 
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -7,6 +12,7 @@ import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import net.victium.xelg.notatry.MainActivity;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.enums.ShieldTypes;
 
@@ -18,9 +24,7 @@ public class ShieldEntry {
     private int id;
     private String name;
     private ShieldTypes type = ShieldTypes.UNIVERSAL;
-    @Ignore
     private int minCost = 1;
-    @Ignore
     private int maxCost;
     private int power;
     @ColumnInfo(name = "magic_defence_multiplier")
@@ -31,27 +35,30 @@ public class ShieldEntry {
     private boolean hasMentalDefence = false;
     @ColumnInfo(name = "personal_shield")
     private boolean personalShield = true;
-    @Ignore
+    @ColumnInfo(name = "can-be-destroyed")
     private boolean canBeDestroyed = true;
     private int range = 1;
 
     @Ignore
-    public ShieldEntry(String name) {
+    public ShieldEntry(String name, Context context) {
         this.name = name;
-        ShieldEntryBuilder.setupShield(name, this);
+        ShieldEntryBuilder.setupShield(context, this);
     }
 
-    public ShieldEntry(int id, String name, ShieldTypes type, int power,
+    public ShieldEntry(int id, String name, ShieldTypes type, int power, int minCost, int maxCost,
                        int magicDefenceMultiplier, int physicDefenceMultiplier,
-                       boolean hasMentalDefence, boolean personalShield, int range) {
+                       boolean hasMentalDefence, boolean personalShield, boolean canBeDestroyed, int range) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.minCost = minCost;
+        this.maxCost = maxCost;
         this.power = power;
         this.magicDefenceMultiplier = magicDefenceMultiplier;
         this.physicDefenceMultiplier = physicDefenceMultiplier;
         this.hasMentalDefence = hasMentalDefence;
         this.personalShield = personalShield;
+        this.canBeDestroyed = canBeDestroyed;
         this.range = range;
     }
 

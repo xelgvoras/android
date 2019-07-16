@@ -2,8 +2,10 @@ package net.victium.xelg.notatry.database;
 
 import android.content.Context;
 
+import net.victium.xelg.notatry.MainActivity;
 import net.victium.xelg.notatry.R;
 import net.victium.xelg.notatry.enums.ShieldTypes;
+import net.victium.xelg.notatry.utilities.PreferenceUtilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +13,12 @@ import java.util.List;
 
 public abstract class ShieldEntryBuilder {
 
-    public static void setupShield(String name, ShieldEntry shield) {
+    public static void setupShield(Context context, ShieldEntry shield) {
+
+        int maxCost = PreferenceUtilities.getMagicPowerLimit(context) * 2;
+        shield.setMaxCost(maxCost);
+        String name = shield.getName();
+
         switch (name) {
             case "Щит мага":
                 shield.setMagicDefenceMultiplier(1);
@@ -134,7 +141,7 @@ public abstract class ShieldEntryBuilder {
         ArrayList<ShieldEntry> shieldList = new ArrayList<>();
 
         for (String shieldName : shieldStringList) {
-            shieldList.add(new ShieldEntry(shieldName));
+            shieldList.add(new ShieldEntry(shieldName, context));
         }
 
         return shieldList;

@@ -27,7 +27,7 @@
                 style="@style/Base.TextAppearance.AppCompat.Medium" />
 
             <TextView
-                android:id="@+id/tv_character_battle_form"
+                android:id="@+id/tv_battle_form"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 style="@style/Base.TextAppearance.AppCompat.Small"

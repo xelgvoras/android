@@ -33,7 +33,7 @@ import net.victium.xelg.notatry.dialog.UpdateShieldDialogFragment;
 import net.victium.xelg.notatry.utilities.ShieldUtil;
 import net.victium.xelg.notatry.utilities.TransformUtil;
 
-public class BattleActivity extends AppCompatActivity implements
+public abstract class BattleActivity extends AppCompatActivity implements
         AddShieldDialogFragment.AddShieldDialogListener,
         DamageDialogFragment.DamageDialogListener,
         UpdateCurrentPowerDialogFragment.UpdateCurrentPowerDialogListener,
@@ -80,7 +80,7 @@ public class BattleActivity extends AppCompatActivity implements
 
         RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
         activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);
+        /*mShieldListAdapter = new ShieldListAdapter(getAllShields(null, null, null), this, this);*/
         activeShieldsRecyclerView.setAdapter(mShieldListAdapter);
 
         RecyclerView battleJournalRecyclerView = findViewById(R.id.rv_battle_journal);
@@ -90,10 +90,10 @@ public class BattleActivity extends AppCompatActivity implements
 
         mCharacter = new Character(this);
         String type = mCharacter.getCharacterType();
-        if (type.equals(getString(R.string.pref_type_value_vampire)) && TransformUtil.getCurrentForm(this).equals("человек")) {
+        /*if (type.equals(getString(R.string.pref_type_value_vampire)) && TransformUtil.getCurrentForm(this).equals("человек")) {
             insertMessageIntoBattleJournal(TransformUtil.makeTransform(this));
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
-        }
+        }*/
 
         setupScreen();
 
@@ -107,7 +107,7 @@ public class BattleActivity extends AppCompatActivity implements
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 long id = (long) viewHolder.itemView.getTag();
                 removeShield(id);
-                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+                /*mShieldListAdapter.swapCursor(getAllShields(null, null, null));*/
             }
         }).attachToRecyclerView(activeShieldsRecyclerView);
     }
@@ -115,7 +115,7 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+        /*mShieldListAdapter.swapCursor(getAllShields(null, null, null));*/
     }
 
     @Override
@@ -410,7 +410,7 @@ public class BattleActivity extends AppCompatActivity implements
             }
         }
 
-        mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+        /*mShieldListAdapter.swapCursor(getAllShields(null, null, null));*/
     }
 
     private void resetBattleJournal() {
@@ -476,7 +476,7 @@ public class BattleActivity extends AppCompatActivity implements
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
 
-        if (dialogFragment instanceof AddShieldDialogFragment || dialogFragment instanceof UpdateShieldDialogFragment) {
+        /*if (dialogFragment instanceof AddShieldDialogFragment || dialogFragment instanceof UpdateShieldDialogFragment) {
             mShieldListAdapter.swapCursor(getAllShields(null, null, null));
         } else if (dialogFragment instanceof DamageDialogFragment) {
             DamageDialogFragment damageDialogFragment = (DamageDialogFragment) dialogFragment;
@@ -489,7 +489,7 @@ public class BattleActivity extends AppCompatActivity implements
             mBattleJournalAdapter.swapCursor(getAllBattleJournalMessage());
             MenuItem item = mMenu.getItem(0);
             item.setTitle("использовать реакцию (" + getReactionCount() + ")");
-        }
+        }*/
     }
 
     @Override
@@ -505,7 +505,7 @@ public class BattleActivity extends AppCompatActivity implements
             } else if (textViewId == R.id.tv_battle_form) {
                 insertMessageIntoBattleJournal(TransformUtil.makeTransform(this));
                 mBattleFormTextView.setText(TransformUtil.getCurrentForm(this));
-                mShieldListAdapter.swapCursor(getAllShields(null, null, null));
+                /*mShieldListAdapter.swapCursor(getAllShields(null, null, null));*/
             } else if (textViewId == R.id.tv_natural_defence) {
                 DialogFragment dialogFragment = new UpdateNaturalDefenceDialogFragment();
                 dialogFragment.show(getSupportFragmentManager(), "UpdateNaturalDefenceDialogFragment");
@@ -520,8 +520,8 @@ public class BattleActivity extends AppCompatActivity implements
         setupNaturalDefence(getCharacterStatus());
     }
 
-    @Override
-    public void onClick(long itemId) {
+    /*@Override*/
+    /*public void onClick(long itemId) {
         Bundle args = new Bundle();
         String stringItemId = String.valueOf(itemId);
         args.putString("itemId", stringItemId);
@@ -529,5 +529,5 @@ public class BattleActivity extends AppCompatActivity implements
         DialogFragment dialogFragment = new UpdateShieldDialogFragment();
         dialogFragment.setArguments(args);
         dialogFragment.show(getSupportFragmentManager(), "UpdateShieldPower");
-    }
+    }*/
 }

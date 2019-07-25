@@ -19,6 +19,7 @@ public class AddShieldViewModelFactory extends ViewModelProvider.NewInstanceFact
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new AddShieldViewModel(mDb, mShieldId);
+        /*return (T) new AddShieldViewModel(mDb, mShieldId);*/
+        return null;
     }
 }

@@ -1,20 +1,11 @@
 package net.victium.xelg.notatry.database;
 
-import android.app.Activity;
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
-
-import net.victium.xelg.notatry.MainActivity;
-import net.victium.xelg.notatry.R;
-import net.victium.xelg.notatry.enums.ShieldTypes;
 
 @Entity(tableName = "shields",
 indices = {@Index(value = {"name"}, unique = true)})
@@ -23,31 +14,40 @@ public class ShieldEntry {
     @PrimaryKey(autoGenerate = true)
     private int id;
     private String name;
-    private ShieldTypes type = ShieldTypes.UNIVERSAL;
-    private int minCost = 1;
+    private String type;
+    @ColumnInfo(name = "min_cost")
+    private int minCost;
+    @ColumnInfo(name = "max_cost")
     private int maxCost;
     private int power;
     @ColumnInfo(name = "magic_defence_multiplier")
-    private int magicDefenceMultiplier = 0;
+    private int magicDefenceMultiplier;
     @ColumnInfo(name = "physic_defence_multiplier")
-    private int physicDefenceMultiplier = 0;
+    private int physicDefenceMultiplier;
     @ColumnInfo(name = "mental_defence")
-    private boolean hasMentalDefence = false;
-    @ColumnInfo(name = "personal_shield")
-    private boolean personalShield = true;
-    @ColumnInfo(name = "can-be-destroyed")
-    private boolean canBeDestroyed = true;
-    private int range = 1;
+    private int mentalDefence;
+    private String target;
+    private int range;
 
     @Ignore
-    public ShieldEntry(String name, Context context) {
+    public ShieldEntry(String name, String type, int minCost, int maxCost, int power,
+                       int magicDefenceMultiplier, int physicDefenceMultiplier, int mentalDefence,
+                       String target, int range) {
         this.name = name;
-        ShieldEntryBuilder.setupShield(context, this);
+        this.type = type;
+        this.minCost = minCost;
+        this.maxCost = maxCost;
+        this.power = power;
+        this.magicDefenceMultiplier = magicDefenceMultiplier;
+        this.physicDefenceMultiplier = physicDefenceMultiplier;
+        this.mentalDefence = mentalDefence;
+        this.target = target;
+        this.range = range;
     }
 
-    public ShieldEntry(int id, String name, ShieldTypes type, int power, int minCost, int maxCost,
-                       int magicDefenceMultiplier, int physicDefenceMultiplier,
-                       boolean hasMentalDefence, boolean personalShield, boolean canBeDestroyed, int range) {
+    public ShieldEntry(int id, String name, String type, int minCost, int maxCost, int power,
+                       int magicDefenceMultiplier, int physicDefenceMultiplier, int mentalDefence,
+                       String target, int range) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -56,19 +56,16 @@ public class ShieldEntry {
         this.power = power;
         this.magicDefenceMultiplier = magicDefenceMultiplier;
         this.physicDefenceMultiplier = physicDefenceMultiplier;
-        this.hasMentalDefence = hasMentalDefence;
-        this.personalShield = personalShield;
-        this.canBeDestroyed = canBeDestroyed;
+        this.mentalDefence = mentalDefence;
+        this.target = target;
         this.range = range;
     }
 
     @NonNull
     @Override
     public String toString() {
-
-        String target = personalShield ? "перс." : "груп.";
-
-        return String.format("%s (%s - %s, у.е.: %s-%s)", name, target, type, minCost, maxCost);
+        String s = String.format("%s (%s, %s, у.е.: %s-%s)", name, target, type, minCost, maxCost);
+        return s;
     }
 
     public int getId() {
@@ -87,11 +84,11 @@ public class ShieldEntry {
         this.name = name;
     }
 
-    public ShieldTypes getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(ShieldTypes type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -135,28 +132,20 @@ public class ShieldEntry {
         this.physicDefenceMultiplier = physicDefenceMultiplier;
     }
 
-    public boolean isHasMentalDefence() {
-        return hasMentalDefence;
+    public int getMentalDefence() {
+        return mentalDefence;
     }
 
-    public void setHasMentalDefence(boolean hasMentalDefence) {
-        this.hasMentalDefence = hasMentalDefence;
+    public void setMentalDefence(int mentalDefence) {
+        this.mentalDefence = mentalDefence;
     }
 
-    public boolean isPersonalShield() {
-        return personalShield;
+    public String getTarget() {
+        return target;
     }
 
-    public void setPersonalShield(boolean personalShield) {
-        this.personalShield = personalShield;
-    }
-
-    public boolean isCanBeDestroyed() {
-        return canBeDestroyed;
-    }
-
-    public void setCanBeDestroyed(boolean canBeDestroyed) {
-        this.canBeDestroyed = canBeDestroyed;
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public int getRange() {
@@ -173,9 +162,5 @@ public class ShieldEntry {
 
     public int getPhysicDefence() {
         return physicDefenceMultiplier * power;
-    }
-
-    public int getMentalDefence() {
-        return hasMentalDefence ? 1 : 0;
     }
 }

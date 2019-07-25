@@ -1,7 +1,5 @@
 package net.victium.xelg.notatry;
 
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -18,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.victium.xelg.notatry.adapter.ShieldListAdapter;
-import net.victium.xelg.notatry.data.NotATryContract;
 import net.victium.xelg.notatry.dataBinding.ShieldsActivityInfo;
 import net.victium.xelg.notatry.dataBinding.ShieldsActivityInfoBuilder;
 import net.victium.xelg.notatry.database.AppDatabase;
@@ -42,16 +39,10 @@ public class ShieldsActivity extends AppCompatActivity implements
         UpdateShieldDialogFragment.UpdateShieldDialogListener,
         UpdateNaturalDefenceDialogFragment.UpdateNaturalDefenceDialogListener {
 
-    /*private TextView mCurrentPowerTextView;
-    private TextView mBattleFormTextView;
-    private TextView mNaturalDefenceTextView;*/
     private ActivityShieldsBinding mBinding;
     private ShieldsActivityInfo mInfo;
     private ShieldListAdapter mAdapter;
     private AppDatabase mDb;
-
-    /*private ShieldListAdapter mAdapter;*/
-    // COMPLETED(17) Добавить трансформацию в боевую форму
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,28 +57,6 @@ public class ShieldsActivity extends AppCompatActivity implements
         mBinding.rvActiveShields.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new ShieldListAdapter(this, this);
         mBinding.rvActiveShields.setAdapter(mAdapter);
-
-        /*RecyclerView activeShieldsRecyclerView = findViewById(R.id.rv_active_shields);
-        mCurrentPowerTextView = findViewById(R.id.tv_current_power);
-        mBattleFormTextView = findViewById(R.id.tv_character_battle_form);
-        mNaturalDefenceTextView = findViewById(R.id.tv_natural_defence);
-
-        mCurrentPowerTextView.setOnClickListener(this);
-        mBattleFormTextView.setOnClickListener(this);
-        mNaturalDefenceTextView.setOnClickListener(this);
-
-        activeShieldsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new ShieldListAdapter(getAllShields(), this, this);
-        activeShieldsRecyclerView.setAdapter(mAdapter);
-
-        setupCurrentPower(getCharacterStatus());
-
-        Character character = new Character(this);
-        if (character.isCharacterVop()) {
-            setVopsInfoVisible();
-        } else {
-            setVopsInfoInvisible();
-        }*/
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -110,8 +79,9 @@ public class ShieldsActivity extends AppCompatActivity implements
             }
         }).attachToRecyclerView(mBinding.rvActiveShields);
 
-        // COMPLETED(11) Сделать изменение резерва через диалоговое окно
         mDb = AppDatabase.getInstance(getApplicationContext());
+
+        setupShieldViewModel();
     }
 
     private void displayShieldsInfo(ShieldsActivityInfo info) {
@@ -161,52 +131,24 @@ public class ShieldsActivity extends AppCompatActivity implements
         });
     }
 
-    /*private Cursor getAllShields() {
-        String sortOrder = NotATryContract.ActiveShieldsEntry.COLUMN_RANGE + " DESC";
-        return getContentResolver().query(NotATryContract.ActiveShieldsEntry.CONTENT_URI,
-                null, null, null, sortOrder);
-    }*/
-
-    /*private Cursor getCharacterStatus() {
-        return getContentResolver().query(NotATryContract.CharacterStatusEntry.CONTENT_URI,
-                null, null, null, null);
-    }*/
-
-    /*private void setupCurrentPower(@NonNull Cursor cursor) {
-        cursor.moveToFirst();
-        int currentPower = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_CURRENT_POWER));
-        int powerLimit = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_POWER_LIMIT));
-        mCurrentPowerTextView.setText(String.format("Резерв силы: %s/%s", String.valueOf(currentPower), String.valueOf(powerLimit)));
-        cursor.close();
-    }*/
-
-    /*private void removeShield(long id) {
-        Uri uri = NotATryContract.ActiveShieldsEntry.CONTENT_URI.buildUpon().appendPath(String.valueOf(id)).build();
-
-        getContentResolver().delete(uri, null, null);
-    }*/
-
     public void onClickAddShield(View view) {
 
+        Bundle args = new Bundle();
+        args.putString(AddShieldDialogFragment.ACTIVITY_KEY, AddShieldDialogFragment.SHIELDS_ACTIVITY);
+
         DialogFragment dialogFragment = new AddShieldDialogFragment();
+        dialogFragment.setArguments(args);
         dialogFragment.show(getSupportFragmentManager(), "AddShieldDialogFragment");
     }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialogFragment) {
-        mAdapter.swapCursor(getAllShields());
+        setupShieldViewModel();
     }
 
     @Override
     public void onDialogClick(DialogFragment dialogFragment) {
 
-        setupCurrentPower(getCharacterStatus());
-
-        Cursor cursor = getCharacterStatus();
-        cursor.moveToFirst();
-        int naturalDefence = cursor.getInt(cursor.getColumnIndex(NotATryContract.CharacterStatusEntry.COLUMN_NATURAL_DEFENCE));
-        cursor.close();
-        mNaturalDefenceTextView.setText(String.format("Естественная защита: %s", String.valueOf(naturalDefence)));
     }
 
     @Override
@@ -245,10 +187,10 @@ public class ShieldsActivity extends AppCompatActivity implements
     @Override
     public void onItemClickListener(int itemId) {
         Bundle args = new Bundle();
-        String stringItemId = String.valueOf(itemId);
-        args.putString(AddShieldDialogFragment.EXTRA_SHIELD_ID, stringItemId);
+        args.putInt(AddShieldDialogFragment.EXTRA_SHIELD_ID, itemId);
+        args.putString(AddShieldDialogFragment.ACTIVITY_KEY, AddShieldDialogFragment.SHIELDS_ACTIVITY);
 
-        DialogFragment dialogFragment = new UpdateShieldDialogFragment();
+        DialogFragment dialogFragment = new AddShieldDialogFragment();
         dialogFragment.setArguments(args);
         dialogFragment.show(getSupportFragmentManager(), "UpdateShieldPower");
     }

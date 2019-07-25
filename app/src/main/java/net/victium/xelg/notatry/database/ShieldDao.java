@@ -22,7 +22,7 @@ public interface ShieldDao {
     @Delete
     void deleteShield(ShieldEntry shieldEntry);
 
-    @Delete
+    @Query("DELETE FROM shields")
     void deleteAllShields();
 
     @Query("SELECT * FROM shields ORDER BY range DESC")
@@ -31,8 +31,8 @@ public interface ShieldDao {
     @Query("SELECT * FROM shields WHERE id = :id")
     LiveData<ShieldEntry> loadShieldById(int id);
 
-    @Query("SELECT COUNT(*) FROM shields WHERE personal_shield = :type")
-    LiveData<Integer> getShieldsCount(boolean type);
+    @Query("SELECT COUNT(*) FROM shields WHERE target = :target")
+    int getShieldsCount(String target);
 
     @Query("SELECT SUM(power * magic_defence_multiplier) FROM shields")
     LiveData<Integer> getMagicDefence();
